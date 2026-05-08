@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kontak Masjid Al Karomah - Desa Buntu, Majalengka">
+    <title>Kontak - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <!-- Clerk Authentication -->
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            
+            <button class="navbar-toggle">☰</button>
+            
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak" class="active">Kontak</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============ PAGE TITLE ============ -->
+    <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+        <div class="container">
+            <h1>Hubungi Kami</h1>
+            <p style="color: #e5e7eb;">Kami siap membantu kebutuhan Anda. Hubungi kami dengan mudah melalui berbagai saluran komunikasi</p>
+        </div>
+    </section>
+
+    <!-- ============ QUICK CONTACT ============ -->
+    <section class="section" style="background: var(--light);">
+        <div class="container">
+            <div class="grid-4">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">📍</div>
+                    <h4>Alamat</h4>
+                    <p>Desa Buntu<br>Kecamatan Ligung<br>Kabupaten Majalengka, Jawa Barat</p>
+                    <a href="https://www.google.com/maps/place/Masjid+Al+Karomah/@-6.7659815,108.088137,10z/data=!4m10!1m2!2m1!1smasjid+alkaromah+desa+buntu!3m6!1s0x2e6ed9fcd3b57681:0x64d99eca32613f04!8m2!3d-6.6790125!4d108.2729938!15sChttYXNqaWQgYWxrYXJvbWFoIGRlc2EgYnVudHWSAQZtb3NxdWXgAQA!16s%2Fg%2F11f8bsblh2" target="_blank" class="btn btn-sm" style="background: var(--primary); color: white; margin-top: var(--spacing-3);">Lihat di Maps</a>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">📞</div>
+                    <h4>Telepon</h4>
+                    <p><a href="tel:">[NOMOR_TELEPON_AKAN_DIUPDATE]</a></p>
+                    <p style="color: var(--gray); margin-top: 0;">Hubungi untuk informasi</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">💬</div>
+                    <h4>WhatsApp</h4>
+                    <p><a href="https://wa.me/">[NOMOR_WHATSAPP_AKAN_DIUPDATE]</a></p>
+                    <p style="color: var(--gray); margin-top: 0;">24 Jam Siap Melayani</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">✉️</div>
+                    <h4>Email</h4>
+                    <p><a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a></p>
+                    <p style="color: var(--gray); margin-top: 0;">Respon cepat dalam 24 jam</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CONTACT FORM & MAP ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="grid-2" style="gap: var(--spacing-12);">
+                <div>
+                    <h2 style="margin-bottom: var(--spacing-8);">Kirim Pesan</h2>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="contact-name" class="form-label">Nama Lengkap</label>
+                            <input type="text" id="contact-name" name="name" class="form-control" placeholder="Nama Anda" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-email" class="form-label">Email</label>
+                            <input type="email" id="contact-email" name="email" class="form-control" placeholder="Email Anda" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-phone" class="form-label">Nomor WhatsApp</label>
+                            <input type="tel" id="contact-phone" name="phone" class="form-control" placeholder="08xx xxxx xxxx" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-subject" class="form-label">Subjek</label>
+                            <select id="contact-subject" name="subject" class="form-control" required>
+                                <option value="">-- Pilih Subjek --</option>
+                                <option value="general">Pertanyaan Umum</option>
+                                <option value="service">Ajukan Layanan</option>
+                                <option value="event">Informasi Kegiatan</option>
+                                <option value="donation">Pertanyaan Donasi</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-message" class="form-label">Pesan</label>
+                            <textarea id="contact-message" name="message" class="form-control" placeholder="Tuliskan pesan Anda..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Kirim Pesan</button>
+                    </form>
+                </div>
+                
+                <div>
+                    <h2 style="margin-bottom: var(--spacing-8);">Lokasi Kami</h2>
+                    <div style="background: var(--gray-light); border-radius: var(--radius-xl); height: 400px; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-8);">
+                        <iframe src="https://www.google.com/maps?q=-6.6790125,108.2729938&hl=id&z=16&output=embed" width="100%" height="100%" style="border:0; border-radius: var(--radius-lg);" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    
+                    <div class="card">
+                        <h4 style="margin-bottom: var(--spacing-6);">🕐 Jam Operasional</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-4);">
+                            <div>
+                                <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Senin - Kamis</p>
+                                <p style="margin: var(--spacing-2) 0 0 0; font-weight: var(--font-bold);">06:00 - 22:00</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Jumat</p>
+                                <p style="margin: var(--spacing-2) 0 0 0; font-weight: var(--font-bold);">05:00 - 23:00</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Sabtu</p>
+                                <p style="margin: var(--spacing-2) 0 0 0; font-weight: var(--font-bold);">06:00 - 23:00</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Minggu</p>
+                                <p style="margin: var(--spacing-2) 0 0 0; font-weight: var(--font-bold);">06:00 - 22:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ DEPARTMENTS ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: var(--spacing-12);">Kontak Departemen</h2>
+            
+            <div class="grid-3">
+                <div class="card">
+                    <h4>📋 Sekretariat Umum</h4>
+                    <p>Untuk informasi umum tentang masjid dan pendaftaran kegiatan.</p>
+                    <div style="padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Hubungi:</p>
+                        <p style="margin: var(--spacing-2) 0 0 0;"><a href="tel:+622112345678" style="color: var(--primary-dark); font-weight: var(--font-bold);">+62 (21) 1234 5678</a></p>
+                        <p style="margin: var(--spacing-2) 0 0 0; font-size: var(--text-sm);"><a href="https://wa.me/">💬 Hubungi via WhatsApp</a></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>💰 Departemen Keuangan</h4>
+                    <p>Untuk pertanyaan tentang donasi, zakat, dan keuangan masjid.</p>
+                    <div style="padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Hubungi:</p>
+                        <p style="margin: var(--spacing-2) 0 0 0;"><a href="tel:+622187654321" style="color: var(--primary-dark); font-weight: var(--font-bold);">+62 (21) 8765 4321</a></p>
+                        <p style="margin: var(--spacing-2) 0 0 0; font-size: var(--text-sm);"><a href="https://wa.me/62813987654321">💬 Hubungi via WhatsApp</a></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>🎓 Departemen Pendidikan</h4>
+                    <p>Untuk pertanyaan tentang kajian, pengajaran, dan program pendidikan.</p>
+                    <div style="padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Hubungi:</p>
+                        <p style="margin: var(--spacing-2) 0 0 0;"><a href="tel:+622198765432" style="color: var(--primary-dark); font-weight: var(--font-bold);">+62 (21) 9876 5432</a></p>
+                        <p style="margin: var(--spacing-2) 0 0 0; font-size: var(--text-sm);"><a href="https://wa.me/62814567890123">💬 Hubungi via WhatsApp</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: var(--spacing-12);">Pertanyaan Umum</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div style="margin-bottom: var(--spacing-8); border-bottom: 1px solid var(--gray-light); padding-bottom: var(--spacing-8);">
+                    <h4 style="margin-bottom: var(--spacing-4);">❓ Bagaimana cara mendaftar kegiatan?</h4>
+                    <p>Anda dapat mendaftar kegiatan melalui halaman Kegiatan, mengisi form pendaftaran, atau menghubungi kami via WhatsApp. Admin akan memberikan informasi lebih lanjut.</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-8); border-bottom: 1px solid var(--gray-light); padding-bottom: var(--spacing-8);">
+                    <h4 style="margin-bottom: var(--spacing-4);">❓ Apakah ada fasilitas parkir?</h4>
+                    <p>Ya, masjid kami menyediakan fasilitas parkir gratis yang luas untuk kendaraan roda 4 dan roda 2. Parkir tersedia di depan dan samping masjid.</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-8); border-bottom: 1px solid var(--gray-light); padding-bottom: var(--spacing-8);">
+                    <h4 style="margin-bottom: var(--spacing-4);">❓ Bisakah menyewa aula untuk acara?</h4>
+                    <p>Ya, tersedia layanan sewa aula untuk acara keagamaan dan keluarga. Silakan hubungi departemen layanan masjid untuk informasi detail dan harga.</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-8); border-bottom: 1px solid var(--gray-light); padding-bottom: var(--spacing-8);">
+                    <h4 style="margin-bottom: var(--spacing-4);">❓ Bagaimana cara mengajukan konsultasi keagamaan?</h4>
+                    <p>Anda dapat mengajukan konsultasi langsung dengan imam atau ustadz di masjid, atau menghubungi kami via WhatsApp untuk jadwal konsultasi khusus.</p>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-8);">
+                    <h4 style="margin-bottom: var(--spacing-4);">❓ Bagaimana prosedur akad nikah di masjid?</h4>
+                    <p>Untuk akad nikah, hubungi departemen layanan masjid minimal 1 bulan sebelumnya. Tim kami akan membantu persiapan dan koordinasi detail acara.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/masjid" title="Facebook">f</a>
+                    <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+                    <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+                    <a href="https://wa.me/" title="WhatsApp">💬</a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>
+                    📍 Desa Buntu, Kecamatan Ligung<br>
+                    Kabupaten Majalengka, Jawa Barat
+                </p>
+                <p>
+                    📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>
+                    ✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a>
+                </p>
+                <p>
+                    🕐 <strong>Jam Layanan:</strong><br>
+                    Setiap hari, 06:00 - 22:00
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <!-- ============ FLOATING BUTTONS ============ -->
+    <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="/js/utils.js"></script>
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const data = Form.serialize(form);
+            
+            // Format message for WhatsApp
+            const message = `Halo, saya ingin mengirim pesan melalui website:\n\nNama: ${data.name}\nEmail: ${data.email}\nNo. WhatsApp: ${data.phone}\nSubjek: ${data.subject}\nPesan: ${data.message}`;
+            
+            // Send to WhatsApp
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            Form.clear(form);
+            Notification.success('Terima kasih! Pesan Anda akan dikirim via WhatsApp.');
+        });
+    </script>
+</body>
+</html>

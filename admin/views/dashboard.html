@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+    <!-- Clerk Authentication -->
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- ============ SIDEBAR ============ -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin" class="active">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="#" onclick="logout()">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- ============ MAIN CONTENT ============ -->
+        <main>
+            <!-- ============ HEADER ============ -->
+            <header class="admin-header">
+                <h1>Dashboard Admin</h1>
+                <div class="admin-user">
+                    <span>Admin User</span>
+                    <button onclick="toggleMenu()">⋮</button>
+                </div>
+            </header>
+
+            <!-- ============ CONTENT ============ -->
+            <div class="admin-main">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Donasi</h3>
+                        <div class="number">Rp 325M</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Jumlah Donatur</h3>
+                        <div class="number">1,245</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Kegiatan Aktif</h3>
+                        <div class="number">23</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Artikel</h3>
+                        <div class="number">67</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="card">
+                    <h2>📊 Aktivitas Terbaru</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Aktivitas</th>
+                                <th>Tipe</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>8 Mei 2024</td>
+                                <td>Donasi dari Ahmad Rahman</td>
+                                <td>Donasi</td>
+                                <td><span class="badge badge-success">Dikonfirmasi</span></td>
+                            </tr>
+                            <tr>
+                                <td>7 Mei 2024</td>
+                                <td>Artikel "Hukum Puasa" dipublikasi</td>
+                                <td>Artikel</td>
+                                <td><span class="badge badge-success">Dipublikasi</span></td>
+                            </tr>
+                            <tr>
+                                <td>6 Mei 2024</td>
+                                <td>Kontak masuk dari Siti Nurhaliza</td>
+                                <td>Kontak</td>
+                                <td><span class="badge badge-warning">Belum dibaca</span></td>
+                            </tr>
+                            <tr>
+                                <td>5 Mei 2024</td>
+                                <td>Kegiatan "Kajian Remaja" dijadwalkan</td>
+                                <td>Kegiatan</td>
+                                <td><span class="badge badge-success">Aktif</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h2>⚡ Aksi Cepat</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <button class="btn btn-primary" onclick="location.href='/admin/articles#create'">
+                            ➕ Buat Artikel
+                        </button>
+                        <button class="btn btn-primary" onclick="location.href='/admin/activities#create'">
+                            ➕ Tambah Kegiatan
+                        </button>
+                        <button class="btn btn-primary" onclick="location.href='/admin/services#create'">
+                            ➕ Tambah Layanan
+                        </button>
+                        <button class="btn btn-secondary" onclick="location.href='/admin/donations'">
+                            👁️ Lihat Donasi
+                        </button>
+                        <button class="btn btn-secondary" onclick="location.href='/admin/contacts'">
+                            👁️ Lihat Pesan
+                        </button>
+                        <button class="btn btn-secondary" onclick="location.href='/admin/settings'">
+                            ⚙️ Pengaturan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Donation Programs -->
+                <div class="card">
+                    <h2>💰 Program Donasi</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Program</th>
+                                <th>Target</th>
+                                <th>Terkumpul</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Operasional Masjid</td>
+                                <td>Rp 100.000.000</td>
+                                <td>Rp 65.000.000</td>
+                                <td>65%</td>
+                                <td><span class="badge badge-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>Santunan Yatim</td>
+                                <td>Rp 100.000.000</td>
+                                <td>Rp 45.000.000</td>
+                                <td>45%</td>
+                                <td><span class="badge badge-success">Aktif</span></td>
+                            </tr>
+                            <tr>
+                                <td>Renovasi Masjid</td>
+                                <td>Rp 100.000.000</td>
+                                <td>Rp 30.000.000</td>
+                                <td>30%</td>
+                                <td><span class="badge badge-warning">Berjalan</span></td>
+                            </tr>
+                            <tr>
+                                <td>Program Pendidikan</td>
+                                <td>Rp 50.000.000</td>
+                                <td>Rp 55.000.000</td>
+                                <td>110%</td>
+                                <td><span class="badge badge-success">Selesai</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Clerk
+        const clerkPublishableKey = 'pk_test_cG9zc2libGUta2luZ2Zpc2gtNi5jbGVyay5hY2NvdW50cy5kZXYk';
+        
+        async function initAdmin() {
+            if (typeof Clerk === 'undefined') {
+                console.error('Clerk SDK not loaded');
+                window.location.href = '/signin';
+                return;
+            }
+            
+            await Clerk.load({ publishableKey: clerkPublishableKey });
+            
+            // Check if user is signed in
+            const isSignedIn = await Clerk.user;
+            if (!isSignedIn) {
+                window.location.href = '/signin';
+                return;
+            }
+            
+            // Update user info in header
+            const user = await Clerk.user;
+            const email = user.emailAddresses?.[0]?.emailAddress || 'admin@alkaromah.com';
+            const name = user.fullName || 'Admin';
+            
+            document.querySelector('.admin-user span').textContent = name;
+        }
+        
+        function toggleMenu() {
+            alert('Menu user: ' + (Clerk.user?.fullName || 'Admin'));
+        }
+        
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/signout';
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initAdmin);
+    </script>
+</body>
+</html>

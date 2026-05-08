@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Profil Masjid Al Karomah - Sejarah, Visi & Misi">
+    <title>Profil - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <!-- Clerk Authentication -->
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            
+            <button class="navbar-toggle">☰</button>
+            
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil" class="active">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============ PAGE TITLE ============ -->
+    <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+        <div class="container">
+            <h1>Profil Masjid Kami</h1>
+            <p style="color: #e5e7eb;">Mengenal lebih dekat institusi spiritual dan sosial kami</p>
+        </div>
+    </section>
+
+    <!-- ============ SEJARAH ============ -->
+    <section class="section">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-12); align-items: center;">
+                <div>
+                    <h2>Sejarah Masjid</h2>
+                    <p>Masjid kami didirikan pada tahun 1985 sebagai inisiatif dari para tokoh masyarakat yang memiliki visi untuk membangun pusat ibadah yang modern dan berkelanjutan. Dimulai dari sebuah musholla kecil, masjid ini terus berkembang hingga menjadi institusi spiritual yang melayani ribuan jamaah setiap tahunnya.</p>
+                    
+                    <p>Perjalanan panjang kami penuh dengan pembelajaran, dedikasi, dan dukungan dari jamaah setia. Setiap tahun, kami terus berinovasi dan meningkatkan fasilitas serta layanan untuk memberikan yang terbaik bagi umat.</p>
+                    
+                    <p style="margin-top: var(--spacing-8);">
+                        <strong>Milestones Penting:</strong>
+                    </p>
+                    <ul style="margin-left: var(--spacing-6); margin-top: var(--spacing-4);">
+                        <li><strong>1985</strong> - Pendirian masjid dengan status musholla</li>
+                        <li><strong>1990</strong> - Perluasan dan pembangunan aula</li>
+                        <li><strong>2000</strong> - Renovasi besar-besaran dan penambahan fasilitas</li>
+                        <li><strong>2015</strong> - Implementasi teknologi digital dan website</li>
+                        <li><strong>2024</strong> - Peluncuran website modern dan sistem admin digital</li>
+                    </ul>
+                </div>
+                
+                <div style="border-radius: var(--radius-2xl); overflow: hidden; height: 500px;">
+                    <img src="/images/Masjid.png" alt="Masjid Al Karomah" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ VISI MISI ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <div class="grid-2" style="gap: var(--spacing-12);">
+                <div class="card">
+                    <h3 style="color: var(--primary-dark); margin-bottom: var(--spacing-6);">🎯 Visi Kami</h3>
+                    <p style="font-size: var(--text-lg); line-height: 1.8;">
+                        Menjadi pusat ibadah, ilmu pengetahuan, dan pemberdayaan umat yang modern, profesional, dan inklusif, serta menjadi teladan bagi komunitas dalam menjalankan ajaran Islam yang rahmatan lil'alamin.
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: var(--primary-dark); margin-bottom: var(--spacing-6);">📋 Misi Kami</h3>
+                    <ol style="margin-left: var(--spacing-6);">
+                        <li style="margin-bottom: var(--spacing-4);">Menyelenggarakan ibadah yang khusyuk dan bermakna bagi semua jamaah</li>
+                        <li style="margin-bottom: var(--spacing-4);">Memberikan pendidikan Islam yang berkualitas dan relevan dengan kehidupan modern</li>
+                        <li style="margin-bottom: var(--spacing-4);">Mengupayakan pemberdayaan ekonomi dan sosial masyarakat</li>
+                        <li style="margin-bottom: var(--spacing-4);">Membangun komunitas yang solid, toleran, dan saling mendukung</li>
+                        <li>Menjadi wujud nyata dari Islam yang damai, terbuka, dan mengayomi semua lapisan</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ NILAI-NILAI UTAMA ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nilai-Nilai Utama Kami</h2>
+                <p>Prinsip-prinsip yang kami pegang teguh dalam melayani umat</p>
+            </div>
+            
+            <div class="grid-4">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--spacing-4);">🤲</div>
+                    <h4 style="color: var(--primary-dark);">Ibadah</h4>
+                    <p>Mengutamakan ketaatan dan kedekatan kepada Allah dalam setiap ibadah dan amal perbuatan.</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--spacing-4);">📚</div>
+                    <h4 style="color: var(--primary-dark);">Pendidikan</h4>
+                    <p>Memberikan pemahaman Islam yang mendalam, kontekstual, dan mudah dipraktikkan dalam kehidupan.</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--spacing-4);">❤️</div>
+                    <h4 style="color: var(--primary-dark);">Kebajikan Sosial</h4>
+                    <p>Peduli pada kesejahteraan umat dan aktif dalam kegiatan sosial kemasyarakatan yang berkelanjutan.</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--spacing-4);">🤝</div>
+                    <h4 style="color: var(--primary-dark);">Kebersamaan</h4>
+                    <p>Membangun komunitas yang solid, inklusif, toleran, dan saling menunjang satu sama lain.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ STRUKTUR PENGURUS ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>Struktur Pengurus</h2>
+                <p>Tim profesional yang mengabdi untuk masjid</p>
+            </div>
+            
+            <div class="grid-3" style="margin-bottom: var(--spacing-12);">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">👨‍💼</div>
+                    <h4>Ketua Pengurus</h4>
+                    <p style="color: var(--gray); margin-bottom: var(--spacing-2);">H. Ahmad Hidayat, S.E.</p>
+                    <p style="color: var(--gray); font-size: var(--text-sm);">Pengalaman lebih dari 20 tahun dalam mengelola organisasi sosial keagamaan.</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">👨‍💼</div>
+                    <h4>Sekretaris</h4>
+                    <p style="color: var(--gray); margin-bottom: var(--spacing-2);">Budi Santoso, S.H.</p>
+                    <p style="color: var(--gray); font-size: var(--text-sm);">Menangani administrasi dan koordinasi operasional masjid sehari-hari.</p>
+                </div>
+                
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">👨‍💼</div>
+                    <h4>Bendahara</h4>
+                    <p style="color: var(--gray); margin-bottom: var(--spacing-2);">Hj. Siti Nurhaliza, S.E.</p>
+                    <p style="color: var(--gray); font-size: var(--text-sm);">Mengelola keuangan masjid dengan transparansi dan akuntabilitas penuh.</p>
+                </div>
+            </div>
+            
+            <div style="background: white; border-radius: var(--radius-xl); padding: var(--spacing-8);">
+                <h3 style="margin-bottom: var(--spacing-6); text-align: center;">Departemen Masjid</h3>
+                <div class="grid-3" style="gap: var(--spacing-8);">
+                    <div>
+                        <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">📖 Departemen Pendidikan</h4>
+                        <ul style="margin-left: var(--spacing-6);">
+                            <li>Ustadz Rahman, M.Pd. (Kepala)</li>
+                            <li>Ustadzah Siti (Koordinator Ibu-ibu)</li>
+                            <li>Ustadz Harun (Pengajar Remaja)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">💰 Departemen Keuangan</h4>
+                        <ul style="margin-left: var(--spacing-6);">
+                            <li>Ibu Dewi Lestari (Kepala)</li>
+                            <li>Pak Wawan (Kasir)</li>
+                            <li>Ibu Ani (Administrasi)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">🏗️ Departemen Sarana</h4>
+                        <ul style="margin-left: var(--spacing-6);">
+                            <li>Pak Bambang (Kepala)</li>
+                            <li>Tim Maintenance</li>
+                            <li>Keamanan & Parkir</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ IMAM & PENGAJAR ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Imam & Tim Pengajar</h2>
+                <p>Tokoh-tokoh yang memimpin ibadah dan pengajaran di masjid</p>
+            </div>
+            
+            <div class="grid-2" style="gap: var(--spacing-12);">
+                <div class="card">
+                    <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">🕌 Imam Masjid</h4>
+                    <div style="margin-bottom: var(--spacing-6);">
+                        <p style="margin: 0; font-weight: var(--font-bold); font-size: var(--text-lg);">Ustadz Dr. Imam Malik, M.A.</p>
+                        <p style="margin: var(--spacing-2) 0 0 0; color: var(--gray); font-size: var(--text-sm);">Imam Besar, Lc., Pemegang Ijazah dari Al-Azhar University</p>
+                        <p style="margin: var(--spacing-4) 0 0 0; line-height: 1.7;">Pengalaman lebih dari 25 tahun dalam memimpin ibadah dan membimbing jamaah. Spesialisasi dalam fiqih ibadah dan kepemimpinan spiritual.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">🎤 Muazin</h4>
+                    <div style="margin-bottom: var(--spacing-6);">
+                        <p style="margin: 0; font-weight: var(--font-bold); font-size: var(--text-lg);">Muhammad Farhan Al-Hakim</p>
+                        <p style="margin: var(--spacing-2) 0 0 0; color: var(--gray); font-size: var(--text-sm);">Muazin, Penyanyi Adzan Profesional</p>
+                        <p style="margin: var(--spacing-4) 0 0 0; line-height: 1.7;">Terkenal dengan tartil adzan yang indah dan khusyuk. Aktif dalam program murottal dan hafiz Quran.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">📚 Ustadz Senior</h4>
+                    <div style="margin-bottom: var(--spacing-6);">
+                        <p style="margin: 0; font-weight: var(--font-bold); font-size: var(--text-lg);">Ustadz Ahmad Saiful Islam</p>
+                        <p style="margin: var(--spacing-2) 0 0 0; color: var(--gray); font-size: var(--text-sm);">Pengajar Kajian Fiqih dan Aqidah</p>
+                        <p style="margin: var(--spacing-4) 0 0 0; line-height: 1.7;">Penulis buku dan peneliti dalam bidang fiqih muamalah. Sering mengisi khutbah Jumat dengan materi yang relevan.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4 style="color: var(--primary-dark); margin-bottom: var(--spacing-4);">👩‍🏫 Ustadzah Koordinator</h4>
+                    <div style="margin-bottom: var(--spacing-6);">
+                        <p style="margin: 0; font-weight: var(--font-bold); font-size: var(--text-lg);">Ustadzah Siti Nurhaliza</p>
+                        <p style="margin: var(--spacing-2) 0 0 0; color: var(--gray); font-size: var(--text-sm);">Koordinator Pengajian Ibu-ibu & Pendidikan Anak</p>
+                        <p style="margin: var(--spacing-4) 0 0 0; line-height: 1.7;">Spesialis dalam pemberdayaan perempuan dan pendidikan anak usia dini berbasis Quran.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/masjid" title="Facebook">f</a>
+                    <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+                    <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+                    <a href="https://wa.me/" title="WhatsApp">💬</a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>
+                    📍 Desa Buntu<br>
+                    Kecamatan Ligung, Kabupaten Majalengka
+                </p>
+                <p>
+                    📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>
+                    ✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a>
+                </p>
+                <p>
+                    🕐 <strong>Jam Layanan:</strong><br>
+                    Setiap hari, 06:00 - 22:00
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <!-- ============ FLOATING BUTTONS ============ -->
+    <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="/js/utils.js"></script>
+</body>
+</html>

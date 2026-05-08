@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jadwal Sholat Harian - Masjid Al Karomah">
+    <title>Jadwal Sholat - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <!-- Clerk Authentication -->
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            
+            <button class="navbar-toggle">☰</button>
+            
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============ PAGE TITLE ============ -->
+    <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+        <div class="container">
+            <h1>Jadwal Sholat Harian</h1>
+            <p style="color: #e5e7eb;">Waktu sholat yang tepat untuk masjid Anda, diupdate setiap hari</p>
+        </div>
+    </section>
+
+    <!-- ============ LOCATION SELECTOR ============ -->
+    <section class="section">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: var(--spacing-12);">
+                <label for="city-select" style="font-weight: var(--font-semibold); margin-right: var(--spacing-4);">Pilih Kota:</label>
+                <select id="city-select" class="form-control" style="width: 300px; max-width: 100%; display: inline-block; margin-top: var(--spacing-2);">
+                    <option>Majalengka</option>
+                    <option>Jakarta Selatan</option>
+                    <option>Jakarta Timur</option>
+                    <option>Jakarta Barat</option>
+                    <option>Bandung</option>
+                    <option>Surabaya</option>
+                    <option>Yogyakarta</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ PRAYER TIMES DETAIL ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <div class="grid-2" style="gap: var(--spacing-12);">
+                <div>
+                    <h3>Waktu Sholat - Kamis, 8 Mei 2024</h3>
+                    <div style="margin-top: var(--spacing-8);">
+                        <div class="card" style="margin-bottom: var(--spacing-6); border-left: 4px solid var(--primary-dark);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0; color: var(--primary-dark);">Subuh</h4>
+                                    <p style="color: var(--gray); margin: 0;">Fajar terbit</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: var(--text-4xl); font-weight: var(--font-bold); color: var(--dark);">03:45</div>
+                                    <small style="color: var(--gray);">4 jam 30 menit lagi</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: var(--spacing-6); border-left: 4px solid var(--gray-light);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0;">Dzuhur</h4>
+                                    <p style="color: var(--gray); margin: 0;">Matahari di tengah</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: var(--text-4xl); font-weight: var(--font-bold);">12:15</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: var(--spacing-6); border-left: 4px solid var(--gray-light);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0;">Ashar</h4>
+                                    <p style="color: var(--gray); margin: 0;">Bayangan sama dengan benda</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: var(--text-4xl); font-weight: var(--font-bold);">15:45</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: var(--spacing-6); border-left: 4px solid var(--gray-light);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0;">Maghrib</h4>
+                                    <p style="color: var(--gray); margin: 0;">Terbenam matahari</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: var(--text-4xl); font-weight: var(--font-bold);">18:30</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: var(--spacing-6); border-left: 4px solid var(--gray-light);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0;">Isya</h4>
+                                    <p style="color: var(--gray); margin: 0;">Hilang mega merah</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: var(--text-4xl); font-weight: var(--font-bold);">19:50</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Jadwal Sholat Jumat</h3>
+                    <div class="card" style="margin-top: var(--spacing-8); background: linear-gradient(135deg, var(--primary-light), var(--secondary-light)); border: 2px solid var(--primary-dark);">
+                        <h4 style="text-align: center; color: var(--primary-dark);">Sholat Jumat</h4>
+                        <div style="text-align: center; margin-top: var(--spacing-6);">
+                            <div style="font-size: 3.5rem; font-weight: var(--font-bold); color: var(--primary-dark); margin-bottom: var(--spacing-2);">13:00</div>
+                            <p style="color: var(--dark);">Jadwal Sholat Jumat</p>
+                        </div>
+                        <hr style="border: none; border-top: 1px solid var(--primary-dark); margin: var(--spacing-6) 0;">
+                        <div style="background: white; padding: var(--spacing-6); border-radius: var(--radius-lg);">
+                            <p><strong>Khutbah:</strong> Dimulai 12:45</p>
+                            <p><strong>Takbir:</strong> 13:00</p>
+                            <p><strong>Sholat:</strong> 13:10</p>
+                            <p style="margin: 0;"><strong>Lokasi:</strong> Masjid Utama</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: var(--spacing-8); padding: var(--spacing-6); background: var(--light); border-radius: var(--radius-lg); border-left: 4px solid var(--secondary);">
+                        <h4 style="margin-top: 0;">ℹ️ Informasi Penting</h4>
+                        <ul style="margin-left: var(--spacing-6);">
+                            <li>Jamaah diharapkan tiba 15 menit sebelum sholat</li>
+                            <li>Berpakaian rapi dan menutupi aurat</li>
+                            <li>Matikan atau senyapkan ponsel</li>
+                            <li>Jaga ketenangan dan khusyu dalam ibadah</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ WEEKLY SCHEDULE ============ -->
+    <section class="section">
+        <div class="container">
+            <h2 style="margin-bottom: var(--spacing-8);">Jadwal Sholat Minggu Ini</h2>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--primary-dark); color: white;">
+                            <th style="padding: var(--spacing-4); text-align: left;">Hari</th>
+                            <th style="padding: var(--spacing-4); text-align: center;">Subuh</th>
+                            <th style="padding: var(--spacing-4); text-align: center;">Dzuhur</th>
+                            <th style="padding: var(--spacing-4); text-align: center;">Ashar</th>
+                            <th style="padding: var(--spacing-4); text-align: center;">Maghrib</th>
+                            <th style="padding: var(--spacing-4); text-align: center;">Isya</th>
+                            <th style="padding: var(--spacing-4); text-align: center;">Jumat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--gray-light); background-color: var(--primary-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Senin</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:45</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:15</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:45</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:30</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">-</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Selasa</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:46</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:15</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:44</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:30</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">-</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Rabu</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:47</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:14</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:43</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:30</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">-</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Kamis</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:47</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:14</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:42</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:30</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">-</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Jumat</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:48</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:14</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:41</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:30</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;"><strong>13:00</strong></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Sabtu</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:48</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:13</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:40</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:30</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">-</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--gray-light);">
+                            <td style="padding: var(--spacing-4);"><strong>Minggu</strong></td>
+                            <td style="padding: var(--spacing-4); text-align: center;">03:49</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">12:13</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">15:39</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">18:31</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">19:50</td>
+                            <td style="padding: var(--spacing-4); text-align: center;">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TIPS SHOLAT ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <h2 style="margin-bottom: var(--spacing-8);">Tips & Panduan Sholat</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🕌 Etika Saat Sholat</h4>
+                    <ul style="margin-left: var(--spacing-6);">
+                        <li>Berwudhu dengan sempurna sebelum sholat</li>
+                        <li>Datang lebih awal dari waktu sholat</li>
+                        <li>Gunakan tempat yang bersih dan suci</li>
+                        <li>Fokus pada Allah dan jangan terganggu</li>
+                        <li>Jaga adab dan khusyu dalam sholat</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h4>📱 Notifikasi Azan</h4>
+                    <p>Aktifkan notifikasi untuk mengingatkan jadwal sholat Anda. Gunakan aplikasi pengingat sholat atau atur alarm untuk tidak melewatkan waktu sholat.</p>
+                    <div style="margin-top: var(--spacing-6);">
+                        <a href="#" class="btn btn-primary" style="margin-right: var(--spacing-2);">Aplikasi Android</a>
+                        <a href="#" class="btn btn-primary">Aplikasi iOS</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/masjid" title="Facebook">f</a>
+                    <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+                    <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+                    <a href="https://wa.me/" title="WhatsApp">💬</a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>
+                    📍 Desa Buntu<br>
+                    Kecamatan Ligung, Kabupaten Majalengka
+                </p>
+                <p>
+                    📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>
+                    ✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a>
+                </p>
+                <p>
+                    🕐 <strong>Jam Layanan:</strong><br>
+                    Setiap hari, 06:00 - 22:00
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <!-- ============ FLOATING BUTTONS ============ -->
+    <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="/js/utils.js"></script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Layanan Masjid Al Karomah - Desa Buntu, Majalengka">
+    <title>Layanan - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <!-- Clerk Authentication -->
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan" class="active">Layanan</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============ PAGE TITLE ============ -->
+    <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+        <div class="container">
+            <h1>Layanan Masjid</h1>
+            <p style="color: #e5e7eb;">Berbagai layanan siap membantu kebutuhan spiritual dan sosial Anda</p>
+        </div>
+    </section>
+
+    <!-- ============ LAYANAN UTAMA ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Layanan Utama</h2>
+                <p>Fasilitas dan pelayanan yang tersedia di Masjid Al Karomah</p>
+            </div>
+
+            <div class="grid-3" style="gap: var(--spacing-8);">
+                <div class="card" style="border: 1px solid var(--gray-light); border-radius: var(--radius-2xl); overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #10b981, #059669); padding: var(--spacing-10); text-align: center; color: white;">
+                        <div style="font-size: 3.5rem; margin-bottom: var(--spacing-3);">💍</div>
+                        <h3 style="color: white;">Akad Nikah</h3>
+                    </div>
+                    <div style="padding: var(--spacing-6);">
+                        <p style="color: var(--gray); line-height: 1.8;">Layanan pelaksanaan akad nikah di masjid dengan fasilitas lengkap, dipandu oleh penghulu resmi, dan dilengkapi dengan ruang tunggal yang nyaman bagi kedua mempelai.</p>
+                        <div style="margin-top: var(--spacing-6);">
+                            <h5 style="color: var(--primary-dark);">Syarat & Ketentuan:</h5>
+                            <ul style="margin-top: var(--spacing-3); color: var(--gray); font-size: var(--text-sm);">
+                                <li>Kartu identitas (KTP) kedua mempelai</li>
+                                <li>Surat keterangan dari RT/RW</li>
+                                <li>Nikah/Keterangan belum menikah</li>
+                                <li>Pendaftaran minimal 2 minggu sebelumnya</li>
+                            </ul>
+                        </div>
+                        <a href="https://wa.me/" class="btn btn-primary btn-sm btn-block" style="margin-top: var(--spacing-6);">Daftar via WhatsApp</a>
+                    </div>
+                </div>
+
+                <div class="card" style="border: 1px solid var(--gray-light); border-radius: var(--radius-2xl); overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: var(--spacing-10); text-align: center; color: white;">
+                        <div style="font-size: 3.5rem; margin-bottom: var(--spacing-3);">🤲</div>
+                        <h3 style="color: white;">Bimbingan Mualaf</h3>
+                    </div>
+                    <div style="padding: var(--spacing-6);">
+                        <p style="color: var(--gray); line-height: 1.8;">Program pembinaan intensif untuk saudara/i yang baru memeluk Islam. Meliputi pengajaran dasar aqidah, ibadah praktis, dan pendampingan adaptasi kehidupan baru.</p>
+                        <div style="margin-top: var(--spacing-6);">
+                            <h5 style="color: var(--primary-dark);">Program Includes:</h5>
+                            <ul style="margin-top: var(--spacing-3); color: var(--gray); font-size: var(--text-sm);">
+                                <li>Pengajaran syahadat dan dasar aqidah</li>
+                                <li>Praktik sholat, wudhu, dan ibadah harian</li>
+                                <li>Pembacaan Al-Quran dasar (Iqro)</li>
+                                <li>Pendampingan selama 6 bulan</li>
+                            </ul>
+                        </div>
+                        <a href="https://wa.me/" class="btn btn-primary btn-sm btn-block" style="margin-top: var(--spacing-6);">Daftar via WhatsApp</a>
+                    </div>
+                </div>
+
+                <div class="card" style="border: 1px solid var(--gray-light); border-radius: var(--radius-2xl); overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: var(--spacing-10); text-align: center; color: white;">
+                        <div style="font-size: 3.5rem; margin-bottom: var(--spacing-3);">🚑</div>
+                        <h3 style="color: white;">Layanan Ambulans</h3>
+                    </div>
+                    <div style="padding: var(--spacing-6);">
+                        <p style="color: var(--gray); line-height: 1.8;">Layanan kesehatan darurat 24 jam untuk membantu umat dalam situasi mendesak. Tersedia untuk pengantaran jenazah dan kebutuhan darurat medis jamaah.</p>
+                        <div style="margin-top: var(--spacing-6);">
+                            <h5 style="color: var(--primary-dark);">Informasi:</h5>
+                            <ul style="margin-top: var(--spacing-3); color: var(--gray); font-size: var(--text-sm);">
+                                <li>Layanan 24 jam, 7 hari seminggu</li>
+                                <li>Pengantaran jenazah ke pemakaman</li>
+                                <li>Rujukan darurat ke rumah sakit</li>
+                                <li>Gratis untuk jamaah yang membutuhkan</li>
+                            </ul>
+                        </div>
+                        <a href="https://wa.me/" class="btn btn-primary btn-sm btn-block" style="margin-top: var(--spacing-6);">Hubungi Darurat</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ LAYANAN TAMBAHAN ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>Layanan Tambahan</h2>
+                <p>Fasilitas pendukung untuk kenyamanan jamaah</p>
+            </div>
+
+            <div class="grid-4">
+                <div class="service-card">
+                    <div class="service-icon">💬</div>
+                    <h4 class="service-title">Konsultasi Keagamaan</h4>
+                    <p class="service-description">Konsultasi dengan ulama dan praktisi tentang masalah ibadah, muamalah, dan kehidupan sehari-hari.</p>
+                    <a href="/kontak" class="btn btn-primary btn-sm">Konsultasi</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🏛️</div>
+                    <h4 class="service-title">Sewa Aula</h4>
+                    <p class="service-description">Ruang serbaguna kapasitas 200 orang untuk acara keagamaan, pertemuan, dan kegiatan komunitas.</p>
+                    <a href="https://wa.me/" class="btn btn-primary btn-sm">Pesan Aula</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🏪</div>
+                    <h4 class="service-title">Pembinaan UMKM</h4>
+                    <p class="service-description">Program pemberdayaan ekonomi jamaah melalui pelatihan keterampilan, manajemen usaha, dan modal usaha.</p>
+                    <a href="https://wa.me/" class="btn btn-primary btn-sm">Info Program</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">💝</div>
+                    <h4 class="service-title">Zakat & Infaq</h4>
+                    <p class="service-description">Penyaluran zakat, infaq, dan sedekah secara transparan dan tepat sasaran kepada yang berhak.</p>
+                    <a href="/donasi" class="btn btn-primary btn-sm">Donasi</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🤝</div>
+                    <h4 class="service-title">Program Sosial</h4>
+                    <p class="service-description">Santunan yatim, bakti sosial, dan program kepedulian komunitas untuk masyarakat yang membutuhkan bantuan.</p>
+                    <a href="/kegiatan" class="btn btn-primary btn-sm">Lihat Kegiatan</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📚</div>
+                    <h4 class="service-title">Perpustakaan</h4>
+                    <p class="service-description">Koleksi buku islami, kitab kuning, dan referensi keagamaan yang tersedia untuk dipinjam oleh jamaah.</p>
+                    <a href="https://wa.me/" class="btn btn-primary btn-sm">Info</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🧑‍🎓</div>
+                    <h4 class="service-title">Bimbingan Hafalan</h4>
+                    <p class="service-description">Program tahfidz dan tahsin untuk anak-anak dan dewasa dengan metode pembelajaran yang efektif.</p>
+                    <a href="https://wa.me/" class="btn btn-primary btn-sm">Daftar</a>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">⚰️</div>
+                    <h4 class="service-title">Pemakaman Islam</h4>
+                    <p class="service-description">Layanan pemakaman Islam lengkap mulai dari pemandian, kafan, sholat jenazah, hingga pemakaman.</p>
+                    <a href="https://wa.me/" class="btn btn-primary btn-sm">Hubungi</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ JADWAL LAYANAN ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Jadwal Layanan</h2>
+                <p>Waktu operasional layanan masjid</p>
+            </div>
+
+            <div style="max-width: 700px; margin: 0 auto;">
+                <div style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-md);">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--primary-dark); color: white;">
+                                <th style="padding: var(--spacing-4) var(--spacing-6); text-align: left;">Layanan</th>
+                                <th style="padding: var(--spacing-4) var(--spacing-6); text-align: left;">Hari</th>
+                                <th style="padding: var(--spacing-4) var(--spacing-6); text-align: left;">Jam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--gray-light);">
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Konsultasi Keagamaan</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Senin - Jumat</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">09:00 - 17:00</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--gray-light); background: var(--light);">
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Sewa Aula</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Senin - Minggu</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">08:00 - 21:00</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--gray-light);">
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Bimbingan Mualaf</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Sabtu - Minggu</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">09:00 - 15:00</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--gray-light); background: var(--light);">
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Perpustakaan</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Senin - Sabtu</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">08:00 - 17:00</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--gray-light);">
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Pembinaan UMKM</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Jumat</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">14:00 - 17:00</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Ambulans / Darurat</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">Setiap Hari</td>
+                                <td style="padding: var(--spacing-4) var(--spacing-6);">24 Jam</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section class="section" style="background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('/images/Masjid.png') center/cover no-repeat; color: white;">
+        <div class="container" style="text-align: center;">
+            <h2 style="color: white;">Butuh Layanan Kami?</h2>
+            <p style="color: #e5e7eb; font-size: var(--text-lg); margin-bottom: var(--spacing-8);">Jangan ragu untuk menghubungi kami. Tim kami siap melayani Anda dengan sepenuh hati.</p>
+            <div style="display: flex; gap: var(--spacing-6); justify-content: center; flex-wrap: wrap;">
+                <a href="https://wa.me/" class="btn" style="background-color: white; color: var(--primary-dark);">💬 Chat WhatsApp</a>
+                <a href="/kontak" class="btn btn-primary-outline" style="border-color: white; color: white;">📞 Hubungi Kami</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/masjid" title="Facebook">f</a>
+                    <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+                    <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+                    <a href="https://wa.me/" title="WhatsApp">💬</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>📍 Desa Buntu<br>Kecamatan Ligung, Kabupaten Majalengka</p>
+                <p>📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a></p>
+                <p>🕐 <strong>Jam Layanan:</strong><br>Setiap hari, 06:00 - 22:00</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <!-- ============ FLOATING BUTTONS ============ -->
+    <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="/js/utils.js"></script>
+</body>
+</html>

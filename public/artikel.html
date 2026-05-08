@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Artikel & Kajian Islami - Masjid Al Karomah">
+    <title>Artikel & Kajian - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <!-- Clerk Authentication -->
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/artikel" class="active">Artikel</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============ PAGE TITLE ============ -->
+    <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+        <div class="container">
+            <h1>Artikel & Kajian Islami</h1>
+            <p style="color: #e5e7eb;">Bacaan berkualitas untuk memperkaya iman dan pengetahuan</p>
+        </div>
+    </section>
+
+    <!-- ============ CATEGORY FILTER ============ -->
+    <section class="section" style="background: var(--light); padding: var(--spacing-8) var(--spacing-4);">
+        <div class="container">
+            <div style="display: flex; gap: var(--spacing-4); flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-primary btn-sm" data-filter="*">Semua</button>
+                <button class="btn btn-primary-outline btn-sm" data-filter="fiqih">📖 Fiqih</button>
+                <button class="btn btn-primary-outline btn-sm" data-filter="akhlak">❤️ Akhlak</button>
+                <button class="btn btn-primary-outline btn-sm" data-filter="aqidah">🕌 Aqidah</button>
+                <button class="btn btn-primary-outline btn-sm" data-filter="keluarga">👨‍👩‍👧 Keluarga</button>
+                <button class="btn btn-primary-outline btn-sm" data-filter="ekonomi">💰 Ekonomi</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FEATURED ARTICLE ============ -->
+    <section class="section">
+        <div class="container">
+            <div style="background: white; border-radius: var(--radius-2xl); overflow: hidden; box-shadow: var(--shadow-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
+                    <div style="min-height: 350px; overflow: hidden;">
+                        <img src="/images/Masjid.png" alt="Masjid Al Karomah" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="padding: var(--spacing-10);">
+                        <span class="badge badge-primary">Fiqih</span>
+                        <h2 style="margin-top: var(--spacing-4);">Hukum Puasa Bagi Musafir</h2>
+                        <p style="color: var(--gray); margin-top: var(--spacing-4); line-height: 1.8;">Pembahasan lengkap tentang hukum puasa bagi orang yang sedang bepergian, ketentuan qadha, dan pandangan empat mazhab. Artikel ini mengupas tuntas berbagai skenario yang sering dihadapi musafir di bulan Ramadhan.</p>
+                        <div style="display: flex; align-items: center; gap: var(--spacing-4); margin-top: var(--spacing-6); color: var(--gray); font-size: var(--text-sm);">
+                            <span>👤 Ustadz Ahmad Saiful Islam</span>
+                            <span>•</span>
+                            <span>📅 2 hari yang lalu</span>
+                            <span>•</span>
+                            <span>👁️ 245 dibaca</span>
+                        </div>
+                        <a href="#" class="btn btn-primary" style="margin-top: var(--spacing-6);">Baca Selengkapnya</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ ARTICLE GRID ============ -->
+    <section class="section section-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>Artikel Terbaru</h2>
+                <p>Kumpulan tulisan islami dari para ustadz dan pemateri</p>
+            </div>
+
+            <div class="grid-3">
+                <article class="card" data-category="akhlak">
+                    <div style="background: linear-gradient(135deg, #f59e0b, #fbbf24); height: 200px; border-radius: var(--radius-lg); margin-bottom: var(--spacing-6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">❤️</div>
+                    <span class="badge badge-secondary" style="margin-bottom: var(--spacing-4);">Akhlak</span>
+                    <h3>Pentingnya Silaturrahmi</h3>
+                    <p style="color: var(--gray);">Makna dan manfaat silaturrahmi dalam mempererat tali persaudaraan dalam Islam yang bermakna dan membawa keberkahan.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <small style="color: var(--gray);">4 hari yang lalu</small>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </article>
+
+                <article class="card" data-category="keluarga">
+                    <div style="background: linear-gradient(135deg, #3b82f6, #60a5fa); height: 200px; border-radius: var(--radius-lg); margin-bottom: var(--spacing-6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">👨‍👩‍👧</div>
+                    <span class="badge badge-primary" style="margin-bottom: var(--spacing-4);">Keluarga</span>
+                    <h3>Tanggung Jawab Orang Tua</h3>
+                    <p style="color: var(--gray);">Panduan komprehensif tentang hak dan kewajiban orang tua dalam mendidik anak menurut ajaran Islam.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <small style="color: var(--gray);">1 minggu yang lalu</small>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </article>
+
+                <article class="card" data-category="ekonomi">
+                    <div style="background: linear-gradient(135deg, #10b981, #34d399); height: 200px; border-radius: var(--radius-lg); margin-bottom: var(--spacing-6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">💰</div>
+                    <span class="badge badge-primary" style="margin-bottom: var(--spacing-4);">Ekonomi</span>
+                    <h3>Panduan Zakat Mal</h3>
+                    <p style="color: var(--gray);">Cara menghitung dan menunaikan zakat mal dengan benar sesuai syariat Islam dan kondisi saat ini.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <small style="color: var(--gray);">2 minggu yang lalu</small>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </article>
+
+                <article class="card" data-category="aqidah">
+                    <div style="background: linear-gradient(135deg, #8b5cf6, #a78bfa); height: 200px; border-radius: var(--radius-lg); margin-bottom: var(--spacing-6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">🕌</div>
+                    <span class="badge" style="background: #ede9fe; color: #7c3aed; margin-bottom: var(--spacing-4);">Aqidah</span>
+                    <h3>Memahami Qada dan Qadar</h3>
+                    <p style="color: var(--gray);">Penjelasan mendalam tentang konsep qada dan qadar dalam Islam serta bagaimana sikap seorang mukmin menghadapinya.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <small style="color: var(--gray);">2 minggu yang lalu</small>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </article>
+
+                <article class="card" data-category="fiqih">
+                    <div style="background: linear-gradient(135deg, #ec4899, #f472b6); height: 200px; border-radius: var(--radius-lg); margin-bottom: var(--spacing-6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">📜</div>
+                    <span class="badge badge-primary" style="margin-bottom: var(--spacing-4);">Fiqih</span>
+                    <h3>Tata Cara Sholat Dhuha</h3>
+                    <p style="color: var(--gray);">Panduan lengkap tata cara, niat, doa, dan keutamaan sholat dhuha sebagai amalan sunnah yang dianjurkan.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <small style="color: var(--gray);">3 minggu yang lalu</small>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </article>
+
+                <article class="card" data-category="akhlak">
+                    <div style="background: linear-gradient(135deg, #14b8a6, #5eead4); height: 200px; border-radius: var(--radius-lg); margin-bottom: var(--spacing-6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">🤲</div>
+                    <span class="badge badge-secondary" style="margin-bottom: var(--spacing-4);">Akhlak</span>
+                    <h3>Adab Menerima Musibah</h3>
+                    <p style="color: var(--gray);">Bagaimana seorang muslim menyikapi ujian dan musibah dengan sabar dan penuh keimanan kepada Allah SWT.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
+                        <small style="color: var(--gray);">3 minggu yang lalu</small>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ KAJIAN RUTIN ============ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Ringkasan Kajian Rutin</h2>
+                <p>Catatan ilmiah dari kajian yang telah diselenggarakan</p>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div style="padding: var(--spacing-6); background: var(--light); border-radius: var(--radius-xl); border-left: 4px solid var(--primary-dark); margin-bottom: var(--spacing-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: var(--spacing-4);">
+                        <div style="flex: 1;">
+                            <span class="badge badge-primary">Kajian Jumat</span>
+                            <h4 style="margin-top: var(--spacing-3);">Fiqih Ibadah: Hukum Mandi Wajib</h4>
+                            <p style="color: var(--gray); margin-top: var(--spacing-2);">Pembahasan mendalam tentang sebab-sebab mandi wajib dan tata cara yang benar menurut syariat. Disampaikan oleh Ustadz Ahmad Saiful Islam.</p>
+                            <small style="color: var(--gray);">📅 3 Mei 2026 • 👁️ 189 dibaca</small>
+                        </div>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </div>
+
+                <div style="padding: var(--spacing-6); background: var(--light); border-radius: var(--radius-xl); border-left: 4px solid var(--secondary); margin-bottom: var(--spacing-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: var(--spacing-4);">
+                        <div style="flex: 1;">
+                            <span class="badge badge-secondary">Pengajian Rabu</span>
+                            <h4 style="margin-top: var(--spacing-3);">Akhlak Wanita Muslimah</h4>
+                            <p style="color: var(--gray); margin-top: var(--spacing-2);">Membahas adab dan akhlak wanita muslimah dalam kehidupan sehari-hari, termasuk adab berpakaian dan bergaul. Oleh Ustadzah Siti Nurhaliza.</p>
+                            <small style="color: var(--gray);">📅 1 Mei 2026 • 👁️ 156 dibaca</small>
+                        </div>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </div>
+
+                <div style="padding: var(--spacing-6); background: var(--light); border-radius: var(--radius-xl); border-left: 4px solid #8b5cf6; margin-bottom: var(--spacing-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: var(--spacing-4);">
+                        <div style="flex: 1;">
+                            <span class="badge" style="background: #ede9fe; color: #7c3aed;">Kajian Remaja</span>
+                            <h4 style="margin-top: var(--spacing-3);">Islam dan Media Sosial</h4>
+                            <p style="color: var(--gray); margin-top: var(--spacing-2);">Bagaimana menyikapi media sosial dengan bijak sesuai pandangan Islam. Materi yang relevan untuk generasi muda masa kini.</p>
+                            <small style="color: var(--gray);">📅 27 April 2026 • 👁️ 210 dibaca</small>
+                        </div>
+                        <a href="#" class="btn btn-primary btn-sm">Baca</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ NEWSLETTER CTA ============ -->
+    <section class="section" style="background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('/images/Masjid.png') center/cover no-repeat; color: white;">
+        <div class="container" style="text-align: center;">
+            <h2 style="color: white;">Jangan Lewatkan Artikel Terbaru</h2>
+            <p style="color: #e5e7eb; font-size: var(--text-lg); margin-bottom: var(--spacing-8);">Ikuti kajian dan artikel kami untuk terus meningkatkan iman dan ilmu</p>
+            <div style="max-width: 500px; margin: 0 auto; display: flex; gap: var(--spacing-4); flex-wrap: wrap; justify-content: center;">
+                <a href="/kontak" class="btn" style="background-color: white; color: var(--primary-dark);">📧 Hubungi Kami</a>
+                <a href="/kegiatan" class="btn btn-primary-outline" style="border-color: white; color: white;">📚 Lihat Kegiatan</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/masjid" title="Facebook">f</a>
+                    <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+                    <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+                    <a href="https://wa.me/" title="WhatsApp">💬</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>📍 Desa Buntu<br>Kecamatan Ligung, Kabupaten Majalengka</p>
+                <p>📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a></p>
+                <p>🕐 <strong>Jam Layanan:</strong><br>Setiap hari, 06:00 - 22:00</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <!-- ============ FLOATING BUTTONS ============ -->
+    <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="/js/utils.js"></script>
+    <script>
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-filter]').forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-primary-outline');
+            });
+            btn.classList.remove('btn-primary-outline');
+            btn.classList.add('btn-primary');
+            const filter = btn.dataset.filter;
+            document.querySelectorAll('[data-category]').forEach(card => {
+                card.style.display = (filter === '*' || card.dataset.category === filter) ? '' : 'none';
+            });
+        });
+    });
+    </script>
+</body>
+</html>
