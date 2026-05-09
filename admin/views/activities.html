@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kegiatan - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities" class="active">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Kelola Kegiatan</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <button class="btn btn-secondary btn-sm" onclick="filterActivities('all')">Semua</button>
+                        <button class="btn btn-secondary btn-sm" onclick="filterActivities('active')">Aktif</button>
+                        <button class="btn btn-secondary btn-sm" onclick="filterActivities('inactive')">Nonaktif</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateForm()">➕ Tambah Kegiatan</button>
+                </div>
+
+                <!-- Create/Edit Form (hidden by default) -->
+                <div class="card" id="activity-form-card" style="display: none;">
+                    <h2 id="form-title">Tambah Kegiatan Baru</h2>
+                    <form id="activity-form">
+                        <input type="hidden" id="activity-id">
+                        <div class="grid-2" style="gap: 1rem;">
+                            <div class="form-group">
+                                <label>Judul Kegiatan</label>
+                                <input type="text" id="activity-title" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <select id="activity-category" class="form-control">
+                                    <option value="Kajian">Kajian</option>
+                                    <option value="Pengajian">Pengajian</option>
+                                    <option value="Ramadhan">Ramadhan</option>
+                                    <option value="Sosial">Sosial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2" style="gap: 1rem;">
+                            <div class="form-group">
+                                <label>Tanggal</label>
+                                <input type="date" id="activity-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Waktu</label>
+                                <input type="text" id="activity-time" class="form-control" placeholder="10:00" required>
+                            </div>
+                        </div>
+                        <div class="grid-2" style="gap: 1rem;">
+                            <div class="form-group">
+                                <label>Lokasi</label>
+                                <input type="text" id="activity-location" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Pembicara</label>
+                                <input type="text" id="activity-speaker" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Deskripsi</label>
+                            <textarea id="activity-description" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>URL Gambar</label>
+                            <input type="text" id="activity-image" class="form-control" placeholder="/images/kegiatan.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="activity-status" class="form-control">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Nonaktif</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideForm()">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Activities Table -->
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Tanggal</th>
+                                    <th>Waktu</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activities-table-body">
+                                <tr><td colspan="7" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allActivities = [];
+        let currentFilter = 'all';
+
+        async function loadActivities() {
+            try {
+                const res = await fetch('/api/admin/activities');
+                const data = await res.json();
+                allActivities = data.data || [];
+                renderActivities();
+            } catch (err) {
+                console.error('Failed to load activities:', err);
+                document.getElementById('activities-table-body').innerHTML = 
+                    '<tr><td colspan="7" style="text-align: center; color: var(--accent);">Gagal memuat data</td></tr>';
+            }
+        }
+
+        function renderActivities() {
+            const tbody = document.getElementById('activities-table-body');
+            let filtered = allActivities;
+            if (currentFilter !== 'all') {
+                filtered = allActivities.filter(a => a.status === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(a => `
+                <tr>
+                    <td>${a.id}</td>
+                    <td><strong>${a.title}</strong><br><small style="color: var(--gray);">${a.speaker || '-'}</small></td>
+                    <td>${a.category || '-'}</td>
+                    <td>${a.date}</td>
+                    <td>${a.time}</td>
+                    <td><span class="badge ${a.status === 'active' ? 'badge-success' : 'badge-warning'}">${a.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editActivity(${a.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteActivity(${a.id})">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterActivities(status) {
+            currentFilter = status;
+            renderActivities();
+        }
+
+        function showCreateForm() {
+            document.getElementById('form-title').textContent = 'Tambah Kegiatan Baru';
+            document.getElementById('activity-id').value = '';
+            document.getElementById('activity-title').value = '';
+            document.getElementById('activity-category').value = 'Kajian';
+            document.getElementById('activity-date').value = '';
+            document.getElementById('activity-time').value = '';
+            document.getElementById('activity-location').value = '';
+            document.getElementById('activity-speaker').value = '';
+            document.getElementById('activity-description').value = '';
+            document.getElementById('activity-image').value = '';
+            document.getElementById('activity-status').value = 'active';
+            document.getElementById('activity-form-card').style.display = 'block';
+        }
+
+        function hideForm() {
+            document.getElementById('activity-form-card').style.display = 'none';
+        }
+
+        async function editActivity(id) {
+            const activity = allActivities.find(a => a.id === id);
+            if (!activity) return;
+
+            document.getElementById('form-title').textContent = 'Edit Kegiatan';
+            document.getElementById('activity-id').value = activity.id;
+            document.getElementById('activity-title').value = activity.title;
+            document.getElementById('activity-category').value = activity.category || 'Kajian';
+            document.getElementById('activity-date').value = activity.date;
+            document.getElementById('activity-time').value = activity.time;
+            document.getElementById('activity-location').value = activity.location || '';
+            document.getElementById('activity-speaker').value = activity.speaker || '';
+            document.getElementById('activity-description').value = activity.description || '';
+            document.getElementById('activity-image').value = activity.image || '';
+            document.getElementById('activity-status').value = activity.status || 'active';
+            document.getElementById('activity-form-card').style.display = 'block';
+        }
+
+        async function deleteActivity(id) {
+            if (!confirm('Yakin ingin menghapus kegiatan ini?')) return;
+            const res = await fetch(`/api/admin/activities/${id}`, { method: 'DELETE' });
+            const result = await res.json();
+            if (result.status === 'success') {
+                alert('Kegiatan dihapus');
+                loadActivities();
+            } else {
+                alert('Error: ' + (result.message || 'Gagal'));
+            }
+        }
+
+        document.getElementById('activity-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('activity-id').value;
+            const body = {
+                title: document.getElementById('activity-title').value,
+                description: document.getElementById('activity-description').value,
+                category: document.getElementById('activity-category').value,
+                date: document.getElementById('activity-date').value,
+                time: document.getElementById('activity-time').value,
+                location: document.getElementById('activity-location').value,
+                speaker: document.getElementById('activity-speaker').value,
+                image: document.getElementById('activity-image').value,
+                status: document.getElementById('activity-status').value
+            };
+
+            let result;
+            if (id) {
+                result = await fetch(`/api/admin/activities/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }).then(r => r.json());
+            } else {
+                result = await fetch('/api/admin/activities', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }).then(r => r.json());
+            }
+
+            if (result.status === 'success') {
+                alert('Kegiatan disimpan');
+                hideForm();
+                loadActivities();
+            } else {
+                alert('Error: ' + (result.message || 'Gagal'));
+            }
+        });
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadActivities();
+        });
+    </script>
+</body>
+</html>

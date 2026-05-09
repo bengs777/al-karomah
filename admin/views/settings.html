@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings" class="active">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Pengaturan Masjid</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div class="card">
+                    <h2>⚙️ Pengaturan Umum</h2>
+                    <div id="settings-list">Memuat data...</div>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn btn-primary" onclick="saveSettings()">Simpan Pengaturan</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📞 Informasi Kontak</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Informasi kontak yang ditampilkan di website.</p>
+                    <form id="contact-settings-form">
+                        <div class="form-group">
+                            <label>Nomor WhatsApp</label>
+                            <input type="text" id="setting-whatsapp" class="form-control" placeholder="628123456789">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Masjid</label>
+                            <input type="text" id="setting-email" class="form-control" placeholder="admin@alkaromah.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Telepon</label>
+                            <input type="text" id="setting-phone" class="form-control" placeholder="02112345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Lengkap</label>
+                            <textarea id="setting-address" class="form-control" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>🏦 Informasi Rekening</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Rekening bank untuk donasi.</p>
+                    <form id="bank-settings-form">
+                        <div class="form-group">
+                            <label>Nama Bank</label>
+                            <input type="text" id="setting-bank-name" class="form-control" placeholder="Bank Mandiri">
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Rekening</label>
+                            <input type="text" id="setting-bank-account" class="form-control" placeholder="1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label>Atas Nama</label>
+                            <input type="text" id="setting-bank-holder" class="form-control" placeholder="Yayasan Masjid Al Karomah">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allSettings = {};
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/admin/settings');
+                const data = await res.json();
+                allSettings = {};
+                (data.data || []).forEach(s => {
+                    allSettings[s.key] = s.value;
+                });
+
+                // Update form fields
+                document.getElementById('setting-whatsapp').value = allSettings['masjid_whatsapp'] || '';
+                document.getElementById('setting-email').value = allSettings['masjid_email'] || '';
+                document.getElementById('setting-phone').value = allSettings['masjid_phone'] || '';
+                document.getElementById('setting-address').value = allSettings['masjid_address'] || '';
+                document.getElementById('setting-bank-name').value = allSettings['bank_name'] || '';
+                document.getElementById('setting-bank-account').value = allSettings['bank_account'] || '';
+                document.getElementById('setting-bank-holder').value = allSettings['bank_holder'] || '';
+
+                // Display settings list
+                const list = document.getElementById('settings-list');
+                list.innerHTML = Object.keys(allSettings).length > 0 ? `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.keys(allSettings).map(key => `
+                                <tr>
+                                    <td><strong>${key}</strong></td>
+                                    <td>${allSettings[key]}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                ` : '<p style="text-align: center; color: var(--gray);">Tidak ada pengaturan.</p>';
+
+            } catch (err) {
+                console.error('Failed to load settings:', err);
+                document.getElementById('settings-list').innerHTML = 
+                    '<p style="color: var(--accent); text-align: center;">Gagal memuat data</p>';
+            }
+        }
+
+        async function saveSettings() {
+            const settings = {
+                'masjid_whatsapp': document.getElementById('setting-whatsapp').value,
+                'masjid_email': document.getElementById('setting-email').value,
+                'masjid_phone': document.getElementById('setting-phone').value,
+                'masjid_address': document.getElementById('setting-address').value,
+                'bank_name': document.getElementById('setting-bank-name').value,
+                'bank_account': document.getElementById('setting-bank-account').value,
+                'bank_holder': document.getElementById('setting-bank-holder').value
+            };
+
+            try {
+                for (const [key, value] of Object.entries(settings)) {
+                    if (value) {
+                        await fetch(`/api/admin/settings/${key}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ value })
+                        });
+                    }
+                }
+                alert('Pengaturan disimpan!');
+                loadSettings();
+            } catch (err) {
+                alert('Gagal menyimpan: ' + err.message);
+            }
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

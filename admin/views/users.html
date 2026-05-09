@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengguna - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users" class="active">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Pengguna</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div class="card">
+                    <h2>👥 Daftar Pengguna</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Pengguna dikelola melalui Clerk Dashboard. Admin emails diatur di file <code>.env</code>.</p>
+                    <div id="users-list">Memuat data...</div>
+                </div>
+
+                <div class="card">
+                    <h2>⚙️ Pengaturan Admin</h2>
+                    <div style="background: var(--light); padding: 1rem; border-radius: var(--radius-lg); margin-bottom: 1.5rem;">
+                        <p style="margin: 0; font-size: var(--text-sm); color: var(--gray);">
+                            Admin emails saat ini:
+                        </p>
+                        <p style="margin: 0.5rem 0 0 0; font-weight: var(--font-bold);">
+                            admin@alkaromah.com
+                        </p>
+                        <p style="margin: 0.5rem 0 0 0; font-size: var(--text-sm); color: var(--gray);">
+                            Untuk menambah admin, edit variabel <code>ADMIN_EMAILS</code> di file <code>.env</code> dan restart server.
+                        </p>
+                    </div>
+                    <a href="https://clerk.com/dashboard" target="_blank" class="btn btn-primary">Buka Clerk Dashboard</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                const data = await res.json();
+                const users = data.data || [];
+
+                document.getElementById('users-list').innerHTML = users.length > 0 ? `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Tanggal Daftar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(u => `
+                                <tr>
+                                    <td>${u.id}</td>
+                                    <td><strong>${u.username}</strong></td>
+                                    <td>${u.email}</td>
+                                    <td><span class="badge ${u.role === 'admin' ? 'badge-primary' : 'badge-secondary'}">${u.role}</span></td>
+                                    <td>${new Date(u.created_at).toLocaleDateString('id-ID')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                ` : '<p style="text-align: center; color: var(--gray);">Tidak ada data pengguna.</p>';
+            } catch (err) {
+                console.error('Failed to load users:', err);
+                document.getElementById('users-list').innerHTML = 
+                    '<p style="color: var(--accent); text-align: center;">Gagal memuat data</p>';
+            }
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+        });
+    </script>
+</body>
+</html>

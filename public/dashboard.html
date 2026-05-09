@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Saya - Masjid Al Karomah</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <!-- Clerk Authentication -->
+  <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+  <!-- ============ SCROLL PROGRESS ============ -->
+  <div class="scroll-progress"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand">
+        <span>🕌</span>
+        <span>Al Karomah</span>
+      </a>
+      <button class="navbar-toggle">☰</button>
+      <ul class="navbar-menu">
+        <li><a href="/">Beranda</a></li>
+        <li><a href="/profil">Profil</a></li>
+        <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+        <li><a href="/kegiatan">Kegiatan</a></li>
+        <li><a href="/layanan">Layanan</a></li>
+        <li><a href="/donasi">Donasi</a></li>
+        <li><a href="/artikel">Artikel</a></li>
+        <li><a href="/media">Media</a></li>
+        <li><a href="/kontak">Kontak</a></li>
+        <!-- Will be replaced by Auth.js -->
+        <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ============ PAGE HEADER ============ -->
+  <section style="background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+    <div class="container">
+      <h1>Dashboard Saya</h1>
+      <p style="color: #e5e7eb;">Kelola permintaan layanan dan lihat riwayat Pengajuan</p>
+    </div>
+  </section>
+
+  <!-- ============ USER INFO + ACTIONS ============ -->
+  <section class="section">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-8);">
+        <!-- Profile Card -->
+        <div class="card">
+          <div style="text-align: center; margin-bottom: var(--spacing-6);">
+            <div style="font-size: 4rem; margin-bottom: var(--spacing-3);">👤</div>
+            <h4 id="user-name">Memuat...</h4>
+            <p id="user-email" style="color: var(--gray); font-size: var(--text-sm);">...</p>
+          </div>
+          <div style="border-top: 1px solid var(--gray-light); padding-top: var(--spacing-4);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-3);">
+              <span>Total Pengajuan</span>
+              <strong id="total-requests">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-3);">
+              <span>Menunggu</span>
+              <strong id="pending-count">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-3);">
+              <span>Diverifikasi</span>
+              <strong id="verified-count">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-3);">
+              <span>Ditolak</span>
+              <strong id="rejected-count">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Sertifikat Diterbitkan</span>
+              <strong id="issued-count">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions & Recent Requests -->
+        <div>
+          <!-- Action Buttons -->
+          <div style="display: flex; gap: var(--spacing-4); margin-bottom: var(--spacing-8); flex-wrap: wrap;">
+            <a href="/request/sertifikat-kurban" class="btn btn-primary btn-lg">
+              📝 Ajukan Sertifikat Kurban
+            </a>
+            <a href="/kontak" class="btn btn-secondary btn-lg">
+              📞 Hubungi Admin
+            </a>
+          </div>
+
+          <!-- Recent Requests -->
+          <div class="card">
+            <h3 style="margin-bottom: var(--spacing-6);">Riwayat Pengajuan</h3>
+            <div id="requests-list">
+              <p style="color: var(--gray); text-align: center; padding: var(--spacing-8);">
+                Memuat data...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4>Tentang Masjid Al Karomah</h4>
+        <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com/masjid" title="Facebook">f</a>
+          <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+          <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+          <a href="https://wa.me/" title="WhatsApp">💬</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigasi Cepat</h4>
+        <ul>
+          <li><a href="/">Beranda</a></li>
+          <li><a href="/profil">Profil Masjid</a></li>
+          <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+          <li><a href="/kegiatan">Kegiatan</a></li>
+          <li><a href="/donasi">Donasi</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <ul>
+          <li><a href="/layanan">Layanan Masjid</a></li>
+          <li><a href="/artikel">Artikel Islami</a></li>
+          <li><a href="/media">Media Center</a></li>
+          <li><a href="/kontak">Kontak Kami</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak Kami</h4>
+        <p>📍 Desa Buntu<br>Kecamatan Ligung, Kabupaten Majalengka</p>
+        <p>📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a></p>
+        <p>🕐 <strong>Jam Layanan:</strong><br>Setiap hari, 06:00 - 22:00</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+    </div>
+  </footer>
+
+  <!-- ============ FLOATING BUTTONS ============ -->
+  <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script src="/js/utils.js"></script>
+  <script>
+    // Load user data
+    async function loadUserData() {
+      try {
+        const userRes = await fetch('/api/user/me');
+        if (!userRes.ok) {
+          window.location.href = '/signin';
+          return;
+        }
+        const user = await userRes.json();
+        
+        document.getElementById('user-name').textContent = 
+          (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : (user.email || 'User');
+        document.getElementById('user-email').textContent = user.email || '';
+        
+        // Load user requests
+        const requestsRes = await fetch('/api/user/requests');
+        const requestsData = await requestsRes.json();
+        const requestsList = document.getElementById('requests-list');
+        
+        if (requestsData.data && requestsData.data.length > 0) {
+          requestsList.innerHTML = requestsData.data.map(req => `
+              <div class="card" style="margin-bottom: var(--spacing-4); border-left: 4px solid ${
+                req.status === 'pending' ? '#f59e0b' :
+                req.status === 'verified' ? '#3b82f6' :
+                req.status === 'issued' ? '#10b981' : '#ef4444'
+              };">
+                <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: var(--spacing-4);">
+                  <div>
+                    <h4 style="margin-bottom: var(--spacing-2);">Sertifikat Kurban - ${req.qurban_name || req.name}</h4>
+                    <p style="color: var(--gray); font-size: var(--text-sm);">
+                      ${req.animal_type} • ${req.portion_count} bagian • ${req.qurban_year}
+                    </p>
+                    <div style="margin-top: var(--spacing-3);">
+                      <span class="badge ${
+                        req.status === 'pending' ? 'badge-secondary' :
+                        req.status === 'verified' ? 'badge-primary' :
+                        req.status === 'issued' ? 'badge-primary' : ''
+                      }">${
+                        req.status === 'pending' ? 'Menunggu Verifikasi' :
+                        req.status === 'verified' ? 'Diverifikasi' :
+                        req.status === 'issued' ? 'Sertifikat Diterbitkan' : 'Ditolak'
+                      }</span>
+                    </div>
+                    ${req.admin_note ? `<p style="margin-top: var(--spacing-3); font-size: var(--text-sm); color: var(--gray);"><strong>Catatan Admin:</strong> ${req.admin_note}</p>` : ''}
+                  </div>
+                  <div style="text-align: right;">
+                    ${req.status === 'issued' ? 
+                      `<a href="/api/user/certificate/${req.id}/download" class="btn btn-primary btn-sm" target="_blank">⬇️ Download</a>` :
+                      ''
+                    }
+                    <small style="display: block; margin-top: var(--spacing-2); color: var(--gray); font-size: var(--text-xs);">
+                      ${new Date(req.created_at).toLocaleDateString('id-ID')}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            `).join('');
+        } else {
+          requestsList.innerHTML = `
+              <div style="text-align: center; padding: var(--spacing-8); color: var(--gray);">
+                <p>Belum ada pengajuan.</p>
+                <a href="/request/sertifikat-kurban" class="btn btn-primary btn-sm" style="margin-top: var(--spacing-4);">
+                  Ajukan Sekarang
+                </a>
+              </div>
+            `;
+        }
+
+        // Update counts
+        const counts = {
+          total: requestsData.data?.length || 0,
+          pending: requestsData.data?.filter(r => r.status === 'pending').length || 0,
+          verified: requestsData.data?.filter(r => r.status === 'verified').length || 0,
+          rejected: requestsData.data?.filter(r => r.status === 'rejected').length || 0,
+          issued: requestsData.data?.filter(r => r.status === 'issued').length || 0
+        };
+        document.getElementById('total-requests').textContent = counts.total;
+        document.getElementById('pending-count').textContent = counts.pending;
+        document.getElementById('verified-count').textContent = counts.verified;
+        document.getElementById('rejected-count').textContent = counts.rejected;
+        document.getElementById('issued-count').textContent = counts.issued;
+
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        document.getElementById('requests-list').innerHTML = 
+          '<p style="color: var(--accent); text-align: center;">Gagal memuat data. Silakan refresh halaman.</p>';
+      }
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUserData();
+    });
+  </script>
+</body>
+</html>

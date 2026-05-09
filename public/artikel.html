@@ -273,21 +273,6 @@
 
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
-    <script>
-    document.querySelectorAll('[data-filter]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('[data-filter]').forEach(b => {
-                b.classList.remove('btn-primary');
-                b.classList.add('btn-primary-outline');
-            });
-            btn.classList.remove('btn-primary-outline');
-            btn.classList.add('btn-primary');
-            const filter = btn.dataset.filter;
-            document.querySelectorAll('[data-category]').forEach(card => {
-                card.style.display = (filter === '*' || card.dataset.category === filter) ? '' : 'none';
-            });
-        });
-    });
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

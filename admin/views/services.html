@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Layanan - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services" class="active">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Kelola Layanan</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="showCreateForm()">➕ Tambah Layanan</button>
+                </div>
+
+                <!-- Create/Edit Form (hidden by default) -->
+                <div class="card" id="service-form-card" style="display: none;">
+                    <h2 id="form-title">Tambah Layanan Baru</h2>
+                    <form id="service-form">
+                        <input type="hidden" id="service-id">
+                        <div class="form-group">
+                            <label>Nama Layanan</label>
+                            <input type="text" id="service-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Deskripsi</label>
+                            <textarea id="service-description" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Icon (Emoji)</label>
+                            <input type="text" id="service-icon" class="form-control" placeholder="💼">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="service-status" class="form-control">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Nonaktif</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideForm()">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama</th>
+                                    <th>Deskripsi</th>
+                                    <th>Icon</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="services-table-body">
+                                <tr><td colspan="6" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allServices = [];
+
+        async function loadServices() {
+            try {
+                const res = await fetch('/api/admin/services');
+                const data = await res.json();
+                allServices = data.data || [];
+                renderServices();
+            } catch (err) {
+                console.error('Failed to load services:', err);
+                document.getElementById('services-table-body').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; color: var(--accent);">Gagal memuat data</td></tr>';
+            }
+        }
+
+        function renderServices() {
+            const tbody = document.getElementById('services-table-body');
+            if (allServices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = allServices.map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.description || '-'}</td>
+                    <td style="font-size: 1.5rem;">${s.icon || ''}</td>
+                    <td><span class="badge ${s.status === 'active' ? 'badge-success' : 'badge-warning'}">${s.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editService(${s.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteService(${s.id})">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showCreateForm() {
+            document.getElementById('form-title').textContent = 'Tambah Layanan Baru';
+            document.getElementById('service-id').value = '';
+            document.getElementById('service-name').value = '';
+            document.getElementById('service-description').value = '';
+            document.getElementById('service-icon').value = '';
+            document.getElementById('service-status').value = 'active';
+            document.getElementById('service-form-card').style.display = 'block';
+        }
+
+        function hideForm() {
+            document.getElementById('service-form-card').style.display = 'none';
+        }
+
+        async function editService(id) {
+            const service = allServices.find(s => s.id === id);
+            if (!service) return;
+
+            document.getElementById('form-title').textContent = 'Edit Layanan';
+            document.getElementById('service-id').value = service.id;
+            document.getElementById('service-name').value = service.name;
+            document.getElementById('service-description').value = service.description || '';
+            document.getElementById('service-icon').value = service.icon || '';
+            document.getElementById('service-status').value = service.status || 'active';
+            document.getElementById('service-form-card').style.display = 'block';
+        }
+
+        async function deleteService(id) {
+            if (!confirm('Yakin ingin menghapus layanan ini?')) return;
+            try {
+                const res = await fetch(`/api/admin/services/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert('Layanan dihapus');
+                    loadServices();
+                } else {
+                    alert('Error: ' + (result.message || 'Gagal'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan');
+            }
+        }
+
+        document.getElementById('service-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('service-id').value;
+            const body = {
+                name: document.getElementById('service-name').value,
+                description: document.getElementById('service-description').value,
+                icon: document.getElementById('service-icon').value,
+                status: document.getElementById('service-status').value
+            };
+
+            let result;
+            if (id) {
+                result = await fetch(`/api/admin/services/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }).then(r => r.json());
+            } else {
+                result = await fetch('/api/admin/services', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }).then(r => r.json());
+            }
+
+            if (result.status === 'success') {
+                alert('Layanan disimpan');
+                hideForm();
+                loadServices();
+            } else {
+                alert('Error: ' + (result.message || 'Gagal'));
+            }
+        });
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+        });
+    </script>
+</body>
+</html>

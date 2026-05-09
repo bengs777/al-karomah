@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontak Masuk - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts" class="active">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Kontak Masuk</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <button class="btn btn-secondary btn-sm" onclick="filterContacts('all')">Semua</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterContacts('unread')">Belum Dibaca</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterContacts('read')">Sudah Dibaca</button>
+                </div>
+
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>Telepon</th>
+                                    <th>Subjek</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table-body">
+                                <tr><td colspan="8" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allContacts = [];
+        let currentFilter = 'all';
+
+        async function loadContacts() {
+            try {
+                const res = await fetch('/api/admin/contacts');
+                const data = await res.json();
+                allContacts = data.data || [];
+                renderContacts();
+            } catch (err) {
+                console.error('Failed to load contacts:', err);
+            }
+        }
+
+        function renderContacts() {
+            const tbody = document.getElementById('contacts-table-body');
+            let filtered = allContacts;
+            if (currentFilter === 'unread') {
+                filtered = allContacts.filter(c => c.status === 'unread');
+            } else if (currentFilter === 'read') {
+                filtered = allContacts.filter(c => c.status === 'read');
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(c => `
+                <tr>
+                    <td>${c.id}</td>
+                    <td><strong>${c.name}</strong></td>
+                    <td>${c.email}</td>
+                    <td>${c.phone || '-'}</td>
+                    <td>${c.subject || '-'}</td>
+                    <td><span class="badge ${c.status === 'unread' ? 'badge-warning' : 'badge-success'}">${c.status}</span></td>
+                    <td>${new Date(c.created_at).toLocaleDateString('id-ID')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewContact(${c.id})">Lihat</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteContact(${c.id})">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterContacts(status) {
+            currentFilter = status;
+            renderContacts();
+        }
+
+        async function viewContact(id) {
+            const contact = allContacts.find(c => c.id === id);
+            if (!contact) return;
+
+            const message = `
+Nama: ${contact.name}
+Email: ${contact.email}
+Telepon: ${contact.phone || '-'}
+Subjek: ${contact.subject || '-'}
+
+Pesan:
+${contact.message}
+            `;
+            alert(message);
+
+            // Mark as read
+            if (contact.status === 'unread') {
+                await fetch(`/api/admin/contacts/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'read' })
+                });
+                loadContacts();
+            }
+        }
+
+        async function deleteContact(id) {
+            if (!confirm('Yakin ingin menghapus kontak ini?')) return;
+            try {
+                const res = await fetch(`/api/admin/contacts/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert('Kontak dihapus');
+                    loadContacts();
+                } else {
+                    alert('Error: ' + (result.message || 'Gagal'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan');
+            }
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContacts();
+        });
+    </script>
+</body>
+</html>

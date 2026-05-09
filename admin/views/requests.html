@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengajuan Sertifikat Kurban - Admin</title>
+  <link rel="stylesheet" href="/admin/assets/css/admin.css">
+  <style>
+    .status-badge {
+      padding: var(--spacing-1) var(--spacing-3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+    }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-verified { background: #dbeafe; color: #1e40af; }
+    .status-issued { background: #d1fae5; color: #065f46; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+    .action-btns { display: flex; gap: var(--spacing-2); flex-wrap: wrap; }
+    .upload-proof { color: var(--primary-dark); text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <span>🕌</span>
+        <span>Admin</span>
+      </div>
+      
+      <nav>
+        <ul class="admin-menu">
+          <li><a href="/admin">📊 Dashboard</a></li>
+          <li><a href="/admin/articles">📰 Artikel</a></li>
+          <li><a href="/admin/activities">📅 Kegiatan</a></li>
+          <li><a href="/admin/donations">💰 Donasi</a></li>
+          <li><a href="/admin/services">🔧 Layanan</a></li>
+          <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+          <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+          <li><a href="/admin/users">👥 Pengguna</a></li>
+          <li><a href="/admin/requests" class="active">📋 Pengajuan Sertifikat</a></li>
+          <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+            <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main>
+      <!-- ============ HEADER ============ -->
+      <header class="admin-header">
+        <h1>Pengajuan Sertifikat Kurban</h1>
+        <div class="admin-user">
+          <span id="user-name">Admin</span>
+          <button onclick="logout()">⋮</button>
+        </div>
+      </header>
+
+      <!-- ============ CONTENT ============ -->
+      <div class="admin-main">
+        <!-- Filter Tabs -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: var(--spacing-3); flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" onclick="filterRequests('all')">Semua</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterRequests('pending')">Menunggu</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterRequests('verified')">Diverifikasi</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterRequests('issued')">Diterbitkan</button>
+            <button class="btn btn-secondary btn-sm" onclick="filterRequests('rejected')">Ditolak</button>
+          </div>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="card">
+          <h2>Daftar Permintaan Sertifikat</h2>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nama Pequrban</th>
+                  <th>Jenis Hewan</th>
+                  <th>Jumlah</th>
+                  <th>Tahun</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="requests-table-body">
+                <tr><td colspan="8" style="text-align: center; padding: var(--spacing-8);">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Detail Modal (hidden by default) -->
+        <div id="detail-modal" class="modal">
+          <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+              <h3>Detail Pengajuan</h3>
+              <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+              <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer" id="modal-footer">
+              <!-- Action buttons loaded dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let allRequests = [];
+
+    async function loadRequests() {
+      try {
+        const res = await fetch('/api/admin/requests');
+        const data = await res.json();
+        allRequests = data.data || [];
+        renderRequests(allRequests);
+      } catch (err) {
+        console.error('Failed to load requests:', err);
+        document.getElementById('requests-table-body').innerHTML = 
+          '<tr><td colspan="8" style="text-align: center; color: var(--accent);">Gagal memuat data</td></tr>';
+      }
+    }
+
+    function renderRequests(requests) {
+      const tbody = document.getElementById('requests-table-body');
+      if (requests.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: var(--spacing-8);">Tidak ada data</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = requests.map(req => `
+        <tr>
+          <td>#${req.id}</td>
+          <td>
+            <strong>${req.name}</strong><br>
+            <small style="color: var(--gray);">${req.qurban_name}</small>
+          </td>
+          <td>${req.animal_type}</td>
+          <td>${req.portion_count}</td>
+          <td>${req.qurban_year}</td>
+          <td>
+            <span class="status-badge status-${req.status}">${getStatusLabel(req.status)}</span>
+          </td>
+          <td>${new Date(req.created_at).toLocaleDateString('id-ID')}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn btn-sm btn-primary" onclick="viewDetail(${req.id})">Detail</button>
+              ${req.status === 'verified' ? 
+                `<button class="btn btn-sm btn-success" onclick="issueCertificate(${req.id})">Terbitkan</button>` :
+                ''
+              }
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        pending: 'Menunggu',
+        verified: 'Diverifikasi',
+        issued: 'Diterbitkan',
+        rejected: 'Ditolak'
+      };
+      return labels[status] || status;
+    }
+
+    function filterRequests(status) {
+      if (status === 'all') {
+        renderRequests(allRequests);
+      } else {
+        renderRequests(allRequests.filter(r => r.status === status));
+      }
+    }
+
+    function viewDetail(id) {
+      const req = allRequests.find(r => r.id === id);
+      if (!req) return;
+
+      const modal = document.getElementById('detail-modal');
+      const body = document.getElementById('modal-body');
+      const footer = document.getElementById('modal-footer');
+
+      body.innerHTML = `
+        <div class="grid-2" style="gap: var(--spacing-6);">
+          <div>
+            <h4 style="margin-bottom: var(--spacing-4);">Data Pemohon</h4>
+            <p><strong>Nama:</strong> ${req.name}</p>
+            <p><strong>WhatsApp:</strong> ${req.whatsapp || '-'}</p>
+            <p><strong>Alamat:</strong> ${req.address || '-'}</p>
+          </div>
+          <div>
+            <h4 style="margin-bottom: var(--spacing-4);">Detail Qurban</h4>
+            <p><strong>Nama Qurban:</strong> ${req.qurban_name}</p>
+            <p><strong>Jenis Hewan:</strong> ${req.animal_type}</p>
+            <p><strong>Jumlah Bagian:</strong> ${req.portion_count}</p>
+            <p><strong>Tahun:</strong> ${req.qurban_year}</p>
+            <p><strong>Atas Nama:</strong> ${req.behalf_of || 'Pribadi'}</p>
+          </div>
+        </div>
+        ${req.notes ? `<div style="margin-top: var(--spacing-6);"><h4>Catatan Tambahan</h4><p>${req.notes}</p></div>` : ''}
+        ${req.payment_proof ? 
+          `<div style="margin-top: var(--spacing-6);">
+             <h4>Bukti Pembayaran/Kurban</h4>
+             <a href="${req.payment_proof}" target="_blank" class="upload-proof">📎 Lihat Bukti</a>
+           </div>` : ''
+        }
+        <div style="margin-top: var(--spacing-6);">
+          <h4>Status Saat Ini:</h4>
+          <span class="status-badge status-${req.status}">${getStatusLabel(req.status)}</span>
+          ${req.admin_note ? `<p style="margin-top: var(--spacing-2);"><strong>Catatan Admin:</strong> ${req.admin_note}</p>` : ''}
+        </div>
+      `;
+
+      // Action buttons
+      let actions = '';
+      if (req.status === 'pending') {
+        actions = `
+          <button class="btn btn-success" onclick="approveRequest(${req.id})">✅ Approve</button>
+          <button class="btn btn-danger" onclick="rejectRequest(${req.id})">❌ Tolak</button>
+        `;
+      } else if (req.status === 'verified') {
+        actions = `
+          <button class="btn btn-primary" onclick="issueCertificate(${req.id})">🏆 Terbitkan Sertifikat</button>
+        `;
+      }
+      actions += `<button class="btn btn-secondary" onclick="closeModal()">Tutup</button>`;
+
+      footer.innerHTML = actions;
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').style.display = 'none';
+    }
+
+    async function approveRequest(id) {
+      const note = prompt('Catatan (opsional):');
+      await submitAction(`/api/admin/requests/${id}/approve`, { admin_note: note });
+      closeModal();
+      loadRequests();
+    }
+
+    async function rejectRequest(id) {
+      const note = prompt('Alasan penolakan (wajib):');
+      if (!note) return alert('Alasan penolakan wajib diisi');
+      await submitAction(`/api/admin/requests/${id}/reject`, { admin_note: note });
+      closeModal();
+      loadRequests();
+    }
+
+    async function issueCertificate(id) {
+      if (!confirm('Terbitkan sertifikat untuk permintaan ini?')) return;
+      await submitAction(`/api/admin/requests/${id}/issue`, {});
+      closeModal();
+      loadRequests();
+    }
+
+    async function submitAction(url, body) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert('Error: ' + (data.error || 'Gagal'));
+      } else {
+        alert('Sukses: ' + data.message);
+      }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRequests();
+    });
+
+    // Close modal when clicking outside
+    window.onclick = (e) => {
+      const modal = document.getElementById('detail-modal');
+      if (e.target === modal) modal.style.display = 'none';
+    };
+  </script>
+</body>
+</html>

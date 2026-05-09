@@ -36,6 +36,16 @@ const Auth = {
     return null;
   },
 
+  async getUserInfo() {
+    try {
+      const response = await fetch('/api/user/me');
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to get user info:', error);
+      return null;
+    }
+  },
+
   async signIn() {
     if (typeof Clerk !== 'undefined') {
       window.location.href = '/signin';
@@ -54,19 +64,68 @@ const Auth = {
     const adminLink = DOM.$('.navbar-menu a[href="/admin"]');
     if (!navbar || !adminLink) return;
 
-    if (this.isSignedIn()) {
-      const userButton = DOM.create('button', {
-        className: 'btn btn-primary btn-sm',
-        id: 'user-menu-btn'
-      }, '👤 Menu');
-      adminLink.parentElement.replaceChild(userButton, adminLink);
-      this.createUserDropdown(navbar);
-    } else {
-      adminLink.classList.add('btn', 'btn-primary', 'btn-sm');
-    }
+    // First check user role via API
+    this.getUserInfo().then(userInfo => {
+      if (!userInfo) {
+        // Fallback to default (not logged in)
+        this.renderLoggedOutNavbar(adminLink);
+        return;
+      }
+
+      if (userInfo.isAdmin) {
+        // Admin menu
+        const adminButton = DOM.create('button', {
+          className: 'btn btn-primary btn-sm',
+          id: 'admin-menu-btn'
+        }, '🎛️ Admin');
+        adminLink.parentElement.replaceChild(adminButton, adminLink);
+        this.createAdminDropdown(navbar, userInfo);
+      } else {
+        // Regular user menu
+        const userButton = DOM.create('button', {
+          className: 'btn btn-primary btn-sm',
+          id: 'user-menu-btn'
+        }, '👤 Menu');
+        adminLink.parentElement.replaceChild(userButton, adminLink);
+        this.createUserDropdown(navbar, userInfo);
+      }
+    });
   },
 
-  createUserDropdown(navbar) {
+  renderLoggedOutNavbar(adminLink) {
+    const loginBtn = DOM.create('button', {
+      className: 'btn btn-primary btn-sm',
+      id: 'login-btn'
+    }, '🔐 Masuk');
+    const signupBtn = DOM.create('button', {
+      className: 'btn btn-secondary btn-sm',
+      id: 'signup-btn',
+      style: 'margin-left: var(--spacing-3);'
+    }, '📝 Daftar');
+    const googleBtn = DOM.create('button', {
+      className: 'btn btn-primary-outline btn-sm',
+      id: 'google-login-btn',
+      style: 'margin-left: var(--spacing-3);'
+    }, '🔍 Google');
+
+    const li = adminLink.parentElement;
+    li.innerHTML = '';
+    li.appendChild(loginBtn);
+    li.appendChild(signupBtn);
+    li.appendChild(googleBtn);
+
+    loginBtn.addEventListener('click', () => window.location.href = '/signin');
+    signupBtn.addEventListener('click', () => window.location.href = '/signup');
+    googleBtn.addEventListener('click', () => {
+      if (typeof Clerk !== 'undefined') {
+        Clerk.redirectToSignIn({ strategy: 'google', redirectUrl: '/' });
+      } else {
+        window.location.href = '/signin';
+      }
+    });
+  },
+
+  createUserDropdown(navbar, userInfo) {
     const existingMenu = DOM.$('#user-dropdown');
     if (existingMenu) existingMenu.remove();
 
@@ -78,38 +137,79 @@ const Auth = {
       style: 'position: absolute; top: 70px; right: 1rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); min-width: 200px; z-index: 1000; display: none;'
     });
 
-    this.getUser().then(user => {
-      const name = user?.fullName || 'User';
-      const email = user?.emailAddresses?.[0]?.emailAddress || '';
+    const name = userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : (userInfo?.email || 'User');
 
-      dropdown.innerHTML = `
-        <div style="padding: var(--spacing-4); border-bottom: 1px solid var(--gray-light);">
-          <div style="font-weight: bold; color: var(--dark);">${name}</div>
-          <div style="font-size: var(--text-sm); color: var(--gray);">${email}</div>
-        </div>
-        <a href="/admin" style="display: block; padding: var(--spacing-3) var(--spacing-4); color: var(--dark); text-decoration: none;">
-          🎛️ Dashboard Admin
-        </a>
-        <button id="logout-btn" class="btn btn-primary-outline btn-sm" style="width: calc(100% - 1rem); margin: var(--spacing-2);">
-          🔐 Keluar
-        </button>
-      `;
+    dropdown.innerHTML = `
+      <div style="padding: var(--spacing-4); border-bottom: 1px solid var(--gray-light);">
+        <div style="font-weight: bold; color: var(--dark);">${name}</div>
+        <div style="font-size: var(--text-sm); color: var(--gray);">${userInfo.email || ''}</div>
+      </div>
+      <a href="/dashboard" style="display: block; padding: var(--spacing-3) var(--spacing-4); color: var(--dark); text-decoration: none;">
+        🏠 Dashboard Saya
+      </a>
+      <a href="/request/sertifikat-kurban" style="display: block; padding: var(--spacing-3) var(--spacing-4); color: var(--dark); text-decoration: none;">
+        📝 Ajukan Sertifikat Kurban
+      </a>
+      <button id="logout-btn" class="btn btn-primary-outline btn-sm" style="width: calc(100% - 1rem); margin: var(--spacing-2);">
+        🔐 Keluar
+      </button>
+    `;
 
-      navbar.appendChild(dropdown);
+    navbar.appendChild(dropdown);
 
-      userBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isVisible = dropdown.style.display === 'block';
-        dropdown.style.display = isVisible ? 'none' : 'block';
-      });
+    userBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    });
 
-      DOM.$('#logout-btn')?.addEventListener('click', () => this.signOut());
+    DOM.$('#logout-btn')?.addEventListener('click', () => this.signOut());
 
-      document.addEventListener('click', () => {
-        dropdown.style.display = 'none';
-      });
-    }).catch(err => {
-      console.error('Failed to get user:', err);
+    document.addEventListener('click', () => {
+      dropdown.style.display = 'none';
+    });
+  },
+
+  createAdminDropdown(navbar, userInfo) {
+    const existingMenu = DOM.$('#admin-dropdown');
+    if (existingMenu) existingMenu.remove();
+
+    const adminBtn = DOM.$('#admin-menu-btn');
+    if (!adminBtn) return;
+
+    const dropdown = DOM.create('div', {
+      id: 'admin-dropdown',
+      style: 'position: absolute; top: 70px; right: 1rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); min-width: 200px; z-index: 1000; display: none;'
+    });
+
+    const name = userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : 'Admin';
+
+    dropdown.innerHTML = `
+      <div style="padding: var(--spacing-4); border-bottom: 1px solid var(--gray-light);">
+        <div style="font-weight: bold; color: var(--dark);">${name}</div>
+        <div style="font-size: var(--text-sm); color: var(--gray);">${userInfo.email || ''}</div>
+      </div>
+      <a href="/admin" style="display: block; padding: var(--spacing-3) var(--spacing-4); color: var(--dark); text-decoration: none;">
+        📊 Dashboard Admin
+      </a>
+      <a href="/admin/requests" style="display: block; padding: var(--spacing-3) var(--spacing-4); color: var(--dark); text-decoration: none;">
+        📋 Pengajuan Sertifikat
+      </a>
+      <button id="logout-btn-admin" class="btn btn-primary-outline btn-sm" style="width: calc(100% - 1rem); margin: var(--spacing-2);">
+        🔐 Keluar
+      </button>
+    `;
+
+    navbar.appendChild(dropdown);
+
+    adminBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    });
+
+    DOM.$('#logout-btn-admin')?.addEventListener('click', () => this.signOut());
+
+    document.addEventListener('click', () => {
+      dropdown.style.display = 'none';
     });
   },
 

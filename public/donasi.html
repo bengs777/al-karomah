@@ -355,23 +355,6 @@
 
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
-    <script>
-        document.getElementById('donation-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const form = this;
-            const data = Form.serialize(form);
-            
-            // Format WhatsApp message
-            const message = `Assalamu alaikum, saya ingin melakukan konfirmasi donasi:\n\nNama: ${data['donor-name']}\nJumlah: Rp ${Number(data['donation-amount']).toLocaleString('id-ID')}\nProgram: ${data['donation-program']}\nMetode: ${data['donation-method']}\nCatatan: ${data['donation-note'] || '-'}`;
-            
-            // Send to WhatsApp
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            Form.clear(form);
-            Notification.success('Terima kasih! Silakan lanjutkan ke WhatsApp untuk konfirmasi.');
-        });
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

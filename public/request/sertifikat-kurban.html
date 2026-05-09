@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajukan Sertifikat Kurban - Masjid Al Karomah</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <!-- Clerk Authentication -->
+  <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+  <style>
+    .form-section {
+      margin-bottom: var(--spacing-8);
+    }
+    .form-section h3 {
+      color: var(--primary-dark);
+      margin-bottom: var(--spacing-4);
+      padding-bottom: var(--spacing-2);
+      border-bottom: 2px solid var(--primary-light);
+    }
+    .required label::after {
+      content: " *";
+      color: var(--accent);
+    }
+    .form-hint {
+      font-size: var(--text-sm);
+      color: var(--gray);
+      margin-top: var(--spacing-1);
+    }
+    .upload-area {
+      border: 2px dashed var(--gray-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-8);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+    .upload-area:hover {
+      border-color: var(--primary-dark);
+      background-color: var(--primary-light);
+    }
+    .upload-area input {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- ============ SCROLL PROGRESS ============ -->
+  <div class="scroll-progress"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand">
+        <span>🕌</span>
+        <span>Al Karomah</span>
+      </a>
+      <button class="navbar-toggle">☰</button>
+      <ul class="navbar-menu">
+        <li><a href="/">Beranda</a></li>
+        <li><a href="/profil">Profil</a></li>
+        <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+        <li><a href="/kegiatan">Kegiatan</a></li>
+        <li><a href="/layanan">Layanan</a></li>
+        <li><a href="/donasi">Donasi</a></li>
+        <li><a href="/artikel">Artikel</a></li>
+        <li><a href="/media">Media</a></li>
+        <li><a href="/kontak">Kontak</a></li>
+        <!-- Will be replaced by Auth.js -->
+        <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ============ PAGE HEADER ============ -->
+  <section style="background: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+    <div class="container">
+      <h1>Ajukan Sertifikat Kurban</h1>
+      <p style="color: #e5e7eb;">Isi formulir di bawah ini untuk meminta sertifikat kurban Masjid Al Karomah</p>
+    </div>
+  </section>
+
+  <!-- ============ FORM SECTION ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <form id="sertifikat-form" enctype="multipart/form-data">
+          <!-- Personal Info -->
+          <div class="form-section">
+            <h3>📋 Data Pemohon</h3>
+            <div class="grid-2" style="gap: var(--spacing-6);">
+              <div class="form-group required">
+                <label class="form-label">Nama Lengkap Pequrban</label>
+                <input type="text" name="name" class="form-control" required placeholder="Masukkan nama lengkap">
+              </div>
+              <div class="form-group required">
+                <label class="form-label">Nomor WhatsApp</label>
+                <input type="tel" name="whatsapp" class="form-control" required placeholder="08xxxxxxxxxx">
+                <p class="form-hint">Nomor akan digunakan untuk konfirmasi</p>
+              </div>
+            </div>
+            <div class="form-group required">
+              <label class="form-label">Alamat</label>
+              <textarea name="address" class="form-control" rows="3" required placeholder="Alamat lengkap untuk pengiriman sertifikat"></textarea>
+            </div>
+          </div>
+
+          <!-- Qurban Details -->
+          <div class="form-section">
+            <h3>🐄 Detail Qurban</h3>
+            <div class="grid-2" style="gap: var(--spacing-6);">
+              <div class="form-group required">
+                <label class="form-label">Nama yang Ingin Ditulis di Sertifikat</label>
+                <input type="text" name="qurban_name" class="form-control" required placeholder="Contoh: Abdullah bin Ahmad">
+              </div>
+              <div class="form-group required">
+                <label class="form-label">Jenis Hewan</label>
+                <select name="animal_type" class="form-control" required>
+                  <option value="">Pilih jenis hewan</option>
+                  <option value="sapi">Sapi</option>
+                  <option value="kambing">Kambing</option>
+                  <option value="domba">Domba</option>
+                </select>
+              </div>
+              <div class="form-group required">
+                <label class="form-label">Jumlah Bagian</label>
+                <input type="number" name="portion_count" class="form-control" required min="1" placeholder="Contoh: 1, 2, 7">
+                <p class="form-hint">1 sapi = 7 bagian</p>
+              </div>
+              <div class="form-group required">
+                <label class="form-label">Tahun Kurban (Idul Adha)</label>
+                <input type="text" name="qurban_year" class="form-control" required placeholder="Contoh: 1445 H / 2024 M">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Atas Nama</label>
+              <select name="behalf_of" class="form-control">
+                <option value="pribadi">Pribadi</option>
+                <option value="keluarga">Keluarga</option>
+                <option value="instansi">Instansi / Organisasi</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Additional Info -->
+          <div class="form-section">
+            <h3>📎 Bukti & Catatan</h3>
+            <div class="form-group">
+              <label class="form-label">Upload Bukti Pembayaran / Bukti Kurban</label>
+              <div class="upload-area" id="upload-area">
+                <input type="file" name="payment_proof" id="payment_proof" accept="image/*,.pdf">
+                <p>📁 Klik untuk memilih file atau drag & drop</p>
+                <p class="form-hint">Format: JPG, PNG, PDF (maks. 5MB)</p>
+                <p id="file-name" style="margin-top: var(--spacing-2); color: var(--primary-dark); font-weight: bold;"></p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Catatan Tambahan</label>
+              <textarea name="notes" class="form-control" rows="3" placeholder="Informasi tambahan jika diperlukan"></textarea>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div style="text-align: center; margin-top: var(--spacing-8);">
+            <button type="submit" class="btn btn-primary btn-lg" style="min-width: 200px;">
+              ✅ Kirim Permintaan
+            </button>
+            <p style="margin-top: var(--spacing-4); color: var(--gray); font-size: var(--text-sm);">
+              Setelah dikirim, permintaan akan diverifikasi oleh admin Masjid Al Karomah.
+            </p>
+          </div>
+        </form>
+
+        <!-- Success Message (hidden by default) -->
+        <div id="success-message" style="display: none; text-align: center; padding: var(--spacing-8);">
+          <div style="font-size: 4rem; color: var(--primary-dark); margin-bottom: var(--spacing-4);">✅</div>
+          <h3>Permintaan Berhasil Dikirim!</h3>
+          <p style="color: var(--gray); margin: var(--spacing-4) 0;">
+            Permintaan sertifikat kurban Anda telah diterima.<br>
+            Silakan cek status di <a href="/dashboard">Dashboard Saya</a>.
+          </p>
+          <a href="/dashboard" class="btn btn-primary">Lihat Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-col">
+        <h4>Tentang Masjid Al Karomah</h4>
+        <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com/masjid" title="Facebook">f</a>
+          <a href="https://instagram.com/masjid" title="Instagram">📷</a>
+          <a href="https://youtube.com/masjid" title="YouTube">▶️</a>
+          <a href="https://wa.me/" title="WhatsApp">💬</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigasi Cepat</h4>
+        <ul>
+          <li><a href="/">Beranda</a></li>
+          <li><a href="/profil">Profil Masjid</a></li>
+          <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+          <li><a href="/kegiatan">Kegiatan</a></li>
+          <li><a href="/donasi">Donasi</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <ul>
+          <li><a href="/layanan">Layanan Masjid</a></li>
+          <li><a href="/artikel">Artikel Islami</a></li>
+          <li><a href="/media">Media Center</a></li>
+          <li><a href="/kontak">Kontak Kami</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak Kami</h4>
+        <p>📍 Desa Buntu<br>Kecamatan Ligung, Kabupaten Majalengka</p>
+        <p>📞 <a href="https://wa.me/">[Nomor WhatsApp akan diupdate]</a><br>✉️ <a href="mailto:admin@alkaromah.com">admin@alkaromah.com</a></p>
+        <p>🕐 <strong>Jam Layanan:</strong><br>Setiap hari, 06:00 - 22:00</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+    </div>
+  </footer>
+
+  <!-- ============ FLOATING BUTTONS ============ -->
+  <a href="https://wa.me/" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script src="/js/utils.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth
+      if (typeof Clerk !== 'undefined') {
+        await Clerk.load({ publishableKey: 'pk_test_cG9zc2libGUta2luZ2Zpc2gtNi5jbGVyay5hY2NvdW50cy5kZXYk' });
+        
+        // Redirect if not signed in
+        if (!Clerk.user) {
+          window.location.href = '/signin';
+          return;
+        }
+      } else {
+        window.location.href = '/signin';
+        return;
+      }
+
+      // File upload preview
+      const uploadArea = document.getElementById('upload-area');
+      const fileInput = document.getElementById('payment_proof');
+      const fileNameDisplay = document.getElementById('file-name');
+
+      uploadArea.addEventListener('click', () => fileInput.click());
+
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--primary-dark)';
+        uploadArea.style.backgroundColor = 'var(--primary-light)';
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'var(--gray-light)';
+        uploadArea.style.backgroundColor = 'transparent';
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--gray-light)';
+        uploadArea.style.backgroundColor = 'transparent';
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          fileNameDisplay.textContent = e.dataTransfer.files[0].name;
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+          fileNameDisplay.textContent = fileInput.files[0].name;
+        }
+      });
+
+      // Form submission
+      const form = document.getElementById('sertifikat-form');
+      const successMessage = document.getElementById('success-message');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        
+        try {
+          const response = await fetch('/api/user/request-sertifikat', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            form.style.display = 'none';
+            successMessage.style.display = 'block';
+          } else {
+            alert('Error: ' + (result.error || 'Gagal mengirim permintaan'));
+          }
+        } catch (error) {
+          console.error('Submit error:', error);
+          alert('Terjadi kesalahan. Silakan coba lagi.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -6,7 +6,16 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, 'masjid.db');
+// Use /tmp on Vercel (filesystem is read-only except /tmp)
+// For local development, use the project database directory
+const isVercel = process.env.VERCEL === '1';
+const DB_DIR = isVercel ? '/tmp/database' : path.join(__dirname);
+const DB_PATH = path.join(DB_DIR, 'masjid.db');
+
+// Ensure database directory exists (important for /tmp on Vercel)
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
 
 // Create or open database
 const db = new sqlite3.Database(DB_PATH, (err) => {
@@ -156,6 +165,54 @@ function initDatabase() {
     `, (err) => {
       if (err) console.error('Error creating settings table:', err);
       else console.log('✓ Settings table ready');
+    });
+
+    // Service Requests table (for qurban certificates and other services)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS service_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        clerk_user_id TEXT NOT NULL,
+        service_type TEXT NOT NULL DEFAULT 'sertifikat_kurban',
+        name TEXT NOT NULL,
+        whatsapp TEXT,
+        address TEXT,
+        qurban_name TEXT,
+        animal_type TEXT,
+        portion_count INTEGER,
+        qurban_year TEXT,
+        behalf_of TEXT,
+        notes TEXT,
+        payment_proof TEXT,
+        status TEXT DEFAULT 'pending',
+        admin_note TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) console.error('Error creating service_requests table:', err);
+      else console.log('✓ Service Requests table ready');
+    });
+
+    // Qurban Certificates table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS qurban_certificates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        request_id INTEGER NOT NULL,
+        clerk_user_id TEXT NOT NULL,
+        certificate_number TEXT UNIQUE NOT NULL,
+        qurban_name TEXT NOT NULL,
+        animal_type TEXT NOT NULL,
+        portion_count INTEGER NOT NULL,
+        qurban_year TEXT NOT NULL,
+        behalf_of TEXT,
+        certificate_pdf_url TEXT,
+        issued_at DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (request_id) REFERENCES service_requests(id)
+      )
+    `, (err) => {
+      if (err) console.error('Error creating qurban_certificates table:', err);
+      else console.log('✓ Qurban Certificates table ready');
     });
 
     setTimeout(() => {

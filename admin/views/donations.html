@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Donasi - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations" class="active">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Kelola Donasi</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="filterDonations('all')">Semua</button>
+                        <button class="btn btn-secondary btn-sm" onclick="filterDonations('pending')">Menunggu</button>
+                        <button class="btn btn-secondary btn-sm" onclick="filterDonations('confirmed')">Dikonfirmasi</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>Jumlah</th>
+                                    <th>Program</th>
+                                    <th>Metode</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="donations-table-body">
+                                <tr><td colspan="9" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allDonations = [];
+        let currentFilter = 'all';
+
+        async function loadDonations() {
+            try {
+                const res = await fetch('/api/admin/donations');
+                const data = await res.json();
+                allDonations = data.data || [];
+                renderDonations();
+            } catch (err) {
+                console.error('Failed to load donations:', err);
+                document.getElementById('donations-table-body').innerHTML = 
+                    '<tr><td colspan="9" style="text-align: center; color: var(--accent);">Gagal memuat data</td></tr>';
+            }
+        }
+
+        function renderDonations() {
+            const tbody = document.getElementById('donations-table-body');
+            let filtered = allDonations;
+            if (currentFilter !== 'all') {
+                filtered = allDonations.filter(d => d.status === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(d => `
+                <tr>
+                    <td>${d.id}</td>
+                    <td><strong>${d.donor_name}</strong><br><small style="color: var(--gray);">${d.donor_email || '-'}</small></td>
+                    <td>${d.donor_email || '-'}</td>
+                    <td>Rp ${(d.amount || 0).toLocaleString('id-ID')}</td>
+                    <td>${d.program}</td>
+                    <td>${d.method || '-'}</td>
+                    <td><span class="badge ${d.status === 'pending' ? 'badge-warning' : 'badge-success'}">${d.status}</span></td>
+                    <td>${new Date(d.created_at).toLocaleDateString('id-ID')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="updateDonationStatus(${d.id}, 'confirmed')">Konfirmasi</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDonation(${d.id})">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterDonations(status) {
+            currentFilter = status;
+            renderDonations();
+        }
+
+        async function updateDonationStatus(id, status) {
+            try {
+                const res = await fetch(`/api/admin/donations/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert('Status donasi diperbarui');
+                    loadDonations();
+                } else {
+                    alert('Error: ' + (result.message || 'Gagal'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan');
+            }
+        }
+
+        async function deleteDonation(id) {
+            if (!confirm('Yakin ingin menghapus donasi ini?')) return;
+            try {
+                const res = await fetch(`/api/admin/donations/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert('Donasi dihapus');
+                    loadDonations();
+                } else {
+                    alert('Error: ' + (result.message || 'Gagal'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan');
+            }
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDonations();
+        });
+    </script>
+</body>
+</html>

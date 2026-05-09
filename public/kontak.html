@@ -293,23 +293,6 @@
 
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
-    <script>
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const form = this;
-            const data = Form.serialize(form);
-            
-            // Format message for WhatsApp
-            const message = `Halo, saya ingin mengirim pesan melalui website:\n\nNama: ${data.name}\nEmail: ${data.email}\nNo. WhatsApp: ${data.phone}\nSubjek: ${data.subject}\nPesan: ${data.message}`;
-            
-            // Send to WhatsApp
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            Form.clear(form);
-            Notification.success('Terima kasih! Pesan Anda akan dikirim via WhatsApp.');
-        });
-    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

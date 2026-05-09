@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Artikel - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles" class="active">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Kelola Artikel</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <button class="btn btn-secondary btn-sm" onclick="filterArticles('all')">Semua</button>
+                        <button class="btn btn-secondary btn-sm" onclick="filterArticles('published')">Dipublikasi</button>
+                        <button class="btn btn-secondary btn-sm" onclick="filterArticles('draft')">Draft</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateForm()">➕ Buat Artikel</button>
+                </div>
+
+                <!-- Create/Edit Form (hidden by default) -->
+                <div class="card" id="article-form-card" style="display: none;">
+                    <h2 id="form-title">Buat Artikel Baru</h2>
+                    <form id="article-form">
+                        <input type="hidden" id="article-id">
+                        <div class="form-group">
+                            <label>Judul Artikel</label>
+                            <input type="text" id="article-title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Slug (URL)</label>
+                            <input type="text" id="article-slug" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="article-category" class="form-control">
+                                <option value="Fiqih">Fiqih</option>
+                                <option value="Akhlak">Akhlak</option>
+                                <option value="Aqidah">Aqidah</option>
+                                <option value="Keluarga">Keluarga</option>
+                                <option value="Ekonomi">Ekonomi</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Konten</label>
+                            <textarea id="article-content" class="form-control" rows="10" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="article-status" class="form-control">
+                                <option value="draft">Draft</option>
+                                <option value="published">Publikasi</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="button" class="btn btn-secondary" onclick="hideForm()">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Articles Table -->
+                <div class="card">
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>View</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="articles-table-body">
+                                <tr><td colspan="7" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allArticles = [];
+        let currentFilter = 'all';
+
+        // API helper
+        async function api(method, endpoint, body = null) {
+            const opts = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body) opts.body = JSON.stringify(body);
+            const res = await fetch(endpoint, opts);
+            return res.json();
+        }
+
+        async function loadArticles() {
+            try {
+                const data = await api('GET', '/api/admin/articles');
+                allArticles = data.data || [];
+                renderArticles();
+            } catch (err) {
+                console.error('Failed to load articles:', err);
+                document.getElementById('articles-table-body').innerHTML = 
+                    '<tr><td colspan="7" style="text-align: center; color: var(--accent);">Gagal memuat data</td></tr>';
+            }
+        }
+
+        function renderArticles() {
+            const tbody = document.getElementById('articles-table-body');
+            let filtered = allArticles;
+            if (currentFilter !== 'all') {
+                filtered = allArticles.filter(a => a.status === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(a => `
+                <tr>
+                    <td>${a.id}</td>
+                    <td><strong>${a.title}</strong><br><small style="color: var(--gray);">${a.slug}</small></td>
+                    <td>${a.category || '-'}</td>
+                    <td><span class="badge ${a.status === 'published' ? 'badge-success' : 'badge-warning'}">${a.status}</span></td>
+                    <td>${new Date(a.created_at).toLocaleDateString('id-ID')}</td>
+                    <td>${a.views || 0}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editArticle(${a.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteArticle(${a.id})">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterArticles(status) {
+            currentFilter = status;
+            renderArticles();
+        }
+
+        function showCreateForm() {
+            document.getElementById('form-title').textContent = 'Buat Artikel Baru';
+            document.getElementById('article-id').value = '';
+            document.getElementById('article-title').value = '';
+            document.getElementById('article-slug').value = '';
+            document.getElementById('article-category').value = 'Fiqih';
+            document.getElementById('article-content').value = '';
+            document.getElementById('article-status').value = 'draft';
+            document.getElementById('article-form-card').style.display = 'block';
+        }
+
+        function hideForm() {
+            document.getElementById('article-form-card').style.display = 'none';
+        }
+
+        async function editArticle(id) {
+            const article = allArticles.find(a => a.id === id);
+            if (!article) return;
+
+            document.getElementById('form-title').textContent = 'Edit Artikel';
+            document.getElementById('article-id').value = article.id;
+            document.getElementById('article-title').value = article.title;
+            document.getElementById('article-slug').value = article.slug;
+            document.getElementById('article-category').value = article.category || 'Fiqih';
+            document.getElementById('article-content').value = article.content || '';
+            document.getElementById('article-status').value = article.status || 'draft';
+            document.getElementById('article-form-card').style.display = 'block';
+        }
+
+        async function deleteArticle(id) {
+            if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+            const result = await api('DELETE', `/api/admin/articles/${id}`);
+            if (result.status === 'success') {
+                alert('Artikel dihapus');
+                loadArticles();
+            } else {
+                alert('Error: ' + (result.message || 'Gagal'));
+            }
+        }
+
+        // Form submission
+        document.getElementById('article-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('article-id').value;
+            const body = {
+                title: document.getElementById('article-title').value,
+                slug: document.getElementById('article-slug').value,
+                category: document.getElementById('article-category').value,
+                content: document.getElementById('article-content').value,
+                status: document.getElementById('article-status').value
+            };
+
+            let result;
+            if (id) {
+                result = await api('PUT', `/api/admin/articles/${id}`, body);
+            } else {
+                result = await api('POST', '/api/admin/articles', body);
+            }
+
+            if (result.status === 'success') {
+                alert('Artikel disimpan');
+                hideForm();
+                loadArticles();
+            } else {
+                alert('Error: ' + (result.message || 'Gagal'));
+            }
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadArticles();
+        });
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                window.location.href = '/admin/logout';
+            }
+        }
+    </script>
+</body>
+</html>
