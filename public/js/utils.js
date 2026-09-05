@@ -9,8 +9,28 @@ const CONFIG = {
   masjidName: 'Masjid Al Karomah',
   whatsappPhone: '[NOMOR_WHATSAPP_AKAN_DIUPDATE]',
   email: 'admin@alkaromah.com',
-  clerkPublishableKey: 'pk_test_cG9zc2libGUta2luZ2Zpc2gtNi5jbGVyay5hY2NvdW50cy5kZXYk'
+  clerkPublishableKey: '',
+  clerkFrontendApi: ''
 };
+
+// Fetch config from server
+(async function loadConfig() {
+  try {
+    const res = await fetch('/api/config');
+    const data = await res.json();
+    if (data.clerkPublishableKey) {
+      CONFIG.clerkPublishableKey = data.clerkPublishableKey;
+    }
+    if (data.clerkFrontendApi) {
+      CONFIG.clerkFrontendApi = data.clerkFrontendApi;
+    }
+    if (data.appName) {
+      CONFIG.masjidName = data.appName;
+    }
+  } catch (err) {
+    console.warn('Failed to load config, using defaults');
+  }
+})();
 
 // ---- CLERK AUTH ----
 

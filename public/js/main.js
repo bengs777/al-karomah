@@ -217,8 +217,8 @@ if (document.querySelectorAll('[data-filter]').length > 0 && document.querySelec
   loadGallery();
 }
 
-// ---- UTILS.JS OVERRIDE ----
-// Fix Clerk publishable key
-if (typeof CONFIG !== 'undefined') {
-  CONFIG.clerkPublishableKey = 'pk_test_cG9zc2libGUta2luZ2Zpc2gtNi5jbGVyay5hY2NvdW50cy5kZXYk';
+// ---- CLERK PUBLISHABLE KEY ----
+// Config is loaded from /api/config in utils.js - no hardcoded keys here
+if (typeof CONFIG !== 'undefined' && CONFIG.clerkPublishableKey) {
+  // CONFIG.clerkPublishableKey is set by utils.js
 }

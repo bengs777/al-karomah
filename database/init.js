@@ -5,6 +5,9 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
+
+const SALT_ROUNDS = 10;
 
 // Use /tmp on Vercel (filesystem is read-only except /tmp)
 // For local development, use the project database directory
@@ -223,22 +226,28 @@ function initDatabase() {
 
 // Insert default data
 function insertDefaultData() {
-  // Default admin user
-  const adminUser = {
-    username: 'admin',
-    email: process.env.ADMIN_EMAIL || 'admin@alkaromah.com',
-    password: process.env.ADMIN_PASSWORD || 'admin123', // Hash this in production!
-    role: 'admin'
-  };
-
-  db.run(
-    'INSERT OR IGNORE INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-    [adminUser.username, adminUser.email, adminUser.password, adminUser.role],
-    (err) => {
-      if (err) console.error('Error inserting admin user:', err);
-      else console.log('✓ Default admin user created');
+  bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', SALT_ROUNDS, (err, hashedPassword) => {
+    if (err) {
+      console.error('Error hashing password:', err);
+      hashedPassword = process.env.ADMIN_PASSWORD || 'admin123';
     }
-  );
+    
+    const adminUser = {
+      username: 'admin',
+      email: process.env.ADMIN_EMAIL || 'admin@alkaromah.com',
+      password: hashedPassword,
+      role: 'admin'
+    };
+
+    db.run(
+      'INSERT OR IGNORE INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+      [adminUser.username, adminUser.email, adminUser.password, adminUser.role],
+      (err) => {
+        if (err) console.error('Error inserting admin user:', err);
+        else console.log('Default admin user created (hashed password)');
+      }
+    );
+  });
 
   // Default services
   const services = [
@@ -279,12 +288,12 @@ function insertDefaultData() {
     );
   });
 
-  console.log('\n✅ Database initialization complete!');
+  console.log('\n Database initialization complete!');
   console.log('\nDefault Admin Credentials:');
-  console.log('Username:', adminUser.username);
-  console.log('Email:', adminUser.email);
-  console.log('Password:', adminUser.password);
-  console.log('\n⚠️  IMPORTANT: Change these credentials in production!\n');
+  console.log('Username: admin');
+  console.log('Email:', process.env.ADMIN_EMAIL || 'admin@alkaromah.com');
+  console.log('Password: (hashed with bcrypt)');
+  console.log('\n  IMPORTANT: Update ADMIN_PASSWORD in .env before production!\n');
 }
 
 // Export database connection
