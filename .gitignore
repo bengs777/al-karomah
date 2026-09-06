@@ -3,4 +3,4 @@ node_modules/
 *.db
 database/*.db
 .vercel
-vercel.json
+#vercel.json
