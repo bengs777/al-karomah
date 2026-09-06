@@ -35,10 +35,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+} catch (err) {
+  console.warn("Gagal membuat folder uploads (biasa terjadi di Vercel Serverless):", err.message);
+}
 
 const certificatesDir = path.join(__dirname, 'public', 'certificates');
-if (!fs.existsSync(certificatesDir)) fs.mkdirSync(certificatesDir, { recursive: true });
+try {
+  if (!fs.existsSync(certificatesDir)) fs.mkdirSync(certificatesDir, { recursive: true });
+} catch (err) {
+  console.warn("Gagal membuat folder certificates (biasa terjadi di Vercel Serverless):", err.message);
+}
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -74,7 +82,7 @@ app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
+  destination: (req, file, cb) => cb(null, '/tmp'),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 const upload = multer({ storage });
