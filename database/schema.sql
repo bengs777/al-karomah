@@ -196,17 +196,24 @@ CREATE TABLE IF NOT EXISTS sunnah_articles (
   slug TEXT UNIQUE NOT NULL,
   excerpt TEXT,
   content TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('fiqih_ibadah', 'akhlak', 'aqidah', 'sirah', 'muamalah')),
+  category TEXT NOT NULL CHECK (category IN ('fiqih_ibadah', 'akhlak', 'aqidah', 'sirah', 'muamalah', 'tarikh', 'adab')),
   subcategory TEXT,
   author TEXT DEFAULT 'Tim Masjid Al Karomah',
   featured_image TEXT,
   source_dalil TEXT,
+  sanad TEXT,
   reading_time INTEGER DEFAULT 5,
   views INTEGER DEFAULT 0,
   is_published BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Add columns if not exist (for migration safety)
+ALTER TABLE sunnah_articles ADD COLUMN IF NOT EXISTS sanad TEXT;
+ALTER TABLE sunnah_articles DROP CONSTRAINT IF EXISTS sunnah_articles_category_check;
+ALTER TABLE sunnah_articles ADD CONSTRAINT sunnah_articles_category_check 
+  CHECK (category IN ('fiqih_ibadah', 'akhlak', 'aqidah', 'sirah', 'muamalah', 'tarikh', 'adab'));
 
 -- ============================================
 -- 14. DONATION HISTORY (QRIS)

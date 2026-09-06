@@ -1,0 +1,30 @@
+[
+  {
+    "name": "WhatsApp Masjid",
+    "type": "whatsapp",
+    "url": "https://wa.me/6285724419648",
+    "icon": "whatsapp",
+    "is_active": true
+  },
+  {
+    "name": "Instagram Al Karomah",
+    "type": "instagram",
+    "url": "https://instagram.com/masjid.alkaromah",
+    "icon": "instagram",
+    "is_active": true
+  },
+  {
+    "name": "Facebook Masjid",
+    "type": "facebook",
+    "url": "https://facebook.com/masjid.alkaromah",
+    "icon": "facebook",
+    "is_active": true
+  },
+  {
+    "name": "YouTube Kabar Buntu",
+    "type": "youtube",
+    "url": "https://youtube.com/@kabarbuntu?si=Lt9rbACCLZc5M2rJ",
+    "icon": "youtube",
+    "is_active": true
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "title": "Pengajian Ahad Wage",
+    "slug": "pengajian-ahad-wage",
+    "description": "Pengajian rutin setiap Ahad Wage dengan kajian kitab kuning atau tafsir Al-Quran. Dibimbing oleh ustadz yang berpengalaman dalam ilmu agama.",
+    "category": "pengajian",
+    "date": "2026-01-04",
+    "time": "19:30",
+    "location": "Masjid Al Karomah",
+    "speaker": "Ustadz H. Muhammad Amin, Lc",
+    "status": "active"
+  },
+  {
+    "title": "Kajian Kitab Bulanan",
+    "slug": "kajian-kitab-bulanan",
+    "description": "Kajian kitab kuning rutin setiap bulan. Mengupas tuntas ilmu agama dari kitab-kitab muktabar ulama salaf.",
+    "category": "pengajian",
+    "date": "2026-01-10",
+    "time": "20:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Ustadz KH. Mahmud Fauzi, MA",
+    "status": "active"
+  },
+  {
+    "title": "Sholat Jumat Berjamaah + Kultum",
+    "slug": "sholat-jumat",
+    "description": "Sholat Jumat berjamaah dengan khutbah yang berisi tausiyah dan ceramah agama. Dipimpin oleh imam masjid.",
+    "category": "ibadah",
+    "date": "2026-01-03",
+    "time": "12:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Imam Masjid Al Karomah",
+    "status": "active"
+  },
+  {
+    "title": "Pengajian Ibu-Ibu",
+    "slug": "pengajian-ibu-ibu",
+    "description": "Pengajian rutin untuk muslimah dengan materi akhlak, fiqih wanita, dan sirah nabawiyah. Dipimpin oleh nyai atau ustadzah.",
+    "category": "pengajian",
+    "date": "2026-01-07",
+    "time": "14:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Ustadzah Hj. Siti Aminah, S.Ag",
+    "status": "active"
+  },
+  {
+    "title": "TPA / TPQ Al-Quran",
+    "slug": "tpa-tpq",
+    "description": "Taman Pendidikan Al-Quran untuk anak-anak. Belajar baca tulis Al-Quran, tajwid, dan hafalan surah-surah pendek.",
+    "category": "pendidikan",
+    "date": "2026-01-06",
+    "time": "16:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Pengajar TPA",
+    "status": "active"
+  },
+  {
+    "title": "Istighotsah dan Sholawat",
+    "slug": "istighotsah-sholawat",
+    "description": "Kajian malam dengan pembacaan istighotsah, sholawat, dan dzikir bersama. Menyatukan hati dalam ibadah.",
+    "category": "dzikir",
+    "date": "2026-01-09",
+    "time": "19:30",
+    "location": "Masjid Al Karomah",
+    "speaker": "Imam Masjid",
+    "status": "active"
+  },
+  {
+    "title": "Pengajian Remaja Masjid",
+    "slug": "pengajian-remaja",
+    "description": "Kajian untuk generasi muda tentang akidah, akhlak, dan подготовка menuju pernikahan sesuai syariat.",
+    "category": "pengajian",
+    "date": "2026-01-11",
+    "time": "19:30",
+    "location": "Masjid Al Karomah",
+    "speaker": "Ustadz H. Hasan Basri, S.Pd.I",
+    "status": "active"
+  },
+  {
+    "title": "Kajian Tafsir Al-Quran",
+    "slug": "kajian-tafsir",
+    "description": "Kajian tafsir Al-Quran setiap malam Selasa. Memahami kandungan ayat-ayat Al-Quran dengan pendekatan ilmu tafsir.",
+    "category": "pengajian",
+    "date": "2026-01-14",
+    "time": "20:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Ustadz DR. Abdullah Zaini, M.Th.I",
+    "status": "active"
+  },
+  {
+    "title": "Pengajian Dhuha",
+    "slug": "pengajian-dhuha",
+    "description": "Pengajian sunnah setiap Ahad pagi setelah sholat Dhuha. Membahas hadits-hadits pilihan dari Shahih Bukhari Muslim.",
+    "category": "pengajian",
+    "date": "2026-01-05",
+    "time": "07:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Ustadz H. Abdul Ghoni, S.HI",
+    "status": "active"
+  },
+  {
+    "title": "Bakti Sosial dan Santunan Yatim",
+    "slug": "bakti-sosial",
+    "description": "Kegiatan sosial setiap bulan Ramadhan dan hari besar Islam. Membagi paket makanan, pakaian, dan santunan untuk anak yatim.",
+    "category": "sosial",
+    "date": "2026-01-20",
+    "time": "09:00",
+    "location": "Masjid Al Karomah",
+    "speaker": "Panitia Bakti Sosial",
+    "status": "active"
+  }
+]

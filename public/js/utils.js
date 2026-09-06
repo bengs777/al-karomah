@@ -7,8 +7,8 @@ const CONFIG = {
   baseUrl: window.location.origin,
   apiUrl: '/api',
   masjidName: 'Masjid Al Karomah',
-  whatsappPhone: '6281234567890',
-  email: 'admin@alkaromah.com',
+  whatsappPhone: '6285724419648',
+  email: 'masjidalkaromahdesabuntu@gmail.com',
   clerkPublishableKey: '',
   clerkFrontendApi: ''
 };

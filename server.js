@@ -403,11 +403,55 @@ app.get('/api/activities/archive', async (req, res) => {
   res.json({ status: 'success', months });
 });
 
-app.get('/api/prayer-times', (req, res) => res.json({
-  date: new Date().toISOString().split('T')[0],
-  location: 'Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka',
-  times: { subuh: '03:45', dzuhur: '12:15', ashar: '15:45', maghrib: '18:30', isya: '19:50', jumat: '13:00' }
-}));
+app.get('/api/prayer-times', async (req, res) => {
+  const city = req.query.city || 'majalengka';
+  const cityCoords = {
+    majalengka: { lat: -6.68, lng: 108.27 },
+    cirebon: { lat: -6.73, lng: 108.55 },
+    bandung: { lat: -6.90, lng: 107.61 },
+    jakarta: { lat: -6.21, lng: 106.85 },
+    sumedang: { lat: -6.83, lng: 107.93 },
+    indramayu: { lat: -6.32, lng: 108.32 }
+  };
+  const coords = cityCoords[city] || cityCoords.majalengka;
+  const date = new Date().toISOString().split('T')[0];
+  try {
+    const response = await fetch(`https://api.aladhan.com/v1/timings/${date}?latitude=${coords.lat}&longitude=${coords.lng}&method=2&school=1`);
+    const json = await response.json();
+    if (json.code === 200 && json.data && json.data.timings) {
+      const t = json.data.timings;
+      const locName = city.charAt(0).toUpperCase() + city.slice(1);
+      res.json({
+        status: 'success',
+        date: json.data.date.readable,
+        location: `${locName}, Indonesia`,
+        gregorian: json.data.date.gregorian,
+        hijri: json.data.date.hijri,
+        times: {
+          subuh: t.Fajr,
+          dzuhur: t.Dhuhr,
+          ashar: t.Asr,
+          maghrib: t.Maghrib,
+          isya: t.Isha,
+          jumat: t.Dhuhr,
+          imsak: t.Imsak,
+          terbit: t.Sunrise,
+          zawal: t.Sunset
+        },
+        source: 'Aladhan.com API'
+      });
+    } else {
+      throw new Error('Invalid API response');
+    }
+  } catch (err) {
+    res.json({
+      status: 'fallback',
+      date: date,
+      location: 'Desa Buntu, Majalengka, Indonesia',
+      times: { subuh: '03:45', dzuhur: '12:15', ashar: '15:45', maghrib: '18:30', isya: '19:50', jumat: '12:15', imsak: '03:35', terbit: '05:45', zawal: '12:00' }
+    });
+  }
+});
 
 app.get('/api/services', async (req, res) => {
   const { data: rows, error } = await supabase.from('services').select('*').eq('status', 'active').order('id', { ascending: true });
