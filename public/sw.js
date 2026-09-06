@@ -1,5 +1,5 @@
-const CACHE_NAME = 'alkaromah-v2';
-const AUDIO_CACHE = 'alkaromah-audio-v1';
+const CACHE_NAME = 'alkaromah-v3';
+const AUDIO_CACHE = 'alkaromah-audio-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -10,6 +10,7 @@ const STATIC_ASSETS = [
   '/artikel',
   '/artikel-sunnah',
   '/quran',
+  '/quran/read',
   '/zakat',
   '/donasi',
   '/media',
@@ -31,12 +32,20 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      return Promise.allSettled(
+        STATIC_ASSETS.map(url => 
+          fetch(url, { mode: 'cors' })
+            .then(response => {
+              if (response.ok) return cache.put(url, response);
+            })
+            .catch(err => console.warn('[SW] Failed to cache:', url, err.message))
+        )
+      );
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -55,6 +64,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+  
+  if (!url.protocol.startsWith('http')) return;
   
   if (url.hostname === 'cdn.islamic.network' && request.destination === 'audio') {
     event.respondWith(
@@ -109,7 +120,9 @@ self.addEventListener('message', (event) => {
   }
   if (event.data === 'clearAudioCache') {
     caches.delete(AUDIO_CACHE).then(() => {
-      event.ports[0].postMessage({ success: true });
+      if (event.ports && event.ports[0]) {
+        event.ports[0].postMessage({ success: true });
+      }
     });
   }
 });

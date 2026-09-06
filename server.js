@@ -288,12 +288,16 @@ app.get('/artikel-sunnah/:slug', (req, res) => {
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
-const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'artikel-sunnah', 'zakat', 'media', 'kontak', 'saran'];
+const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'artikel-sunnah', 'zakat', 'media', 'kontak', 'saran', 'quran', 'live'];
 pages.forEach(page => {
   app.get(`/${page}`, (req, res) => res.sendFile(path.join(__dirname, `public/${page}.html`), (err) => {
     if (err) res.status(404).send(`<h1>Halaman ${page} tidak ditemukan</h1>`);
   }));
 });
+
+app.get('/quran/read', (req, res) => res.sendFile(path.join(__dirname, 'public/quran/read.html'), (err) => {
+  if (err) res.status(404).send('<h1>Halaman tidak ditemukan</h1>');
+}));
 
 app.get('/api/test', (req, res) => res.json({ status: 'ok', message: 'Website Masjid Al Karomah API', version: '1.0.0' }));
 
