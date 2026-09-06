@@ -61,7 +61,7 @@ if (document.getElementById('donation-form')) {
         // Open WhatsApp
         const message = `Halo, saya ingin mengirim pesan melalui website:\nNama: ${data.name}\nEmail: ${data.email}\nNo. WhatsApp: ${data.phone}\nSubjek: ${data.subject}\nPesan: ${data.message}`;
         setTimeout(() => {
-          window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+          window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(message)}`, '_blank');
         }, 1000);
       } else {
         Notification.error(result.message || 'Gagal mengirim pesan');
@@ -117,7 +117,7 @@ if (document.querySelectorAll('[data-filter]').length > 0 && document.querySelec
               <p class="activity-description">${act.description || ''}</p>
               <div class="activity-footer">
                 <a href="/kegiatan/${act.slug || act.id}" class="btn btn-primary btn-sm">Detail</a>
-                <a href="https://wa.me/" class="btn btn-primary-outline btn-sm">Daftar</a>
+                <a href="https://wa.me/6281234567890" class="btn btn-primary-outline btn-sm">Daftar</a>
               </div>
             </div>
           </div>

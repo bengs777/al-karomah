@@ -13,8 +13,8 @@ const rateLimit = require('express-rate-limit');
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || '6281234567890';
 const INSTAGRAM_URL = process.env.INSTAGRAM_URL || 'https://instagram.com/masjidalkaromah';
-const FACEBOOK_URL = process.env.FACEBOOK_URL || 'https://facebook.com/masjidalkaromah';
-const YOUTUBE_URL = process.env.YOUTUBE_URL || 'https://youtube.com/@MasjidAlKaromah';
+const FACEBOOK_URL = process.env.FACEBOOK_URL || 'https://facebook.com/groups/1131267470932783/';
+const YOUTUBE_URL = process.env.YOUTUBE_URL || 'https://youtube.com/@kabarbuntu?si=Lt9rbACCLZc5M2rJ';
 
 const SESSION_SECRET = process.env.SESSION_SECRET;
 if (!SESSION_SECRET) {
