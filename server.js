@@ -34,19 +34,7 @@ console.log('Connected to Supabase:', supabaseUrl);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-try {
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-} catch (err) {
-  console.warn("Gagal membuat folder uploads (biasa terjadi di Vercel Serverless):", err.message);
-}
-
-const certificatesDir = path.join(__dirname, 'public', 'certificates');
-try {
-  if (!fs.existsSync(certificatesDir)) fs.mkdirSync(certificatesDir, { recursive: true });
-} catch (err) {
-  console.warn("Gagal membuat folder certificates (biasa terjadi di Vercel Serverless):", err.message);
-}
+const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'uploads';
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -81,11 +69,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, '/tmp'),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 function requireAdmin(req, res, next) {
   if (req.session && req.session.adminId) return next();
@@ -186,9 +171,30 @@ app.post('/api/user/request-sertifikat', requireAuth(), upload.single('payment_p
   const { name, whatsapp, address, qurban_name, animal_type, portion_count, qurban_year, behalf_of, notes } = req.body;
   if (!name || !qurban_name || !animal_type || !portion_count || !qurban_year) return res.status(400).json({ error: 'Data tidak lengkap' });
 
+  let fileUrl = null;
+  if (req.file) {
+    const filePath = `${Date.now()}_${req.file.originalname}`;
+    const { data, error: uploadErr } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+
+    if (uploadErr) {
+      console.error('Error uploading to Supabase:', uploadErr);
+      return res.status(500).json({ error: 'Gagal upload file' });
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(filePath);
+    fileUrl = publicUrlData.publicUrl;
+  }
+
   const { data, error } = await supabase.from('service_requests').insert([{
     clerk_user_id: req.auth.userId, service_type: 'sertifikat_kurban', name, whatsapp, address, qurban_name, animal_type, portion_count: parseInt(portion_count), qurban_year, behalf_of, notes,
-    payment_proof: req.file ? `/uploads/${req.file.filename}` : null, status: 'pending'
+    payment_proof: fileUrl, status: 'pending'
   }]).select().single();
 
   if (error) return res.status(500).json({ error: 'Gagal menyimpan permintaan' });
@@ -199,8 +205,10 @@ app.get('/api/user/certificate/:id/download', requireAuth(), async (req, res) =>
   const { data: cert, error } = await supabase.from('qurban_certificates').select('*, service_requests(status)').eq('id', req.params.id).eq('clerk_user_id', req.auth.userId).single();
   if (error || !cert) return res.status(404).json({ error: 'Sertifikat tidak ditemukan' });
   if (cert.service_requests?.status !== 'issued') return res.status(400).json({ error: 'Sertifikat belum diterbitkan' });
-  const pdfPath = path.join(__dirname, cert.certificate_pdf_url);
-  res.download(pdfPath, `Sertifikat_Kurban_${cert.certificate_number}.pdf`);
+  const { data: publicUrlData } = supabase.storage
+    .from(STORAGE_BUCKET)
+    .getPublicUrl(cert.certificate_pdf_url);
+  res.redirect(publicUrlData.publicUrl);
 });
 
 app.get('/api/admin/requests', requireAdmin, async (req, res) => {
@@ -233,15 +241,26 @@ app.post('/api/admin/requests/:id/issue', requireAdmin, async (req, res) => {
 
   const certificateNumber = `QURBAN-${new Date().getFullYear()}-${String(row.id).padStart(5, '0')}`;
   const pdfFilename = `certificate_${certificateNumber}.pdf`;
-  const pdfPath = path.join(__dirname, 'public', 'certificates', pdfFilename);
+  const pdfPathInBucket = `certificates/${pdfFilename}`;
 
   const pdfContent = `MASJID AL KAROMAH\nSertifikat Kurban\n\nNomor Sertifikat: ${certificateNumber}\n\nDiberikan kepada: ${row.qurban_name}\n\nJenis Hewan: ${row.animal_type}\nJumlah Bagian: ${row.portion_count}\nTahun Kurban: ${row.qurban_year}\nAtas Nama: ${row.behalf_of || 'Pribadi'}\n\nTanggal Penerbitan: ${new Date().toLocaleDateString('id-ID')}\n\n_____\nKetua DKM Masjid Al Karomah`;
-  fs.writeFileSync(pdfPath, pdfContent);
+
+  const { error: uploadErr } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(pdfPathInBucket, Buffer.from(pdfContent), {
+      contentType: 'application/pdf',
+      upsert: false
+    });
+
+  if (uploadErr) {
+    console.error('Error uploading PDF to Supabase:', uploadErr);
+    return res.status(500).json({ error: 'Gagal menyimpan sertifikat' });
+  }
 
   const { data: cert, certError } = await supabase.from('qurban_certificates').insert([{
     request_id: row.id, clerk_user_id: row.clerk_user_id, certificate_number: certificateNumber, qurban_name: row.qurban_name,
     animal_type: row.animal_type, portion_count: row.portion_count, qurban_year: row.qurban_year, behalf_of: row.behalf_of,
-    certificate_pdf_url: `/certificates/${pdfFilename}`, issued_at: new Date().toISOString()
+    certificate_pdf_url: pdfPathInBucket, issued_at: new Date().toISOString()
   }]).select().single();
 
   if (!certError) {
