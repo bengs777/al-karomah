@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Artikel Sunnah - Masjid Al Karomah">
+    <title>Artikel Sunnah - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        .article-card { background:white; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.08); transition:all 0.3s; }
+        .article-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.12); }
+        .article-thumb { height:180px; background:linear-gradient(135deg,#10b981,#34d399); display:flex; align-items:center; justify-content:center; color:white; font-size:3.5rem; }
+        .article-body { padding:1.5rem; }
+        .article-category { display:inline-block; padding:4px 12px; background:#d1fae5; color:#065f46; border-radius:9999px; font-size:12px; font-weight:600; margin-bottom:0.75rem; }
+        .filter-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem; }
+        .filter-tab { padding:8px 16px; background:#f3f4f6; border:none; border-radius:9999px; cursor:pointer; font-size:14px; transition:all 0.2s; color:#374151; }
+        .filter-tab:hover { background:#e5e7eb; }
+        .filter-tab.active { background:#10b981; color:white; }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/artikel-sunnah" class="active">Artikel Sunnah</a></li>
+                <li><a href="/zakat">Zakat</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/saran">Saran</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section style="background:linear-gradient(rgba(15,23,42,0.7),rgba(15,23,42,0.7)),url('/images/Masjid.png') center/cover no-repeat;color:white;padding:calc(70px + 3rem) 1rem 3rem;">
+        <div class="container">
+            <h1>📚 Artikel Sunnah</h1>
+            <p style="color:#e5e7eb;">Pelajaran islami berdasarkan Al-Quran &amp; Hadits Shahih — Manhaj Ahlussunnah waljama'ah</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-cat="all">Semua</button>
+                <button class="filter-tab" data-cat="fiqih_ibadah">🕌 Fiqih Ibadah</button>
+                <button class="filter-tab" data-cat="akhlak">💎 Akhlak</button>
+                <button class="filter-tab" data-cat="aqidah">⭐ Aqidah</button>
+                <button class="filter-tab" data-cat="sirah">📜 Sirah</button>
+                <button class="filter-tab" data-cat="muamalah">💼 Muamalah</button>
+            </div>
+
+            <div style="margin-bottom:2rem;">
+                <input type="text" id="article-search" placeholder="🔍 Cari artikel..."
+                       style="width:100%;max-width:400px;padding:0.75rem 1rem;border:1px solid #e5e7eb;border-radius:8px;">
+            </div>
+
+            <div id="articles-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
+                <p style="color:#6b7280;">Memuat artikel...</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                    <li><a href="/zakat">Zakat</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/saran">Saran</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/6281234567890" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <script>
+    let allArticles = [];
+    let activeCategory = 'all';
+
+    async function loadArticles() {
+      try {
+        const res = await fetch('/api/articles/sunnah?category=' + activeCategory);
+        const data = await res.json();
+        if (data.status === 'success') {
+          allArticles = data.data || [];
+          renderArticles(allArticles);
+        }
+      } catch (e) {
+        console.error(e);
+        document.getElementById('articles-grid').innerHTML = '<p style="color:#ef4444;">Gagal memuat artikel.</p>';
+      }
+    }
+
+    function renderArticles(articles) {
+      const grid = document.getElementById('articles-grid');
+      if (!articles.length) {
+        grid.innerHTML = '<p style="color:#6b7280;grid-column:1/-1;text-align:center;padding:2rem;">Belum ada artikel untuk kategori ini.</p>';
+        return;
+      }
+      const categoryEmoji = { fiqih_ibadah: '🕌', akhlak: '💎', aqidah: '⭐', sirah: '📜', muamalah: '💼' };
+      const categoryLabel = { fiqih_ibadah: 'FIQIH IBADAH', akhlak: 'AKHLAK', aqidah: 'AQIDAH', sirah: 'SIRAH', muamalah: 'MUAMALAH' };
+      grid.innerHTML = articles.map(a => `
+        <div class="article-card">
+          <div class="article-thumb">${categoryEmoji[a.category] || '📖'}</div>
+          <div class="article-body">
+            <span class="article-category">${categoryLabel[a.category] || (a.category || '').toUpperCase()}</span>
+            <h3 style="margin:0 0 0.5rem 0;font-size:1.1rem;line-height:1.4;">${a.title}</h3>
+            <p style="color:#6b7280;font-size:14px;margin:0 0 1rem 0;line-height:1.5;">${a.excerpt || (a.content || '').replace(/<[^>]+>/g, '').substring(0, 120) + '...'}</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <small style="color:#9ca3af;">⏱️ ${a.reading_time || 5} min baca</small>
+              <a href="/artikel-sunnah/${a.slug}" style="color:#10b981;font-weight:600;text-decoration:none;">Baca →</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        activeCategory = tab.dataset.cat;
+        loadArticles();
+      });
+    });
+
+    document.getElementById('article-search').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allArticles.filter(a => a.title.toLowerCase().includes(term));
+      renderArticles(filtered);
+    });
+
+    loadArticles();
+    </script>
+</body>
+</html>

@@ -215,6 +215,78 @@ async function initDatabase() {
           created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
       `
+    },
+    {
+      name: 'sunnah_articles',
+      sql: `
+        CREATE TABLE IF NOT EXISTS sunnah_articles (
+          id SERIAL PRIMARY KEY,
+          title TEXT NOT NULL,
+          slug TEXT UNIQUE NOT NULL,
+          excerpt TEXT,
+          content TEXT NOT NULL,
+          category TEXT NOT NULL CHECK (category IN ('fiqih_ibadah', 'akhlak', 'aqidah', 'sirah', 'muamalah')),
+          subcategory TEXT,
+          author TEXT DEFAULT 'Tim Masjid Al Karomah',
+          featured_image TEXT,
+          source_dalil TEXT,
+          reading_time INTEGER DEFAULT 5,
+          views INTEGER DEFAULT 0,
+          is_published BOOLEAN DEFAULT true,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    },
+    {
+      name: 'donation_history',
+      sql: `
+        CREATE TABLE IF NOT EXISTS donation_history (
+          id SERIAL PRIMARY KEY,
+          transaction_id TEXT UNIQUE,
+          donor_name TEXT NOT NULL,
+          donor_phone TEXT,
+          donor_email TEXT,
+          amount INTEGER NOT NULL,
+          payment_method TEXT DEFAULT 'qris',
+          qris_reference TEXT,
+          status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed', 'expired')),
+          program TEXT,
+          notes TEXT,
+          paid_at TIMESTAMP WITH TIME ZONE,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    },
+    {
+      name: 'zakat_history',
+      sql: `
+        CREATE TABLE IF NOT EXISTS zakat_history (
+          id SERIAL PRIMARY KEY,
+          user_email TEXT,
+          user_name TEXT,
+          zakat_type TEXT NOT NULL CHECK (zakat_type IN ('fitrah', 'mal', 'penghasilan')),
+          calculation_data JSONB,
+          total_zakat INTEGER,
+          notes TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    },
+    {
+      name: 'qris_settings',
+      sql: `
+        CREATE TABLE IF NOT EXISTS qris_settings (
+          id SERIAL PRIMARY KEY,
+          merchant_name TEXT DEFAULT 'Masjid Al Karomah',
+          qris_static_url TEXT,
+          qris_dynamic_api TEXT,
+          merchant_id TEXT,
+          api_key TEXT,
+          is_active BOOLEAN DEFAULT true,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
     }
   ];
 

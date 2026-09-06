@@ -276,7 +276,7 @@ app.post('/api/admin/requests/:id/issue', requireAdmin, async (req, res) => {
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
-const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'media', 'kontak', 'saran'];
+const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'artikel-sunnah', 'zakat', 'media', 'kontak', 'saran'];
 pages.forEach(page => {
   app.get(`/${page}`, (req, res) => res.sendFile(path.join(__dirname, `public/${page}.html`), (err) => {
     if (err) res.status(404).send(`<h1>Halaman ${page} tidak ditemukan</h1>`);
@@ -615,6 +615,249 @@ app.put('/api/admin/settings/:key', requireAdmin, async (req, res) => {
   const { error } = await supabase.from('settings').update({ value, updated_at: new Date().toISOString() }).eq('key', req.params.key);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Pengaturan disimpan' });
+});
+
+// ============================================
+// ARTIKEL SUNNAH
+// ============================================
+app.get('/api/articles/sunnah', async (req, res) => {
+  const { category, search } = req.query;
+  let query = supabase.from('sunnah_articles').select('*').eq('is_published', true);
+
+  if (category && category !== 'all') {
+    query = query.eq('category', category);
+  }
+  if (search) {
+    query = query.ilike('title', `%${search}%`);
+  }
+
+  query = query.order('created_at', { ascending: false });
+  const { data, error } = await query;
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', data: data || [] });
+});
+
+app.get('/api/articles/sunnah/:slug', async (req, res) => {
+  const { data, error } = await supabase
+    .from('sunnah_articles')
+    .select('*')
+    .eq('slug', req.params.slug)
+    .eq('is_published', true)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ status: 'error', message: 'Artikel tidak ditemukan' });
+  }
+
+  await supabase.from('sunnah_articles').update({ views: (data.views || 0) + 1 }).eq('id', data.id);
+
+  res.json({ status: 'success', data });
+});
+
+app.post('/api/admin/articles/sunnah', requireAdmin, async (req, res) => {
+  const { title, slug, content, category, subcategory, source_dalil, featured_image, excerpt } = req.body;
+  if (!title || !slug || !content || !category) {
+    return res.status(400).json({ status: 'error', message: 'Data tidak lengkap' });
+  }
+
+  const { data, error } = await supabase.from('sunnah_articles').insert([{
+    title, slug, content, category, subcategory: subcategory || null,
+    source_dalil: source_dalil || null, featured_image: featured_image || null,
+    excerpt: excerpt || null, is_published: true
+  }]).select().single();
+
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', message: 'Artikel berhasil ditambahkan', id: data.id });
+});
+
+app.delete('/api/admin/articles/sunnah/:id', requireAdmin, async (req, res) => {
+  const { error } = await supabase.from('sunnah_articles').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', message: 'Artikel dihapus' });
+});
+
+// ============================================
+// QRIS DONASI
+// ============================================
+app.get('/api/qris/info', async (req, res) => {
+  const { data, error } = await supabase
+    .from('qris_settings')
+    .select('*')
+    .eq('is_active', true)
+    .single();
+
+  if (error || !data) {
+    return res.json({
+      status: 'success',
+      data: {
+        merchant_name: process.env.QRIS_MERCHANT_NAME || 'Masjid Al Karomah',
+        qris_static_url: process.env.QRIS_IMAGE_URL || '/images/qris-masjid.png',
+        is_active: true
+      }
+    });
+  }
+  res.json({ status: 'success', data });
+});
+
+app.post('/api/qris/update', requireAdmin, async (req, res) => {
+  const { merchant_name, qris_static_url, is_active } = req.body;
+  const payload = {
+    merchant_name: merchant_name || 'Masjid Al Karomah',
+    qris_static_url: qris_static_url || null,
+    is_active: is_active !== false,
+    updated_at: new Date().toISOString()
+  };
+  const { data: existing } = await supabase.from('qris_settings').select('id').single();
+  let result;
+  if (existing) {
+    result = await supabase.from('qris_settings').update(payload).eq('id', existing.id);
+  } else {
+    result = await supabase.from('qris_settings').insert([payload]);
+  }
+  if (result.error) return res.status(500).json({ status: 'error', message: result.error.message });
+  res.json({ status: 'success', message: 'Pengaturan QRIS disimpan' });
+});
+
+app.post('/api/donations/qris', donationLimiter, async (req, res) => {
+  const { donor_name, donor_phone, donor_email, amount, program, notes } = req.body;
+
+  if (!donor_name || !amount || !program) {
+    return res.status(400).json({ status: 'error', message: 'Data tidak lengkap' });
+  }
+
+  const numAmount = parseInt(amount);
+  if (isNaN(numAmount) || numAmount < 10000) {
+    return res.status(400).json({ status: 'error', message: 'Nominal minimal Rp 10.000' });
+  }
+
+  const transactionId = `TRX-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  const { data, error } = await supabase.from('donation_history').insert([{
+    transaction_id: transactionId,
+    donor_name: sanitize(donor_name),
+    donor_phone: sanitize(donor_phone) || null,
+    donor_email: sanitize(donor_email) || null,
+    amount: numAmount,
+    payment_method: 'qris',
+    program: sanitize(program),
+    notes: sanitize(notes) || null,
+    status: 'pending'
+  }]).select().single();
+
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+
+  res.json({
+    status: 'success',
+    data: {
+      transaction_id: transactionId,
+      donation_id: data.id,
+      amount: numAmount,
+      message: 'Silakan scan QRIS untuk menyelesaikan pembayaran'
+    }
+  });
+});
+
+app.get('/api/admin/donations/qris', requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from('donation_history')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', data: data || [] });
+});
+
+app.put('/api/admin/donations/qris/:id', requireAdmin, async (req, res) => {
+  const { status } = req.body;
+  const update = { status: status || 'pending' };
+  if (status === 'paid') update.paid_at = new Date().toISOString();
+  const { error } = await supabase.from('donation_history').update(update).eq('id', req.params.id);
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', message: 'Status donasi diperbarui' });
+});
+
+// ============================================
+// ZAKAT CALCULATOR
+// ============================================
+const NISAB_EMAS_GRAM = 85;
+
+app.post('/api/zakat/calculate', async (req, res) => {
+  const { zakat_type, payload, user_email, user_name } = req.body;
+
+  if (!zakat_type) {
+    return res.status(400).json({ status: 'error', message: 'zakat_type wajib diisi' });
+  }
+
+  let totalZakat = 0;
+  let calculation = {};
+  let notes = '';
+
+  if (zakat_type === 'fitrah') {
+    const { jumlah_jiwa } = payload || {};
+    const jiwa = parseInt(jumlah_jiwa) || 0;
+    const harga_beras_per_kg = 15000;
+    const kg_per_jiwa = 2.5;
+    totalZakat = jiwa * kg_per_jiwa * harga_beras_per_kg;
+    calculation = { jiwa, harga_beras_per_kg, kg_per_jiwa, totalZakat };
+    notes = `Zakat fitrah untuk ${jiwa} jiwa (2.5 kg/jiwa × Rp ${harga_beras_per_kg.toLocaleString('id-ID')}/kg)`;
+  } else if (zakat_type === 'mal') {
+    const { saldo_tabungan, emas_perak, properti, hutang, harga_emas_per_gram } = payload || {};
+    const totalHarta = (parseInt(saldo_tabungan) || 0) +
+                       (parseInt(emas_perak) || 0) +
+                       (parseInt(properti) || 0);
+    const hutangTotal = parseInt(hutang) || 0;
+    const hartaBersih = totalHarta - hutangTotal;
+    const hargaEmas = parseInt(harga_emas_per_gram) || 1300000;
+    const nisab = NISAB_EMAS_GRAM * hargaEmas;
+    const wajibZakat = hartaBersih >= nisab;
+    if (wajibZakat) {
+      totalZakat = Math.floor(hartaBersih * 0.025);
+    }
+    calculation = {
+      totalHarta, hutangTotal, hartaBersih,
+      nisab, hargaEmas, nisab_gram: NISAB_EMAS_GRAM,
+      wajibZakat, totalZakat, presentase: '2.5%'
+    };
+    notes = wajibZakat
+      ? `Harta bersih Rp ${hartaBersih.toLocaleString('id-ID')} ≥ Nisab Rp ${nisab.toLocaleString('id-ID')}, WAJIB zakat 2.5%`
+      : `Harta bersih belum mencapai nisab (${NISAB_EMAS_GRAM} gram emas)`;
+  } else if (zakat_type === 'penghasilan') {
+    const { gaji_bulanan, penghasilan_lain, kebutuhan_pokok, harga_emas_per_gram } = payload || {};
+    const totalGaji = (parseInt(gaji_bulanan) || 0) + (parseInt(penghasilan_lain) || 0);
+    const kebutuhan = parseInt(kebutuhan_pokok) || 0;
+    const sisa = totalGaji - kebutuhan;
+    const hargaEmas = parseInt(harga_emas_per_gram) || 1300000;
+    const nisabBulanan = Math.floor((NISAB_EMAS_GRAM * hargaEmas) / 12);
+    const wajibZakat = sisa >= nisabBulanan;
+    if (wajibZakat) {
+      totalZakat = Math.floor(sisa * 0.025);
+    }
+    calculation = {
+      totalGaji, kebutuhan, sisa,
+      nisabBulanan, hargaEmas,
+      wajibZakat, totalZakat, presentase: '2.5%'
+    };
+    notes = wajibZakat
+      ? `Sisa penghasilan Rp ${sisa.toLocaleString('id-ID')} ≥ Nisab bulanan Rp ${nisabBulanan.toLocaleString('id-ID')}, WAJIB zakat 2.5%`
+      : `Sisa penghasilan belum mencapai nisab bulanan`;
+  } else {
+    return res.status(400).json({ status: 'error', message: 'jenis zakat tidak valid' });
+  }
+
+  if (user_email || user_name) {
+    await supabase.from('zakat_history').insert([{
+      user_email: sanitize(user_email) || null,
+      user_name: sanitize(user_name) || null,
+      zakat_type,
+      calculation_data: calculation,
+      total_zakat: totalZakat,
+      notes
+    }]);
+  }
+
+  res.json({
+    status: 'success',
+    data: { zakat_type, total_zakat: totalZakat, calculation, notes }
+  });
 });
 
 app.use((req, res) => res.status(404).json({ status: 'error', message: 'Halaman tidak ditemukan' }));

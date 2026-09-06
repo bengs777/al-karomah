@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kalkulator Zakat - Masjid Al Karomah">
+    <title>Kalkulator Zakat - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        .zakat-card { background:white; padding:1.5rem; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:1rem; }
+        .zakat-result { background:linear-gradient(135deg,#10b981,#34d399); color:white; padding:2rem; border-radius:12px; text-align:center; margin-top:1.5rem; }
+        .zakat-tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .zakat-tab { padding:10px 20px; background:#f3f4f6; border:none; border-radius:8px; cursor:pointer; color:#374151; }
+        .zakit-tab:hover { background:#e5e7eb; }
+        .zakat-tab.active { background:#10b981; color:white; }
+        .dalil-box { background:#fef3c7; padding:1rem; border-left:4px solid #f59e0b; border-radius:8px; margin:1rem 0; font-style:italic; color:#78350f; }
+        .form-group { margin-bottom:1rem; }
+        .form-label { display:block; margin-bottom:0.5rem; font-weight:600; color:#374151; }
+        .form-control { width:100%; padding:0.6rem 0.75rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.95rem; box-sizing:border-box; }
+        .form-control:focus { outline:none; border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,0.1); }
+        .btn-primary { background:#10b981; color:white; border:none; padding:0.75rem 1.5rem; border-radius:8px; cursor:pointer; font-weight:600; }
+        .btn-primary:hover { background:#059f74; }
+        .btn-primary:disabled { background:#9ca3af; cursor:not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                <li><a href="/zakat" class="active">Zakat</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/saran">Saran</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section style="background:linear-gradient(rgba(15,23,42,0.7),rgba(15,23,42,0.7)),url('/images/Masjid.png') center/cover no-repeat;color:white;padding:calc(70px + 3rem) 1rem 3rem;">
+        <div class="container">
+            <h1>💰 Kalkulator Zakat</h1>
+            <p style="color:#e5e7eb;">Hitung zakat Anda sesuai syariat Islam — Manhaj Salafush Shalih</p>
+        </div>
+    </section>
+
+    <div class="dalil-box container" style="margin-top:2rem;max-width:800px;">
+        <strong>📖 Dalil Zakat:</strong> "Dan dirikanlah shalat, tunaikanlah zakat..." (QS. Al-Baqarah: 43)
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div style="max-width:600px;margin:0 auto;">
+                <div class="zakat-tabs">
+                    <button class="zakat-tab active" data-type="fitrah">Zakat Fitrah</button>
+                    <button class="zakat-tab" data-type="mal">Zakat Mal</button>
+                    <button class="zakat-tab" data-type="penghasilan">Zakat Penghasilan</button>
+                </div>
+
+                <form id="zakat-form">
+                    <input type="hidden" id="zakat_type" name="zakat_type" value="fitrah">
+
+                    <div id="form-fitrah" class="zakat-card">
+                        <h3 style="margin-top:0;">Zakat Fitrah (per jiwa)</h3>
+                        <p style="color:#6b7280;font-size:14px;margin-bottom:1rem;">Dibayar setahun sekali saat Ramadhan. Sebaiknya 2.5 kg beras per jiwa.</p>
+                        <div class="form-group">
+                            <label class="form-label">Jumlah Jiwa (termasuk diri sendiri) *</label>
+                            <input type="number" name="jumlah_jiwa" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+
+                    <div id="form-mal" class="zakat-card" style="display:none;">
+                        <h3 style="margin-top:0;">Zakat Mal (Harta)</h3>
+                        <p style="color:#6b7280;font-size:14px;margin-bottom:1rem;">Nisab: 85 gram emas. Wajib zakat 2.5% jika harta ≥ nisab dan dimiliki 1 tahun (haul).</p>
+                        <div class="form-group">
+                            <label class="form-label">Saldo Tabungan (Rp)</label>
+                            <input type="number" name="saldo_tabungan" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nilai Emas/Perak (Rp)</label>
+                            <input type="number" name="emas_perak" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nilai Properti Investasi (Rp)</label>
+                            <input type="number" name="properti" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hutang / Kewajiban (Rp)</label>
+                            <input type="number" name="hutang" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Harga Emas Saat Ini per Gram (Rp)</label>
+                            <input type="number" name="harga_emas_per_gram" class="form-control" value="1300000">
+                        </div>
+                    </div>
+
+                    <div id="form-penghasilan" class="zakat-card" style="display:none;">
+                        <h3 style="margin-top:0;">Zakat Penghasilan (Gaji)</h3>
+                        <p style="color:#6b7280;font-size:14px;margin-bottom:1rem;">Nisab bulanan: setara 85 gram emas / 12. Wajib 2.5% dari sisa penghasilan.</p>
+                        <div class="form-group">
+                            <label class="form-label">Gaji Pokok per Bulan (Rp)</label>
+                            <input type="number" name="gaji_bulanan" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Penghasilan Lain (Rp)</label>
+                            <input type="number" name="penghasilan_lain" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Kebutuhan Pokok Bulanan (Rp)</label>
+                            <input type="number" name="kebutuhan_pokok" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Harga Emas Saat Ini per Gram (Rp)</label>
+                            <input type="number" name="harga_emas_per_gram" class="form-control" value="1300000">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nama (opsional, untuk menyimpan riwayat)</label>
+                        <input type="text" name="user_name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email (opsional)</label>
+                        <input type="email" name="user_email" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width:100%;padding:0.75rem;font-size:1rem;margin-top:0.5rem;">
+                        🧮 Hitung Zakat
+                    </button>
+                </form>
+
+                <div id="zakat-result" style="display:none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-light">
+        <div class="container">
+            <h2 style="text-align:center;margin-bottom:2rem;">📖 Panduan Zakat</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;">
+                <div class="zakat-card">
+                    <h4 style="margin-top:0;">🕌 Zakat Fitrah</h4>
+                    <p style="color:#6b7280;font-size:14px;margin-bottom:0;">Wajib bagi setiap muslim yang mampu. Dibayar saat Ramadhan, berupa makanan pokok seberat 2.5 kg per jiwa.</p>
+                </div>
+                <div class="zakat-card">
+                    <h4 style="margin-top:0;">💰 Zakat Mal</h4>
+                    <p style="color:#6b7280;font-size:14px;margin-bottom:0;">Wajib jika harta mencapai nisab (85 gram emas) dan haul (1 tahun). Besarannya 2.5% dari total harta.</p>
+                </div>
+                <div class="zakat-card">
+                    <h4 style="margin-top:0;">💼 Zakat Penghasilan</h4>
+                    <p style="color:#6b7280;font-size:14px;margin-bottom:0;">Dari penghasilan yang telah mencapai nisab. Jumhur ulama: 2.5% dari sisa setelah kebutuhan pokok.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                    <li><a href="/zakat">Zakat</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/saran">Saran</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/6281234567890" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <script>
+    const tabs = document.querySelectorAll('.zakat-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const type = tab.dataset.type;
+        document.getElementById('zakat_type').value = type;
+        document.querySelectorAll('[id^="form-"]').forEach(f => f.style.display = 'none');
+        document.getElementById('form-' + type).style.display = 'block';
+        document.getElementById('zakat-result').style.display = 'none';
+      });
+    });
+
+    document.getElementById('zakat-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const payload = {};
+      for (let [k, v] of formData.entries()) {
+        if (k !== 'user_name' && k !== 'user_email' && k !== 'zakat_type') {
+          payload[k] = v;
+        }
+      }
+      const resultDiv = document.getElementById('zakat-result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '<p>Menghitung...</p>';
+
+      try {
+        const res = await fetch('/api/zakat/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            zakat_type: document.getElementById('zakat_type').value,
+            payload,
+            user_name: formData.get('user_name'),
+            user_email: formData.get('user_email')
+          })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+          const d = json.data;
+          const calc = d.calculation;
+          let calcHTML = '';
+          if (d.zakat_type === 'fitrah') {
+            calcHTML = '<p>Jiwa: ' + calc.jiwa + ' orang × 2.5 kg × Rp ' + (calc.harga_beras_per_kg || 0).toLocaleString('id-ID') + '/kg</p>';
+          } else if (d.zakat_type === 'mal') {
+            calcHTML = '<p>Harta Total: Rp ' + (calc.totalHarta || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Hutang: Rp ' + (calc.hutangTotal || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Harta Bersih: Rp ' + (calc.hartaBersih || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Nisab (' + calc.nisab_gram + ' gram × Rp ' + (calc.hargaEmas || 0).toLocaleString('id-ID') + '): Rp ' + (calc.nisab || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Wajib Zakat: ' + (calc.wajibZakat ? '✅ Ya' : '❌ Tidak') + '</p>';
+          } else if (d.zakat_type === 'penghasilan') {
+            calcHTML = '<p>Total Gaji: Rp ' + (calc.totalGaji || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Kebutuhan Pokok: Rp ' + (calc.kebutuhan || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Sisa: Rp ' + (calc.sisa || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Nisab Bulanan: Rp ' + (calc.nisabBulanan || 0).toLocaleString('id-ID') + '</p>' +
+                       '<p>Wajib Zakat: ' + (calc.wajibZakat ? '✅ Ya' : '❌ Tidak') + '</p>';
+          }
+
+          resultDiv.innerHTML = '<div class="zakat-result">' +
+            '<h3 style="margin:0 0 1rem 0;">' + (d.total_zakat > 0 ? '💰 Zakat Anda' : '🎉 Alhamdulillah') + '</h3>' +
+            '<div style="font-size:2rem;font-weight:bold;margin-bottom:1rem;">' +
+              (d.total_zakat > 0 ? 'Rp ' + d.total_zakat.toLocaleString('id-ID') : 'Belum wajib zakat') +
+            '</div>' + calcHTML +
+            '<p style="margin-top:1rem;font-size:14px;">' + d.notes + '</p>' +
+            (d.total_zakat > 0 ? '<a href="/donasi" class="btn" style="background:white;color:#10b981;margin-top:1rem;display:inline-block;text-decoration:none;padding:0.5rem 1rem;border-radius:8px;">💰 Bayar Zakat Sekarang</a>' : '') +
+          '</div>';
+        } else {
+          resultDiv.innerHTML = '<p style="color:#ef4444;background:#fee2e2;padding:1rem;border-radius:8px;">❌ ' + json.message + '</p>';
+        }
+      } catch (err) {
+        resultDiv.innerHTML = '<p style="color:#ef4444;background:#fee2e2;padding:1rem;border-radius:8px;">❌ Gagal menghitung</p>';
+      }
+    });
+    </script>
+</body>
+</html>

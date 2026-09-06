@@ -188,6 +188,74 @@ CREATE TABLE IF NOT EXISTS suggestions (
 );
 
 -- ============================================
+-- 13. SUNNAH ARTICLES TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS sunnah_articles (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  excerpt TEXT,
+  content TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('fiqih_ibadah', 'akhlak', 'aqidah', 'sirah', 'muamalah')),
+  subcategory TEXT,
+  author TEXT DEFAULT 'Tim Masjid Al Karomah',
+  featured_image TEXT,
+  source_dalil TEXT,
+  reading_time INTEGER DEFAULT 5,
+  views INTEGER DEFAULT 0,
+  is_published BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- 14. DONATION HISTORY (QRIS)
+-- ============================================
+CREATE TABLE IF NOT EXISTS donation_history (
+  id SERIAL PRIMARY KEY,
+  transaction_id TEXT UNIQUE,
+  donor_name TEXT NOT NULL,
+  donor_phone TEXT,
+  donor_email TEXT,
+  amount INTEGER NOT NULL,
+  payment_method TEXT DEFAULT 'qris',
+  qris_reference TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed', 'expired')),
+  program TEXT,
+  notes TEXT,
+  paid_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- 15. ZAKAT HISTORY
+-- ============================================
+CREATE TABLE IF NOT EXISTS zakat_history (
+  id SERIAL PRIMARY KEY,
+  user_email TEXT,
+  user_name TEXT,
+  zakat_type TEXT NOT NULL CHECK (zakat_type IN ('fitrah', 'mal', 'penghasilan')),
+  calculation_data JSONB,
+  total_zakat INTEGER,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- 16. QRIS SETTINGS
+-- ============================================
+CREATE TABLE IF NOT EXISTS qris_settings (
+  id SERIAL PRIMARY KEY,
+  merchant_name TEXT DEFAULT 'Masjid Al Karomah',
+  qris_static_url TEXT,
+  qris_dynamic_api TEXT,
+  merchant_id TEXT,
+  api_key TEXT,
+  is_active BOOLEAN DEFAULT true,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
 -- INDEXES for performance
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_articles_status ON articles(status);
@@ -206,6 +274,12 @@ CREATE INDEX IF NOT EXISTS idx_social_links_type ON social_links(type);
 CREATE INDEX IF NOT EXISTS idx_social_links_active ON social_links(is_active);
 CREATE INDEX IF NOT EXISTS idx_suggestions_status ON suggestions(status);
 CREATE INDEX IF NOT EXISTS idx_suggestions_user_id ON suggestions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sunnah_articles_category ON sunnah_articles(category);
+CREATE INDEX IF NOT EXISTS idx_sunnah_articles_published ON sunnah_articles(is_published);
+CREATE INDEX IF NOT EXISTS idx_sunnah_articles_slug ON sunnah_articles(slug);
+CREATE INDEX IF NOT EXISTS idx_donation_history_status ON donation_history(status);
+CREATE INDEX IF NOT EXISTS idx_donation_history_txid ON donation_history(transaction_id);
+CREATE INDEX IF NOT EXISTS idx_zakat_history_type ON zakat_history(zakat_type);
 
 -- ============================================
 -- DISABLE Row Level Security (RLS) for service role access
@@ -224,3 +298,25 @@ ALTER TABLE service_requests DISABLE ROW LEVEL SECURITY;
 ALTER TABLE qurban_certificates DISABLE ROW LEVEL SECURITY;
 ALTER TABLE social_links DISABLE ROW LEVEL SECURITY;
 ALTER TABLE suggestions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sunnah_articles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE donation_history DISABLE ROW LEVEL SECURITY;
+ALTER TABLE zakat_history DISABLE ROW LEVEL SECURITY;
+ALTER TABLE qris_settings DISABLE ROW LEVEL SECURITY;
+
+-- ============================================
+-- SAMPLE DATA: Sunnah Articles
+-- ============================================
+INSERT INTO sunnah_articles (title, slug, excerpt, content, category, subcategory, source_dalil, reading_time) VALUES
+('Tata Cara Sholat Sesuai Sunnah Nabi ﷺ', 'tata-cara-sholat-sunnah', 'Pelajari langkah demi langkah sholat sesuai tuntunan Rasulullah ﷺ.', '<h2>Tata Cara Sholat</h2><p>Sholat adalah rukun Islam yang kedua. Berikut tata cara sholat sesuai sunnah Nabi Muhammad ﷺ:</p><h3>1. Takbiratul Ihram</h3><p>Berdiri tegak menghadap kiblat, angkat kedua tangan sejajar telinga atau bahu, lalu baca "Allahu Akbar".</p><h3>2. Doa Iftitah</h3><p>Membaca doa iftitah (al-Fatihah belum dibaca, baru di rakaat pertama).</p><h3>3. Al-Fatihah</h3><p>Setiap rakaat wajib membaca Al-Fatihah.</p><h3>4. Rukuk</h3><p>Bungkukkan badan dengan tangan di lutut, punggung rata.</p><h3>5. Sujud</h3><p>Sujud dengan tujuh anggota: dahi, kedua telapak tangan, kedua lutut, dan ujung kedua kaki.</p><p><em>Dalil: HR. Bukhari no. 6251 & Muslim no. 397</em></p>', 'fiqih_ibadah', 'sholat', 'HR. Bukhari no. 6251', 8),
+('Keutamaan Puasa Senin Kamis', 'keutamaan-puasa-senin-kamis', 'Puasa sunnah yang sangat dicintai Allah SWT.', '<h2>Puasa Senin-Kamis</h2><p>Rasulullah ﷺ bersabda: "Amal perbuatan manusia disajikan (kepada Allah) pada hari Senin dan Kamis, maka aku ingin amalku disajikan dalam keadaan aku sedang berpuasa."</p><p><strong>Hukum:</strong> Sunnah muakkad (sangat dianjurkan).</p><p><em>Dalil: HR. Tirmidzi no. 747, hasan shahih</em></p>', 'fiqih_ibadah', 'puasa', 'HR. Tirmidzi no. 747', 4),
+('Husnudzhan: Berbaik Sangka kepada Allah', 'husnudzhan-kepada-allah', 'Berbaik sangka adalah bagian dari ibadah hati yang agung.', '<h2>Husnudzhan kepada Allah</h2><p>Allah SWT berfirman: "Dan bertawakkallah kepada Allah Yang Maha Hidup lagi tidak akan mati, dan bertasbihlah dengan memuji-Nya. Dan cukuplah Dia Maha Mengetahui dosa-dosa hamba-Nya." (QS. Al-Furqan: 58)</p><p>Rasulullah ﷺ bersabda: "Bertakwalah kepada Allah di mana pun kamu berada. Iringilah keburukan dengan kebaikan, niscaya kebaikan itu akan menghapusnya. Dan pergaulilah manusia dengan akhlak yang mulia."</p>', 'akhlak', 'hati', 'QS. Al-Furqan: 58', 5),
+('Rukun Iman 6 Perkara', 'rukun-iman-6-perkara', 'Penjelasan 6 rukun iman dengan dalil Al-Quran dan Hadits.', '<h2>Rukun Iman</h2><p>Iman memiliki 6 rukun:</p><ol><li>Iman kepada Allah</li><li>Iman kepada Malaikat</li><li>Iman kepada Kitab-kitab Allah</li><li>Iman kepada Rasul-rasul Allah</li><li>Iman kepada Hari Akhir</li><li>Iman kepada Qada dan Qadar</li></ol><p><em>Dalil: HR. Muslim no. 35 dari Umar bin Khattab</em></p>', 'aqidah', 'rukun-iman', 'HR. Muslim no. 35', 6),
+('Sirah Nabawiyah: Masa Kenabian', 'sirah-masa-kenabian', 'Mengenal kehidupan Rasulullah ﷺ dari masa kecil hingga kenabian.', '<h2>Masa Kenabian</h2><p>Nabi Muhammad ﷺ lahir di Makkah pada tahun Gajah (570 M). Beliau diberi gelar "Al-Amin" (yang dapat dipercaya) oleh masyarakat Quraisy karena kejujurannya.</p><p>Pada usia 40 tahun, beliau menerima wahyu pertama di Gua Hira.</p>', 'sirah', 'nabawiyah', 'Sirah Ibnu Hisyam', 10)
+ON CONFLICT (slug) DO NOTHING;
+
+-- ============================================
+-- SAMPLE DATA: QRIS Settings
+-- ============================================
+INSERT INTO qris_settings (merchant_name, qris_static_url, is_active) VALUES
+('Masjid Al Karomah', '/images/qris-masjid.png', true)
+ON CONFLICT (id) DO NOTHING;
