@@ -174,7 +174,7 @@ if (document.querySelectorAll('[data-filter]').length > 0 && document.querySelec
               <p style="color: var(--gray);">${article.content?.substring(0, 100) || ''}...</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-6); padding-top: var(--spacing-6); border-top: 1px solid var(--gray-light);">
                 <small style="color: var(--gray);">${new Date(article.created_at).toLocaleDateString('id-ID')}</small>
-                <a href="/artikel/${article.slug || article.id}" class="btn btn-primary btn-sm">Baca</a>
+                <a href="/artikel-sunnah/${article.slug || article.id}" class="btn btn-primary btn-sm">Baca</a>
               </div>
             </article>
           `).join('');
