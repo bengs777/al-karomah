@@ -1,4 +1,5 @@
-const CACHE_NAME = 'alkaromah-v1';
+const CACHE_NAME = 'alkaromah-v2';
+const AUDIO_CACHE = 'alkaromah-audio-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,17 +9,25 @@ const STATIC_ASSETS = [
   '/layanan',
   '/artikel',
   '/artikel-sunnah',
+  '/quran',
   '/zakat',
   '/donasi',
   '/media',
   '/kontak',
   '/saran',
+  '/live',
   '/css/style.css',
   '/css/components.css',
+  '/css/quran.css',
   '/js/utils.js',
   '/js/main.js',
+  '/js/quran.js',
+  '/js/quran-player.js',
+  '/js/quran-bookmark.js',
   '/manifest.json',
-  '/favicon.svg'
+  '/favicon.svg',
+  '/robots.txt',
+  '/sitemap.xml'
 ];
 
 self.addEventListener('install', (event) => {
@@ -35,7 +44,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME)
+          .filter((name) => name !== CACHE_NAME && name !== AUDIO_CACHE)
           .map((name) => caches.delete(name))
       );
     })
@@ -46,6 +55,23 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+  
+  if (url.hostname === 'cdn.islamic.network' && request.destination === 'audio') {
+    event.respondWith(
+      caches.open(AUDIO_CACHE).then((cache) => {
+        return cache.match(request).then((cached) => {
+          if (cached) return cached;
+          return fetch(request).then((response) => {
+            if (response.ok) {
+              cache.put(request, response.clone());
+            }
+            return response;
+          }).catch(() => new Response('', { status: 503 }));
+        });
+      })
+    );
+    return;
+  }
   
   if (url.origin !== location.origin) {
     event.respondWith(
@@ -80,5 +106,10 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
+  }
+  if (event.data === 'clearAudioCache') {
+    caches.delete(AUDIO_CACHE).then(() => {
+      event.ports[0].postMessage({ success: true });
+    });
   }
 });

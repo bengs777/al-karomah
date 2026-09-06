@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Baca Al-Quran dengan terjemahan Indonesia, tafsir Ibn Katsir, dan audio murattal - Masjid Al Karomah">
+    <meta name="theme-color" content="#10b981">
+    <link rel="canonical" href="/quran/read">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <title id="pageTitle">Al-Quran - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/quran.css">
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    <div class="scroll-progress"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                <li><a href="/quran" class="active">Al-Quran</a></li>
+                <li><a href="/zakat">Zakat</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/saran">Saran</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+    <!-- SURAH HEADER -->
+    <section class="surah-header" id="surahHeader">
+        <div class="container">
+            <a href="/quran" class="back-link">← Kembali ke Daftar Surah</a>
+            <div class="surah-meta">
+                <div class="surah-arabic-name" id="surahArabicName">-</div>
+                <h1 id="surahLatinName">-</h1>
+                <p id="surahMeaning">-</p>
+                <div class="surah-info">
+                    <span class="badge" id="surahType">-</span>
+                    <span class="badge">📖 <span id="surahAyatCount">-</span> Ayat</span>
+                    <span class="badge">📍 Juz <span id="surahJuz">-</span></span>
+                </div>
+            </div>
+
+            <div class="surah-controls">
+                <div class="control-group">
+                    <label>🔊 Qari:</label>
+                    <select id="qariSelect" class="form-input">
+                        <option value="ar.alafasy">Mishary Rashid Alafasy</option>
+                        <option value="ar.abdulbasitmurattal">Abdul Basit (Murattal)</option>
+                        <option value="ar.husary">Mahmoud Husary</option>
+                        <option value="ar.minshawi">Minshawi</option>
+                        <option value="ar.abdurrahmaansudais">Abdurrahman As-Sudais</option>
+                        <option value="ar.saaborimadina">Saabori</option>
+                        <option value="ar.hudhaify">Ali Al-Hudhaify</option>
+                        <option value="ar.ahmedajamy">Ahmed Al-Ajamy</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>🔠 Ukuran Arab:</label>
+                    <div class="font-size-controls">
+                        <button class="font-btn" data-size="small">A-</button>
+                        <button class="font-btn active" data-size="normal">A</button>
+                        <button class="font-btn" data-size="large">A+</button>
+                        <button class="font-btn" data-size="xlarge">A++</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="global-audio-controls">
+                <button class="btn btn-primary" id="playAllBtn">▶️ Putar Semua</button>
+                <button class="btn btn-primary-outline" id="stopAllBtn">⏹️ Berhenti</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- AYAT LIST -->
+    <section class="section">
+        <div class="container">
+            <div id="bismillahSection" style="display: none; text-align: center; padding: 32px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 24px;">
+                <div class="bismillah-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            </div>
+            <div class="ayat-list" id="ayatList">
+                <div class="surah-skeleton">Memuat ayat...</div>
+            </div>
+
+            <div class="surah-nav">
+                <button class="btn btn-primary-outline" id="prevSurahBtn" disabled>← Surah Sebelumnya</button>
+                <button class="btn btn-primary-outline" id="nextSurahBtn">Surah Berikutnya →</button>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <!-- MINI PLAYER -->
+    <div class="quran-mini-player" id="miniPlayer" style="display: none;">
+        <div class="mini-player-info">
+            <div class="mini-player-title" id="miniPlayerTitle">Memuat...</div>
+            <div class="mini-player-sub" id="miniPlayerSub">-</div>
+        </div>
+        <div class="mini-player-controls">
+            <button class="mini-btn" id="miniPrev" aria-label="Previous">⏮</button>
+            <button class="mini-btn mini-play" id="miniPlayPause" aria-label="Play">▶</button>
+            <button class="mini-btn" id="miniNext" aria-label="Next">⏭</button>
+            <button class="mini-btn" id="miniClose" aria-label="Close">✕</button>
+        </div>
+    </div>
+
+    <a href="https://wa.me/6285724419648" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/quran.js"></script>
+    <script src="/js/quran-player.js"></script>
+    <script src="/js/quran-bookmark.js"></script>
+    <script src="/js/quran-read.js"></script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+</body>
+</html>

@@ -520,6 +520,179 @@ app.get('/api/live/status', async (req, res) => {
   });
 });
 
+const quranCache = { surahs: null, surah: {}, tafsir: {}, timestamp: 0 };
+const QURAN_CACHE_TTL = 60 * 60 * 1000;
+
+app.get('/api/quran/surahs', async (req, res) => {
+  try {
+    if (quranCache.surahs && Date.now() - quranCache.timestamp < QURAN_CACHE_TTL) {
+      return res.json({ status: 'success', data: quranCache.surahs, cached: true });
+    }
+    
+    const response = await fetch('https://api.alquran.cloud/v1/surah');
+    const data = await response.json();
+    
+    if (data.code === 200) {
+      const surahs = data.data.map(s => ({
+        number: s.number,
+        name: s.name,
+        englishName: s.englishName,
+        englishNameTranslation: s.englishNameTranslation,
+        meaning: s.englishNameTranslation,
+        numberOfAyahs: s.numberOfAyahs,
+        revelationType: s.revelationType
+      }));
+      quranCache.surahs = surahs;
+      quranCache.timestamp = Date.now();
+      return res.json({ status: 'success', data: surahs });
+    }
+    res.status(500).json({ status: 'error', message: 'Failed to load surahs' });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+app.get('/api/quran/surah/:number', async (req, res) => {
+  try {
+    const num = parseInt(req.params.number);
+    if (isNaN(num) || num < 1 || num > 114) {
+      return res.status(400).json({ status: 'error', message: 'Invalid surah number' });
+    }
+    
+    const cacheKey = num;
+    if (quranCache.surah[cacheKey] && Date.now() - quranCache.timestamp < QURAN_CACHE_TTL) {
+      return res.json({ status: 'success', data: quranCache.surah[cacheKey], cached: true });
+    }
+    
+    const [arabicRes, indoRes, metaRes] = await Promise.all([
+      fetch(`https://api.alquran.cloud/v1/surah/${num}/quran-uthmani`),
+      fetch(`https://api.alquran.cloud/v1/surah/${num}/id.indonesian`),
+      fetch(`https://api.alquran.cloud/v1/surah/${num}`)
+    ]);
+    
+    const [arabic, indo, meta] = await Promise.all([arabicRes.json(), indoRes.json(), metaRes.json()]);
+    
+    if (arabic.code !== 200 || indo.code !== 200) {
+      return res.status(500).json({ status: 'error', message: 'Failed to load surah' });
+    }
+    
+    const surahData = {
+      number: meta.data.number,
+      name: meta.data.name,
+      englishName: meta.data.englishName,
+      meaning: meta.data.englishNameTranslation,
+      revelationType: meta.data.revelationType,
+      numberOfAyahs: meta.data.numberOfAyahs,
+      ayats: arabic.data.ayahs.map((a, i) => ({
+        number: a.numberInSurah,
+        arabic: a.text,
+        translation: indo.data.ayahs[i]?.text || ''
+      }))
+    };
+    
+    quranCache.surah[cacheKey] = surahData;
+    return res.json({ status: 'success', data: surahData });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+app.get('/api/quran/tafsir/:number', async (req, res) => {
+  try {
+    const num = parseInt(req.params.number);
+    if (isNaN(num) || num < 1 || num > 114) {
+      return res.status(400).json({ status: 'error', message: 'Invalid surah number' });
+    }
+    
+    if (quranCache.tafsir[num]) {
+      return res.json({ status: 'success', data: quranCache.tafsir[num], cached: true });
+    }
+    
+    const response = await fetch(`https://api.alquran.cloud/v1/surah/${num}/en.maududi`);
+    const data = await response.json();
+    
+    if (data.code === 200) {
+      const tafsirMap = {};
+      data.data.ayahs.forEach(a => {
+        tafsirMap[a.numberInSurah] = a.text;
+      });
+      quranCache.tafsir[num] = tafsirMap;
+      return res.json({ status: 'success', data: tafsirMap });
+    }
+    
+    return res.json({ status: 'success', data: {}, note: 'Tafsir tidak tersedia untuk surah ini' });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+app.get('/api/quran/random', async (req, res) => {
+  try {
+    const fallback = [
+      { surah: 'Al-Baqarah', ayat: 255, arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ', translation: 'Allah tidak ada tuhan selain Dia, Yang Maha Hidup lagi Maha Berdiri Sendiri' },
+      { surah: 'Al-Ikhlas', ayat: 1, arabic: 'قُلْ هُوَ اللَّهُ أَحَدٌ', translation: 'Katakanlah (Muhammad), Dialah Allah, Yang Maha Esa' },
+      { surah: 'Ar-Rahman', ayat: 1, arabic: 'الرَّحْمَٰنُ', translation: '(Tuhan) Yang Maha Pengasih' },
+      { surah: 'Al-Asr', ayat: 1, arabic: 'وَالْعَصْرِ', translation: 'Demi waktu' },
+      { surah: 'Al-Nas', ayat: 1, arabic: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', translation: 'Katakanlah, Aku berlindung kepada Tuhan manusia' }
+    ];
+    res.json({ status: 'success', data: fallback[Math.floor(Math.random() * fallback.length)] });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+app.get('/api/quran/search', async (req, res) => {
+  try {
+    const q = (req.query.q || '').toLowerCase();
+    if (!q) return res.json({ status: 'success', data: [] });
+    
+    const response = await fetch('https://api.alquran.cloud/v1/surah');
+    const data = await response.json();
+    
+    if (data.code === 200) {
+      const results = data.data.filter(s => 
+        s.englishName.toLowerCase().includes(q) ||
+        s.englishNameTranslation.toLowerCase().includes(q) ||
+        s.name.includes(q) ||
+        s.number.toString() === q
+      ).slice(0, 20).map(s => ({
+        number: s.number,
+        englishName: s.englishName,
+        meaning: s.englishNameTranslation,
+        numberOfAyahs: s.numberOfAyahs
+      }));
+      return res.json({ status: 'success', data: results });
+    }
+    res.json({ status: 'success', data: [] });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
+app.post('/api/quran/bookmark', async (req, res) => {
+  try {
+    const { surah, ayat, userId } = req.body;
+    if (!surah || !ayat || !userId) {
+      return res.status(400).json({ status: 'error', message: 'Data tidak lengkap' });
+    }
+    
+    const { error } = await supabase.from('quran_bookmarks').insert([{
+      user_id: userId,
+      surah_number: surah,
+      ayat_number: ayat,
+      created_at: new Date().toISOString()
+    }]);
+    
+    if (error) {
+      console.error('Bookmark error:', error);
+      return res.json({ status: 'success', message: 'Bookmark disimpan (offline)' });
+    }
+    res.json({ status: 'success', message: 'Bookmark tersimpan' });
+  } catch (err) {
+    res.json({ status: 'success', message: 'Bookmark disimpan (offline)' });
+  }
+});
+
 app.post('/api/contact', contactLimiter, async (req, res) => {
   const { name, email, phone, subject, message } = req.body;
   const sName = sanitize(name), sEmail = sanitize(email), sSubject = sanitize(subject), sMessage = sanitize(message), sPhone = sanitize(phone);

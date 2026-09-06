@@ -94,6 +94,7 @@
                 <li><a href="/layanan">Layanan</a></li>
                 <li><a href="/artikel">Artikel</a></li>
                 <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                                <li><a href="/quran">Al-Quran</a></li>
                 <li><a href="/zakat">Zakat</a></li>
                 <li><a href="/donasi">Donasi</a></li>
                 <li><a href="/media">Media</a></li>
@@ -181,6 +182,32 @@
             
             <div style="text-align: center; margin-top: var(--spacing-12);">
                 <a href="/jadwal-sholat" class="btn btn-primary">Lihat Jadwal Lengkap</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ QURAN HARI INI ============ -->
+    <section class="section" style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: white;">
+        <div class="container">
+            <div class="section-title" style="text-align:center;">
+                <h2 style="color:white;">📖 Ayat Hari Ini</h2>
+                <p style="color:#d1fae5;">Renungan Al-Quran untuk kehidupan Anda</p>
+            </div>
+            <div class="daily-ayat-card" id="homeDailyAyat" style="max-width: 800px; margin: 0 auto;">
+                <div class="daily-ayat-header">
+                    <span class="badge badge-primary">Ayat Pilihan</span>
+                    <small id="homeDailyAyatRef" style="color:var(--text-muted);">Memuat...</small>
+                </div>
+                <div class="daily-ayat-arabic" id="homeDailyAyatArabic" style="text-align: right; direction: rtl; font-size: 1.8rem; line-height: 2;">
+                    جَارٍ تحميل...
+                </div>
+                <div class="daily-ayat-translation" id="homeDailyAyatTranslation" style="font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin: 16px 0;">
+                    Memuat ayat pilihan hari ini...
+                </div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+                    <a href="/quran" class="btn btn-primary" style="background:var(--white); color:var(--primary-dark);">📖 Buka Al-Quran Digital</a>
+                    <a href="/quran/read?surah=1" class="btn" style="background: var(--secondary); color: white;">📖 Surah Al-Fatihah</a>
+                </div>
             </div>
         </div>
     </section>
@@ -497,6 +524,22 @@
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+      (async function() {
+        const ref = document.getElementById('homeDailyAyatRef');
+        const ar = document.getElementById('homeDailyAyatArabic');
+        const tr = document.getElementById('homeDailyAyatTranslation');
+        try {
+          const res = await fetch('/api/quran/random');
+          const data = await res.json();
+          if (data.status === 'success') {
+            ar.textContent = data.data.arabic;
+            tr.textContent = data.data.translation;
+            ref.textContent = `${data.data.surah} ayat ${data.data.ayat}`;
+          }
+        } catch(e) {}
+      })();
+    </script>
     <script>
       // Theme Toggle Logic
       (function() {

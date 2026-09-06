@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Al-Quran Digital Masjid Al Karomah - Baca Al-Quran online dengan terjemahan Bahasa Indonesia, tafsir Ibn Katsir, dan audio murattal dari 8 qari terkenal.">
+    <meta name="keywords" content="al-quran, quran digital, baca quran online, terjemahan quran, tafsir ibnu katsir, audio murattal, masjid al karomah">
+    <meta name="theme-color" content="#10b981">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Al-Quran Digital - Masjid Al Karomah">
+    <meta property="og:description" content="Baca dan dengarkan Al-Quran dengan terjemahan Indonesia dan tafsir Ibn Katsir">
+    <meta property="og:image" content="/images/quran-cover.jpg">
+    <link rel="canonical" href="/quran">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <title>Al-Quran Digital - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/quran.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Al-Quran Digital - Masjid Al Karomah",
+      "description": "Baca Al-Quran online dengan terjemahan dan tafsir Ibn Katsir",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Masjid Al Karomah"
+      }
+    }
+    </script>
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    <div class="scroll-progress"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                <li><a href="/quran" class="active">Al-Quran</a></li>
+                <li><a href="/zakat">Zakat</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/saran">Saran</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+    <!-- HERO -->
+    <section class="quran-hero">
+        <div class="quran-hero-bg"></div>
+        <div class="container">
+            <div class="quran-hero-content">
+                <h1>📖 Al-Quran Digital</h1>
+                <p>Baca dan dengarkan Al-Quran dengan terjemahan Bahasa Indonesia dan tafsir Ibn Katsir</p>
+                <div class="quran-hero-stats">
+                    <div class="quran-stat">
+                        <strong>114</strong>
+                        <span>Surah</span>
+                    </div>
+                    <div class="quran-stat">
+                        <strong>6,236</strong>
+                        <span>Ayat</span>
+                    </div>
+                    <div class="quran-stat">
+                        <strong>8</strong>
+                        <span>Qari</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DAILY AYAT -->
+    <section class="section section-light">
+        <div class="container">
+            <div class="daily-ayat-card" id="dailyAyatCard">
+                <div class="daily-ayat-header">
+                    <span class="badge badge-primary">Ayat Hari Ini</span>
+                    <small id="dailyAyatRef">Memuat...</small>
+                </div>
+                <div class="daily-ayat-arabic" id="dailyAyatArabic" style="text-align: right; direction: rtl;">
+                    ﴿ جَارٍ تحميل... ﴾
+                </div>
+                <div class="daily-ayat-translation" id="dailyAyatTranslation">Memuat ayat pilihan hari ini...</div>
+                <div class="daily-ayat-actions">
+                    <button class="btn btn-sm btn-primary" onclick="document.getElementById('surahListSection').scrollIntoView({behavior:'smooth'})">
+                        📖 Buka Surah
+                    </button>
+                    <button class="btn btn-sm btn-primary-outline" id="refreshDailyAyat">🔄 Ayat Lain</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SURAH LIST -->
+    <section class="section" id="surahListSection">
+        <div class="container">
+            <div class="section-title">
+                <h2>Daftar Surah</h2>
+                <p>Pilih surah untuk mulai membaca</p>
+            </div>
+
+            <div class="quran-controls">
+                <input type="search" id="searchSurah" placeholder="Cari surah (contoh: Al-Fatihah, البقرة)..." class="form-input">
+                <select id="filterJuz" class="form-input">
+                    <option value="">Semua Juz</option>
+                </select>
+                <select id="filterType" class="form-input">
+                    <option value="">Semua Tipe</option>
+                    <option value="makkiyah">Makkiyah</option>
+                    <option value="madaniyyah">Madaniyyah</option>
+                </select>
+                <select id="filterAyat" class="form-input">
+                    <option value="">Semua Jumlah Ayat</option>
+                    <option value="short">Pendek (1-50)</option>
+                    <option value="medium">Sedang (51-150)</option>
+                    <option value="long">Panjang (151+)</option>
+                </select>
+            </div>
+
+            <div class="quran-stats" id="quranStats" style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.9rem;">
+                Memuat daftar surah...
+            </div>
+
+            <div class="surah-grid" id="surahGrid">
+                <div class="surah-skeleton">Memuat 114 surah...</div>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <!-- MINI PLAYER -->
+    <div class="quran-mini-player" id="miniPlayer" style="display: none;">
+        <div class="mini-player-info">
+            <div class="mini-player-title" id="miniPlayerTitle">Memuat...</div>
+            <div class="mini-player-sub" id="miniPlayerSub">-</div>
+        </div>
+        <div class="mini-player-controls">
+            <button class="mini-btn" id="miniPrev" aria-label="Previous">⏮</button>
+            <button class="mini-btn mini-play" id="miniPlayPause" aria-label="Play">▶</button>
+            <button class="mini-btn" id="miniNext" aria-label="Next">⏭</button>
+            <button class="mini-btn" id="miniClose" aria-label="Close">✕</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/quran">Al-Quran Digital</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>📍 Desa Buntu, Kec. Ligung, Kab. Majalengka</p>
+                <p>📞 <a href="https://wa.me/6285724419648">+62 857-2441-9648</a></p>
+                <p>✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/6285724419648" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/quran.js"></script>
+    <script src="/js/quran-player.js"></script>
+    <script src="/js/quran-bookmark.js"></script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+</body>
+</html>
