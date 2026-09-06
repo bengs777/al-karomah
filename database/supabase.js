@@ -185,6 +185,36 @@ async function initDatabase() {
           FOREIGN KEY (request_id) REFERENCES service_requests(id)
         );
       `
+    },
+    {
+      name: 'social_links',
+      sql: `
+        CREATE TABLE IF NOT EXISTS social_links (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          type TEXT NOT NULL CHECK (type IN ('whatsapp', 'instagram', 'facebook', 'youtube', 'tiktok', 'website')),
+          url TEXT NOT NULL,
+          icon TEXT,
+          is_active BOOLEAN DEFAULT true,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    },
+    {
+      name: 'suggestions',
+      sql: `
+        CREATE TABLE IF NOT EXISTS suggestions (
+          id SERIAL PRIMARY KEY,
+          user_id TEXT NOT NULL,
+          user_email TEXT,
+          user_name TEXT,
+          suggestion TEXT NOT NULL,
+          type TEXT DEFAULT 'other',
+          status TEXT DEFAULT 'unread',
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
     }
   ];
 

@@ -160,12 +160,41 @@ CREATE TABLE IF NOT EXISTS qurban_certificates (
 );
 
 -- ============================================
+-- 11. SOCIAL LINKS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS social_links (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('whatsapp', 'instagram', 'facebook', 'youtube', 'tiktok', 'website')),
+  url TEXT NOT NULL,
+  icon TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- 12. SUGGESTIONS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS suggestions (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  user_email TEXT,
+  user_name TEXT,
+  suggestion TEXT NOT NULL,
+  type TEXT DEFAULT 'other',
+  status TEXT DEFAULT 'unread',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
 -- INDEXES for performance
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_articles_status ON articles(status);
 CREATE INDEX IF NOT EXISTS idx_articles_slug ON articles(slug);
 CREATE INDEX IF NOT EXISTS idx_activities_status ON activities(status);
 CREATE INDEX IF NOT EXISTS idx_activities_date ON activities(date);
+CREATE INDEX IF NOT EXISTS idx_activities_month ON activities(month);
 CREATE INDEX IF NOT EXISTS idx_donations_status ON donations(status);
 CREATE INDEX IF NOT EXISTS idx_contacts_status ON contacts(status);
 CREATE INDEX IF NOT EXISTS idx_service_requests_status ON service_requests(status);
@@ -173,6 +202,10 @@ CREATE INDEX IF NOT EXISTS idx_service_requests_clerk_user_id ON service_request
 CREATE INDEX IF NOT EXISTS idx_qurban_certificates_request_id ON qurban_certificates(request_id);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_social_links_type ON social_links(type);
+CREATE INDEX IF NOT EXISTS idx_social_links_active ON social_links(is_active);
+CREATE INDEX IF NOT EXISTS idx_suggestions_status ON suggestions(status);
+CREATE INDEX IF NOT EXISTS idx_suggestions_user_id ON suggestions(user_id);
 
 -- ============================================
 -- DISABLE Row Level Security (RLS) for service role access
@@ -189,3 +222,5 @@ ALTER TABLE gallery DISABLE ROW LEVEL SECURITY;
 ALTER TABLE settings DISABLE ROW LEVEL SECURITY;
 ALTER TABLE service_requests DISABLE ROW LEVEL SECURITY;
 ALTER TABLE qurban_certificates DISABLE ROW LEVEL SECURITY;
+ALTER TABLE social_links DISABLE ROW LEVEL SECURITY;
+ALTER TABLE suggestions DISABLE ROW LEVEL SECURITY;

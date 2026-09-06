@@ -91,41 +91,54 @@ if (document.querySelectorAll('[data-filter]').length > 0 && document.querySelec
   });
 
   // Load activities from API
-  async function loadActivities() {
+  async function loadActivities(month = null) {
     try {
-      const res = await fetch('/api/activities');
+      let url = '/api/activities';
+      if (month && month !== 'all') {
+        url = `/api/activities/monthly/${month}`;
+      }
+      const res = await fetch(url);
       const data = await res.json();
-      if (data.data && data.data.length > 0) {
-        const container = document.querySelector('.grid-3');
-        if (container) {
-          container.innerHTML = data.data.map(act => `
-            <div class="activity-card" data-category="${act.category?.toLowerCase() || 'umum'}">
-              <div class="activity-image">
-                <img src="${act.image || '/images/Masjid.png'}" alt="${act.title}" style="width:100%;height:100%;object-fit:cover;">
+      const container = document.querySelector('.grid-3');
+      if (container && data.data && data.data.length > 0) {
+        container.innerHTML = data.data.map(act => `
+          <div class="activity-card" data-category="${act.category?.toLowerCase() || 'umum'}" data-date="${act.date || ''}">
+            <div class="activity-image">
+              <img src="${act.image || '/images/Masjid.png'}" alt="${act.title}" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div class="activity-content">
+              <span class="badge ${act.category === 'Kajian' ? 'badge-primary' : 'badge-secondary'}">${act.category || 'Umum'}</span>
+              <h4 class="activity-title">${act.title}</h4>
+              <div class="activity-meta">
+                <div class="activity-meta-item">📅 ${act.date} ${act.time || ''}</div>
+                <div class="activity-meta-item">👤 ${act.speaker || '-'}</div>
+                <div class="activity-meta-item">📍 ${act.location || '-'}</div>
               </div>
-              <div class="activity-content">
-                <span class="badge ${act.category === 'Kajian' ? 'badge-primary' : 'badge-secondary'}">${act.category || 'Umum'}</span>
-                <h4 class="activity-title">${act.title}</h4>
-                <div class="activity-meta">
-                  <div class="activity-meta-item">📅 ${act.date} ${act.time || ''}</div>
-                  <div class="activity-meta-item">👤 ${act.speaker || '-'}</div>
-                  <div class="activity-meta-item">📍 ${act.location || '-'}</div>
-                </div>
-                <p class="activity-description">${act.description || ''}</p>
-                <div class="activity-footer">
-                  <a href="/kegiatan/${act.slug || act.id}" class="btn btn-primary btn-sm">Detail</a>
-                  <a href="https://wa.me/" class="btn btn-primary-outline btn-sm">Daftar</a>
-                </div>
+              <p class="activity-description">${act.description || ''}</p>
+              <div class="activity-footer">
+                <a href="/kegiatan/${act.slug || act.id}" class="btn btn-primary btn-sm">Detail</a>
+                <a href="https://wa.me/" class="btn btn-primary-outline btn-sm">Daftar</a>
               </div>
             </div>
-          `).join('');
-        }
+          </div>
+        `).join('');
+      } else if (container) {
+        container.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1;">Tidak ada kegiatan untuk bulan ini.</p>';
       }
     } catch (err) {
       console.error('Failed to load activities:', err);
     }
   }
+
   loadActivities();
+
+  // Month filter
+  const monthSelect = document.getElementById('month-filter');
+  if (monthSelect) {
+    monthSelect.addEventListener('change', () => {
+      loadActivities(monthSelect.value);
+    });
+  }
 }
 
 // ---- ARTIKEL PAGE ----

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saran & Masukan - Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <span>🕌</span>
+                <span>Admin</span>
+            </div>
+            <nav>
+                <ul class="admin-menu">
+                    <li><a href="/admin">📊 Dashboard</a></li>
+                    <li><a href="/admin/articles">📰 Artikel</a></li>
+                    <li><a href="/admin/activities">📅 Kegiatan</a></li>
+                    <li><a href="/admin/donations">💰 Donasi</a></li>
+                    <li><a href="/admin/services">🔧 Layanan</a></li>
+                    <li><a href="/admin/gallery">🖼️ Galeri</a></li>
+                    <li><a href="/admin/contacts">📧 Kontak Masuk</a></li>
+                    <li><a href="/admin/suggestions" class="active">💬 Saran</a></li>
+                    <li><a href="/admin/users">👥 Pengguna</a></li>
+                    <li><a href="/admin/requests">📋 Pengajuan Sertifikat</a></li>
+                    <li><a href="/admin/settings">⚙️ Pengaturan</a></li>
+                    <li style="margin-top: 2rem; border-top: 1px solid #374151; padding-top: 1rem;">
+                        <a href="/admin/logout">🚪 Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <header class="admin-header">
+                <h1>Saran & Masukan</h1>
+                <div class="admin-user">
+                    <span id="user-name">Admin</span>
+                    <button onclick="logout()">⋮</button>
+                </div>
+            </header>
+
+            <div class="admin-main">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <button class="btn btn-secondary btn-sm" onclick="filterSuggestions('all')">Semua</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterSuggestions('unread')">Belum Dibaca</button>
+                    <button class="btn btn-secondary btn-sm" onclick="filterSuggestions('read')">Sudah Dibaca</button>
+                </div>
+
+                <div id="suggestions-list">
+                    <p style="color: #9ca3af; text-align: center; padding: 2rem;">Memuat...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    let allSuggestions = [];
+
+    async function loadSuggestions() {
+        const container = document.getElementById('suggestions-list');
+        try {
+            const res = await fetch('/api/admin/suggestions');
+            const data = await res.json();
+            if (data.status === 'success' && data.data) {
+                allSuggestions = data.data;
+                renderSuggestions(allSuggestions);
+            } else {
+                container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 2rem;">Belum ada saran masuk.</p>';
+            }
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 2rem;">Gagal memuat data.</p>';
+        }
+    }
+
+    function renderSuggestions(suggestions) {
+        const container = document.getElementById('suggestions-list');
+        if (!suggestions.length) {
+            container.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 2rem;">Tidak ada saran untuk filter ini.</p>';
+            return;
+        }
+        container.innerHTML = suggestions.map(s => {
+            const typeLabels = {
+                praise: '<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:9999px;font-size:12px;">👍 Pujian</span>',
+                question: '<span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:9999px;font-size:12px;">❓ Pertanyaan</span>',
+                complaint: '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:9999px;font-size:12px;">🛠️ Keluhan</span>',
+                other: '<span style="background:#f3f4f6;color:#374151;padding:2px 8px;border-radius:9999px;font-size:12px;">📝 Lainnya</span>'
+            };
+            const statusBadge = s.status === 'unread'
+                ? '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:9999px;font-size:12px;">Baru</span>'
+                : '<span style="background:#e5e7eb;color:#374151;padding:2px 8px;border-radius:9999px;font-size:12px;">Dibaca</span>';
+            const date = new Date(s.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return `
+                <div style="background:#1f2937;border-radius:12px;padding:1.5rem;margin-bottom:1rem;${s.status === 'unread' ? 'border-left:4px solid #34d399;' : ''}">
+                    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:0.75rem;">
+                        <div>
+                            <strong style="color:#f3f4f6;">${s.user_name || 'Anonim'}</strong>
+                            <span style="color:#9ca3af;font-size:13px;margin-left:8px;">${s.user_email || ''}</span>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            ${typeLabels[s.type] || typeLabels.other}
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <p style="color:#d1d5db;margin:0 0 0.75rem 0;line-height:1.6;">${s.suggestion}</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <small style="color:#6b7280;">${date}</small>
+                        <div style="display:flex;gap:8px;">
+                            ${s.user_email ? `<a href="mailto:${s.user_email}" style="background:#374151;color:#9ca3af;padding:4px 12px;border-radius:6px;font-size:12px;text-decoration:none;">✉️ Email</a>` : ''}
+                            <a href="https://wa.me/${s.user_email ? '' : ''}" style="background:#374151;color:#9ca3af;padding:4px 12px;border-radius:6px;font-size:12px;text-decoration:none;">💬 WA</a>
+                            <button onclick="markRead(${s.id})" style="background:#34d399;color:#064e3b;padding:4px 12px;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ Tandai Dibaca</button>
+                            <button onclick="deleteSuggestion(${s.id})" style="background:#ef4444;color:white;padding:4px 12px;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterSuggestions(status) {
+        if (status === 'all') {
+            renderSuggestions(allSuggestions);
+        } else {
+            renderSuggestions(allSuggestions.filter(s => s.status === status));
+        }
+    }
+
+    async function markRead(id) {
+        try {
+            await fetch(`/api/admin/suggestions/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'read' })
+            });
+            loadSuggestions();
+        } catch (e) {
+            alert('Gagal memperbarui status');
+        }
+    }
+
+    async function deleteSuggestion(id) {
+        if (!confirm('Hapus saran ini?')) return;
+        try {
+            await fetch(`/api/admin/suggestions/${id}`, { method: 'DELETE' });
+            loadSuggestions();
+        } catch (e) {
+            alert('Gagal menghapus');
+        }
+    }
+
+    function logout() {
+        window.location.href = '/admin/logout';
+    }
+
+    loadSuggestions();
+    </script>
+</body>
+</html>

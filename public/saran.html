@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saran & Masukan - Masjid Al Karomah">
+    <title>Saran & Masukan - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <!-- ============ SCROLL PROGRESS ============ -->
+    <div class="scroll-progress"></div>
+
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/saran" class="active">Saran</a></li>
+                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============ PAGE TITLE ============ -->
+    <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
+        <div class="container">
+            <h1>💬 Saran & Masukan</h1>
+            <p style="color: #e5e7eb;">Kami sangat menghargai masukan Anda. Isi formulir di bawah ini untuk berkomunikasi langsung dengan kami.</p>
+        </div>
+    </section>
+
+    <!-- ============ SUGGESTION FORM ============ -->
+    <section class="section" style="background: var(--light);">
+        <div class="container">
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div style="background: white; padding: var(--spacing-16); border-radius: var(--radius-xl); box-shadow: var(--shadow-md);">
+                    <h2 style="margin-bottom: var(--spacing-8); text-align: center;">Kirim Saran Anda</h2>
+                    <form id="suggestion-form">
+                        <div class="form-group">
+                            <label for="suggestion-name" class="form-label">Nama</label>
+                            <input type="text" id="suggestion-name" name="name" class="form-control" placeholder="Nama Anda (opsional)">
+                        </div>
+                        <div class="form-group">
+                            <label for="suggestion-email" class="form-label">Email</label>
+                            <input type="email" id="suggestion-email" name="email" class="form-control" placeholder="Email Anda (opsional)">
+                        </div>
+                        <div class="form-group">
+                            <label for="suggestion-text" class="form-label">Saran Anda *</label>
+                            <textarea id="suggestion-text" name="suggestion" class="form-control" rows="5" placeholder="Tulis saran, masukan, keluhan, atau pertanyaan Anda..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Jenis Saran</label>
+                            <select id="suggestion-type" name="type" class="form-control">
+                                <option value="praise">👍 Pujian & Syukur</option>
+                                <option value="question">❓ Pertanyaan</option>
+                                <option value="complaint">🛠️ Masukan & Keluhan</option>
+                                <option value="other">📝 Lainnya</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" style="padding: var(--spacing-6); font-size: var(--text-base); margin-top: var(--spacing-4);">
+                            <span style="margin-right: var(--spacing-4);">💬 Kirim via WhatsApp</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <div id="suggestion-result" style="margin-top: var(--spacing-8); display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ QUICK CONTACT ============ -->
+    <section class="section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: var(--spacing-12);">📱 Kontak Cepat</h2>
+            <div id="social-links-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-6); max-width: 800px; margin: 0 auto;">
+                <div style="text-align: center; padding: var(--spacing-8); background: white; border-radius: var(--radius-lg); border: 2px solid var(--primary);">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">💬</div>
+                    <h4>WhatsApp</h4>
+                    <p><a href="https://wa.me/6281234567890" target="_blank" style="color: var(--primary); font-weight: bold;">Klik untuk Chat</a></p>
+                </div>
+                <div style="text-align: center; padding: var(--spacing-8); background: white; border-radius: var(--radius-lg); border: 2px solid var(--secondary);">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">📷</div>
+                    <h4>Instagram</h4>
+                    <p><a href="https://instagram.com/masjidalkaromah" target="_blank" style="color: var(--secondary); font-weight: bold;">Follow Kami</a></p>
+                </div>
+                <div style="text-align: center; padding: var(--spacing-8); background: white; border-radius: var(--radius-lg); border: 2px solid #3b82f6;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">▶️</div>
+                    <h4>YouTube</h4>
+                    <p><a href="https://youtube.com/@MasjidAlKaromah" target="_blank" style="color: #3b82f6; font-weight: bold;">Subscribe</a></p>
+                </div>
+                <div style="text-align: center; padding: var(--spacing-8); background: white; border-radius: var(--radius-lg); border: 2px solid #8b5cf6;">
+                    <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">f</div>
+                    <h4>Facebook</h4>
+                    <p><a href="https://facebook.com/masjidalkaromah" target="_blank" style="color: #8b5cf6; font-weight: bold;">Like Halaman</a></p>
+                </div>
+            </div>
+            <p style="text-align: center; color: var(--gray); margin-top: var(--spacing-8);">Atau kunjungi langsung melalui: <a href="mailto:admin@alkaromah.com" style="color: var(--primary);">admin@alkaromah.com</a></p>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                    <li><a href="/saran">Saran</a></li>
+                    <li><a href="/kontak">Kontak</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/media">Media Center</a></li>
+                    <li><a href="/kontak">Kontak Kami</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi. Dibuat dengan ❤️ untuk umat.</p>
+        </div>
+    </footer>
+
+    <!-- ============ FLOATING BUTTONS ============ -->
+    <a href="https://wa.me/6281234567890" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="/js/utils.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Load social links from API
+        try {
+            const res = await fetch('/api/social-links');
+            const data = await res.json();
+            if (data.status === 'success' && data.data) {
+                data.data.forEach(link => {
+                    const existingLink = document.querySelector(`a[href*="${link.type}"]`);
+                    if (existingLink) {
+                        existingLink.href = link.url;
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('Failed to load social links');
+        }
+
+        // Suggestion form handler
+        const form = document.getElementById('suggestion-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('suggestion-text').value.trim();
+            const type = document.getElementById('suggestion-type').value;
+            const name = document.getElementById('suggestion-name').value.trim();
+            const email = document.getElementById('suggestion-email').value.trim();
+            const resultDiv = document.getElementById('suggestion-result');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            if (!text) {
+                alert('Isi saran Anda terlebih dahulu');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Mengirim...';
+
+            try {
+                const res = await fetch('/api/suggestions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ suggestion: text, type, name, email })
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <div style="padding: var(--spacing-8); background: var(--success); color: white; border-radius: var(--radius-lg); text-align: center;">
+                            <p style="font-size: var(--text-lg); margin-bottom: var(--spacing-4);">✅ ${data.message}</p>
+                            <a href="${data.whatsappUrl}" target="_blank" class="btn" style="background-color: white; color: var(--success);">💬 Lanjut ke WhatsApp</a>
+                        </div>
+                    `;
+                    form.reset();
+                    if (data.savedId) {
+                        console.log('Suggestion saved with ID:', data.savedId);
+                    }
+                } else {
+                    throw new Error(data.message || 'Gagal mengirim');
+                }
+            } catch (err) {
+                console.error('Suggestion error:', err);
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div style="padding: var(--spacing-8); background: var(--accent); color: white; border-radius: var(--radius-lg); text-align: center;">
+                        <p>❌ ${err.message || 'Terjadi kesalahan. Coba lagi nanti.'}</p>
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '💬 Kirim via WhatsApp <i class="fas fa-paper-plane"></i>';
+            }
+        });
+    });
+    </script>
+</body>
+</html>

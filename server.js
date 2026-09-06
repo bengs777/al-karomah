@@ -11,23 +11,30 @@ const bcrypt = require('bcrypt');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || '6281234567890';
+const INSTAGRAM_URL = process.env.INSTAGRAM_URL || 'https://instagram.com/masjidalkaromah';
+const FACEBOOK_URL = process.env.FACEBOOK_URL || 'https://facebook.com/masjidalkaromah';
+const YOUTUBE_URL = process.env.YOUTUBE_URL || 'https://youtube.com/@MasjidAlKaromah';
+
 const SESSION_SECRET = process.env.SESSION_SECRET;
 if (!SESSION_SECRET) {
   console.error('FATAL: SESSION_SECRET is required in .env');
   process.exit(1);
 }
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   console.error('FATAL: SUPABASE_URL and SUPABASE_SERVICE_KEY are required');
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }
 });
+
+console.log('Connected to Supabase:', SUPABASE_URL);
 
 console.log('Connected to Supabase:', supabaseUrl);
 
@@ -116,7 +123,7 @@ app.post('/admin/login', authLimiter, async (req, res) => {
 
 app.get('/admin/logout', (req, res) => { req.session.destroy(); res.redirect('/admin/login'); });
 
-const adminPages = ['dashboard', 'requests', 'articles', 'activities', 'donations', 'services', 'gallery', 'contacts', 'users', 'settings'];
+const adminPages = ['dashboard', 'requests', 'articles', 'activities', 'donations', 'services', 'gallery', 'contacts', 'suggestions', 'users', 'settings'];
 adminPages.forEach(page => {
   const fileName = page === 'dashboard' ? 'dashboard.html' : `${page}.html`;
   app.get(`/admin${page === 'dashboard' ? '' : '/' + page}`, requireAdmin, (req, res) => {
@@ -271,7 +278,7 @@ app.post('/api/admin/requests/:id/issue', requireAdmin, async (req, res) => {
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
-const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'media', 'kontak'];
+const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'media', 'kontak', 'saran'];
 pages.forEach(page => {
   app.get(`/${page}`, (req, res) => res.sendFile(path.join(__dirname, `public/${page}.html`), (err) => {
     if (err) res.status(404).send(`<h1>Halaman ${page} tidak ditemukan</h1>`);
@@ -279,6 +286,124 @@ pages.forEach(page => {
 });
 
 app.get('/api/test', (req, res) => res.json({ status: 'ok', message: 'Website Masjid Al Karomah API', version: '1.0.0' }));
+
+// ============================================
+// SOCIAL LINKS & SUGGESTIONS
+// ============================================
+app.get('/api/social-links', async (req, res) => {
+  const defaults = {
+    whatsapp: { name: 'WhatsApp', type: 'whatsapp', url: `https://wa.me/${WHATSAPP_NUMBER}`, icon: '💬' },
+    instagram: { name: 'Instagram', type: 'instagram', url: INSTAGRAM_URL, icon: '📷' },
+    facebook: { name: 'Facebook', type: 'facebook', url: FACEBOOK_URL, icon: 'f' },
+    youtube: { name: 'YouTube', type: 'youtube', url: YOUTUBE_URL, icon: '▶️' }
+  };
+  try {
+    const { data, error } = await supabase.from('social_links').select('*').eq('is_active', true);
+    if (error) throw error;
+    res.json({ status: 'success', data: data || Object.values(defaults) });
+  } catch (e) {
+    res.json({ status: 'success', data: Object.values(defaults) });
+  }
+});
+
+app.post('/api/suggestions', contactLimiter, async (req, res) => {
+  const { suggestion, type, name, email } = req.body;
+  if (!suggestion || suggestion.trim().length < 5) {
+    return res.status(400).json({ status: 'error', message: 'Saran minimal 5 karakter' });
+  }
+  const cleanSuggestion = sanitize(suggestion);
+  const sType = ['praise', 'question', 'complaint', 'other'].includes(type) ? type : 'other';
+  const sName = sanitize(name);
+  const sEmail = sanitize(email);
+  if (sEmail && !emailRegex.test(sEmail)) {
+    return res.status(400).json({ status: 'error', message: 'Format email tidak valid' });
+  }
+  try {
+    const { data, error } = await supabase.from('suggestions').insert([{
+      user_id: req.auth?.userId || 'guest',
+      user_email: sEmail || null,
+      user_name: sName || null,
+      suggestion: cleanSuggestion,
+      type: sType,
+      status: 'unread'
+    }]).select().single();
+    if (error) {
+      console.error('Insert suggestion error:', error);
+    }
+    const waText = encodeURIComponent(
+      `Assalamu'alaikum,\n\n` +
+      `*Saran/Masukan untuk Masjid Al Karomah*\n` +
+      `Jenis: ${sType}\n` +
+      `Nama: ${sName || 'Anonim'}\n` +
+      `Email: ${sEmail || '-'}\n\n` +
+      `Pesan:\n${cleanSuggestion}`
+    );
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${waText}`;
+    res.json({
+      status: 'success',
+      message: 'Saran berhasil dikirim',
+      whatsappUrl,
+      savedId: data?.id || null
+    });
+  } catch (e) {
+    console.error('Suggestion error:', e);
+    res.status(500).json({ status: 'error', message: 'Gagal mengirim saran' });
+  }
+});
+
+app.get('/api/admin/suggestions', requireAdmin, async (req, res) => {
+  const { data, error } = await supabase.from('suggestions').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', data: data || [] });
+});
+
+app.put('/api/admin/suggestions/:id', requireAdmin, async (req, res) => {
+  const { status } = req.body;
+  const { error } = await supabase.from('suggestions').update({ status: status || 'read' }).eq('id', req.params.id);
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', message: 'Status saran diperbarui' });
+});
+
+app.delete('/api/admin/suggestions/:id', requireAdmin, async (req, res) => {
+  const { error } = await supabase.from('suggestions').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', message: 'Saran dihapus' });
+});
+
+// ============================================
+// ACTIVITIES BY MONTH
+// ============================================
+app.get('/api/activities/monthly/:month', async (req, res) => {
+  const month = req.params.month;
+  if (!/^\d{4}-\d{2}$/.test(month)) {
+    return res.status(400).json({ status: 'error', message: 'Format bulan tidak valid (YYYY-MM)' });
+  }
+  const { data, error } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('status', 'active')
+    .gte('date', `${month}-01`)
+    .lte('date', `${month}-31`)
+    .order('date', { ascending: true });
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  res.json({ status: 'success', data: data || [] });
+});
+
+app.get('/api/activities/archive', async (req, res) => {
+  const { data, error } = await supabase
+    .from('activities')
+    .select('id, title, date, category')
+    .eq('status', 'active')
+    .order('date', { ascending: false });
+  if (error) return res.status(500).json({ status: 'error', message: error.message });
+  const months = {};
+  (data || []).forEach(item => {
+    const monthKey = item.date ? item.date.slice(0, 7) : 'unknown';
+    if (!months[monthKey]) months[monthKey] = [];
+    months[monthKey].push({ id: item.id, title: item.title, date: item.date, category: item.category });
+  });
+  res.json({ status: 'success', months });
+});
 
 app.get('/api/prayer-times', (req, res) => res.json({
   date: new Date().toISOString().split('T')[0],
