@@ -48,9 +48,9 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "https://clerk.possible-kingfish-6.clerk.accounts.dev", "https://*.clerk.accounts.dev"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "blob:", "https:"],
-      connectSrc: ["'self'", "https://clerk.possible-kingfish-6.clerk.accounts.dev", "https://*.clerk.accounts.dev", "https://api.clerk.com"],
+      connectSrc: ["'self'", "https://clerk.possible-kingfish-6.clerk.accounts.dev", "https://*.clerk.accounts.dev", "https://api.clerk.com", "https://api.alquran.cloud", "https://cdn.islamic.network", "https://everyayah.com"],
       fontSrc: ["'self'", "data:"],
-      frameSrc: ["https://*.clerk.accounts.dev"],
+      frameSrc: ["'self'", "https://*.clerk.accounts.dev", "https://www.youtube.com", "https://youtube.com"]
     }
   },
   crossOriginEmbedderPolicy: false
