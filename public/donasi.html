@@ -160,7 +160,7 @@
                     <div style="text-align: center;">
                         <h4>📲 QRIS</h4>
                         <div style="background: var(--light); padding: var(--spacing-6); border-radius: var(--radius-lg); margin-top: var(--spacing-4); display: flex; align-items: center; justify-content: center;">
-                            <div style="font-size: 5rem;">📦</div>
+                            <img src="/images/qris-placeholder.svg" alt="QRIS" style="max-width:200px;width:100%;border:2px solid #e5e7eb;border-radius:12px;">
                         </div>
                         <p style="margin-top: var(--spacing-4); color: var(--gray); font-size: var(--text-sm);">Scan dengan aplikasi e-wallet Anda</p>
                     </div>
@@ -359,8 +359,11 @@
         <div class="container">
             <h2 style="text-align:center;margin-bottom:var(--spacing-12);">📱 Donasi via QRIS</h2>
             <div style="max-width:500px;margin:0 auto;background:white;padding:var(--spacing-8);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
-                <div id="qris-container" style="text-align:center;margin-bottom:var(--spacing-8);">
-                    <p>Memuat QRIS...</p>
+                <div id="qris-container" style="text-align:center;margin-bottom:var(--spacing-8);display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+                    <div id="qris-image" style="max-width:280px;width:100%;border:3px solid #e5e7eb;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0f172a,#1e293b);">
+                        <img src="/images/qris-placeholder.svg" alt="QRIS Masjid Al Karomah" style="width:100%;height:auto;display:block;">
+                    </div>
+                    <p style="margin:0;color:#10b981;font-weight:600;font-size:0.95rem;">🕌 Masjid Al Karomah</p>
                 </div>
                 <form id="qris-form">
                     <div class="form-group">
@@ -406,16 +409,17 @@
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
     <script>
-    // QRIS Section
-    fetch('/api/qris/info').then(r=>r.json()).then(data=>{
-      if (data.status === 'success' && data.data && data.data.qris_static_url) {
-        document.getElementById('qris-container').innerHTML = '<img src="' + data.data.qris_static_url + '" alt="QRIS Masjid" style="max-width:300px;width:100%;border:2px solid #e5e7eb;border-radius:12px;"><p style="margin-top:0.75rem;color:#6b7280;">' + (data.data.merchant_name || 'Masjid Al Karomah') + '</p>';
-      } else {
-        document.getElementById('qris-container').innerHTML = '<p style="color:#6b7280;background:#fef3c7;padding:1rem;border-radius:8px;">⚠️ QRIS belum diaktifkan oleh admin. Silakan gunakan metode donasi lain di atas.</p>';
-      }
-    }).catch(err => {
-      document.getElementById('qris-container').innerHTML = '<p style="color:#ef4444;">Gagal memuat QRIS.</p>';
-    });
+    // QRIS Section - try to load from admin, fallback to placeholder
+    (function loadQris() {
+      const container = document.getElementById('qris-image');
+      const merchantEl = document.querySelector('#qris-container p');
+      fetch('/api/qris/info').then(r => r.json()).then(data => {
+        if (data.status === 'success' && data.data && data.data.qris_static_url) {
+          container.innerHTML = '<img src="' + data.data.qris_static_url + '" alt="QRIS Masjid Al Karomah" style="width:100%;height:auto;display:block;">';
+          if (merchantEl && data.data.merchant_name) merchantEl.textContent = data.data.merchant_name;
+        }
+      }).catch(() => { /* keep placeholder */ });
+    })();
 
     const qrisForm = document.getElementById('qris-form');
     if (qrisForm) {
