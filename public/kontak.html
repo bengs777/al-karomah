@@ -79,7 +79,7 @@
                 <div class="card" style="text-align: center;">
                     <div style="font-size: 2.5rem; margin-bottom: var(--spacing-4);">✉️</div>
                     <h4>Email</h4>
-                    <p><a href="mailto:masjidalkaromahdesabuntu@gmail.com">admin@alkaromah.com</a></p>
+                    <p><a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a></p>
                     <p style="color: var(--gray); margin-top: 0;">Respon cepat dalam 24 jam</p>
                 </div>
             </div>
@@ -125,9 +125,10 @@
                             <textarea id="contact-message" name="message" class="form-control" placeholder="Tuliskan pesan Anda..." required></textarea>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Kirim Pesan</button>
-                    </form>
-                </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Kirim Pesan</button>
+                    <div id="contact-result" style="margin-top:var(--spacing-4);display:none;"></div>
+                </form>
+            </div>
                 
                 <div>
                     <h2 style="margin-bottom: var(--spacing-8);">Lokasi Kami</h2>
@@ -278,7 +279,7 @@
                 </p>
                 <p>
                     📞 <a href="https://wa.me/6285724419648">+62 857-2441-9648</a><br>
-                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">admin@alkaromah.com</a>
+                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a>
                 </p>
                 <p>
                     🕐 <strong>Jam Layanan:</strong><br>
@@ -298,5 +299,42 @@
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = contactForm.querySelector('button[type=submit]');
+        const orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Mengirim...';
+        const data = Object.fromEntries(new FormData(contactForm));
+        try {
+          const res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const json = await res.json();
+          const result = document.getElementById('contact-result');
+          result.style.display = 'block';
+          if (json.status === 'success') {
+            result.innerHTML = '<div style="padding:1rem;background:#d1fae5;border-radius:8px;color:#065f46;font-weight:600;">✅ ' + json.message + '</div>';
+            contactForm.reset();
+          } else {
+            result.innerHTML = '<div style="padding:1rem;background:#fee2e2;border-radius:8px;color:#991b1b;">❌ ' + (json.message || 'Gagal') + '</div>';
+            btn.disabled = false;
+            btn.textContent = orig;
+          }
+        } catch (err) {
+          const result = document.getElementById('contact-result');
+          result.style.display = 'block';
+          result.innerHTML = '<div style="padding:1rem;background:#fee2e2;border-radius:8px;color:#991b1b;">❌ Terjadi kesalahan. Silakan coba lagi.</div>';
+          btn.disabled = false;
+          btn.textContent = orig;
+        }
+      });
+    }
+    </script>
 </body>
 </html>

@@ -103,7 +103,7 @@
                 </p>
                 <p>
                     📞 <a href="https://wa.me/6285724419648">+62 857-2441-9648</a><br>
-                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">admin@alkaromah.com</a>
+                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a>
                 </p>
                 <p>
                     🕐 <strong>Jam Layanan:</strong><br>
@@ -125,7 +125,8 @@
 
     async function loadArticles() {
       try {
-        const res = await fetch('/api/articles/sunnah?category=' + activeCategory);
+        const url = activeCategory === 'all' ? '/api/articles/sunnah' : '/api/articles/sunnah?category=' + activeCategory;
+        const res = await fetch(url);
         const data = await res.json();
         if (data.status === 'success') {
           allArticles = data.data || [];

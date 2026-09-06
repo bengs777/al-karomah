@@ -57,13 +57,12 @@
             <div style="text-align: center; margin-bottom: var(--spacing-12);">
                 <label for="city-select" style="font-weight: var(--font-semibold); margin-right: var(--spacing-4);">Pilih Kota:</label>
                 <select id="city-select" class="form-control" style="width: 300px; max-width: 100%; display: inline-block; margin-top: var(--spacing-2);">
-                    <option>Majalengka</option>
-                    <option>Jakarta Selatan</option>
-                    <option>Jakarta Timur</option>
-                    <option>Jakarta Barat</option>
-                    <option>Bandung</option>
-                    <option>Surabaya</option>
-                    <option>Yogyakarta</option>
+                    <option value="majalengka">Majalengka</option>
+                    <option value="cirebon">Cirebon</option>
+                    <option value="bandung">Bandung</option>
+                    <option value="jakarta">Jakarta</option>
+                    <option value="sumedang">Sumedang</option>
+                    <option value="indramayu">Indramayu</option>
                 </select>
             </div>
         </div>
@@ -330,7 +329,7 @@
                 </p>
                 <p>
                     📞 <a href="https://wa.me/6285724419648">+62 857-2441-9648</a><br>
-                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">admin@alkaromah.com</a>
+                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a>
                 </p>
                 <p>
                     🕐 <strong>Jam Layanan:</strong><br>
@@ -350,5 +349,49 @@
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+    (function() {
+      const citySelect = document.getElementById('city-select');
+      if (!citySelect) return;
+
+      const labels = { subuh:'Subuh', dzuhur:'Dzuhur', ashar:'Ashar', maghrib:'Maghrib', isya:'Isya' };
+      const prayers = ['subuh','dzuhur','ashar','maghrib','isya'];
+
+      function render(times, dateStr) {
+        const h3 = document.querySelector('h3.section-title-h, .section h3');
+        const titleEl = document.querySelector('section.section-light h3');
+        if (titleEl && dateStr) titleEl.textContent = 'Waktu Sholat - ' + dateStr;
+
+        prayers.forEach(prayer => {
+          const time = times[prayer];
+          if (!time) return;
+          // Find the card with this prayer name (h4)
+          const cards = document.querySelectorAll('section.section-light .card');
+          cards.forEach(card => {
+            const h4 = card.querySelector('h4');
+            if (h4 && h4.textContent.trim() === labels[prayer]) {
+              const timeEl = card.querySelector('div[style*="text-4xl"]');
+              if (timeEl) timeEl.textContent = time;
+            }
+          });
+        });
+      }
+
+      async function load(city) {
+        try {
+          const res = await fetch('/api/prayer-times?city=' + encodeURIComponent(city));
+          const data = await res.json();
+          if (data.times) {
+            render(data.times, data.date);
+          }
+        } catch (e) {
+          console.error('Failed to load prayer times', e);
+        }
+      }
+
+      citySelect.addEventListener('change', () => load(citySelect.value));
+      load(citySelect.value);
+    })();
+    </script>
 </body>
 </html>

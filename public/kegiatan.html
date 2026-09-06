@@ -266,7 +266,7 @@
                     <a href="https://facebook.com/groups/1131267470932783/" title="Facebook" target="_blank">f</a>
                     <a href="https://instagram.com/masjidalkaromah" title="Instagram" target="_blank">📷</a>
                     <a href="https://youtube.com/@kabarbuntu?si=Lt9rbACCLZc5M2rJ" title="YouTube" target="_blank">▶️</a>
-                    <a href="https://wa.me/62857244196486281234567890" title="WhatsApp" target="_blank">💬</a>
+                    <a href="https://wa.me/6285724419648" title="WhatsApp" target="_blank">💬</a>
                 </div>
             </div>
             
@@ -299,8 +299,8 @@
                     Kecamatan Ligung, Kabupaten Majalengka
                 </p>
                 <p>
-                    📞 <a href="https://wa.me/62857244196486281234567890">+62 812-3456-7890</a><br>
-                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">admin@alkaromah.com</a>
+                    📞 <a href="https://wa.me/6285724419648">+62 857-2441-9648</a><br>
+                    ✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a>
                 </p>
                 <p>
                     🕐 <strong>Jam Layanan:</strong><br>
@@ -315,10 +315,72 @@
     </footer>
 
     <!-- ============ FLOATING BUTTONS ============ -->
-    <a href="https://wa.me/62857244196486281234567890" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+    <a href="https://wa.me/6285724419648" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
 
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+    (function() {
+      const grid = document.querySelector('.section .grid-3');
+      if (!grid) return;
+
+      const categoryEmoji = { Kajian:'📚', Pengajian:'👥', Ramadhan:'🌙', Sosial:'🤝', Umum:'🕌' };
+      const typeMap = { Rutin:'kajian', Bulanan:'kajian', Musiman:'ramadhan', Berkala:'sosial' };
+
+      async function load(month) {
+        try {
+          let url = '/api/activities';
+          if (month && month !== 'all') url = '/api/activities/monthly/' + month;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.data && data.data.length > 0) {
+            grid.innerHTML = data.data.map(a => {
+              const cat = (a.category || 'Umum').toLowerCase();
+              const typeMap = { rutin:'kajian', bulanan:'kajian', musiman:'ramadhan', berkala:'sosial' };
+              const filterCat = typeMap[(a.status || 'rutin').toLowerCase()] || cat;
+              return `
+                <div class="activity-card" data-category="${filterCat}">
+                  <div class="activity-image">
+                    <div style="background: linear-gradient(135deg, #10b981, #34d399); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">${categoryEmoji[a.category] || '🕌'}</div>
+                  </div>
+                  <div class="activity-content">
+                    <span class="badge ${a.category === 'Kajian' ? 'badge-primary' : 'badge-secondary'}">${a.category || 'Umum'}</span>
+                    <h4 class="activity-title">${a.title}</h4>
+                    <div class="activity-meta">
+                      <div class="activity-meta-item">📅 ${a.date || ''} ${a.time || ''}</div>
+                      <div class="activity-meta-item">👤 ${a.speaker || '-'}</div>
+                      <div class="activity-meta-item">📍 ${a.location || '-'}</div>
+                    </div>
+                    <p class="activity-description">${a.description || ''}</p>
+                    <div class="activity-footer">
+                      <a href="https://wa.me/6285724419648?text=${encodeURIComponent('Assalamualaikum, saya ingin info kegiatan: ' + a.title)}" class="btn btn-primary btn-sm">Info via WhatsApp</a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+            // re-bind filter
+            const filterBtns = document.querySelectorAll('[data-filter]');
+            filterBtns.forEach(btn => {
+              btn.addEventListener('click', () => {
+                filterBtns.forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-primary-outline'); });
+                btn.classList.remove('btn-primary-outline');
+                btn.classList.add('btn-primary');
+                const f = btn.dataset.filter;
+                document.querySelectorAll('.activity-card').forEach(card => {
+                  card.style.display = (f === '*' || card.dataset.category === f) ? '' : 'none';
+                });
+              });
+            });
+          }
+        } catch (e) { console.error('Failed to load activities', e); }
+      }
+
+      const monthSel = document.getElementById('month-filter');
+      if (monthSel) monthSel.addEventListener('change', () => load(monthSel.value));
+      load('all');
+    })();
+    </script>
 </body>
 </html>
