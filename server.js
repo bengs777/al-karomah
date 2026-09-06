@@ -36,8 +36,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 
 console.log('Connected to Supabase:', SUPABASE_URL);
 
-console.log('Connected to Supabase:', supabaseUrl);
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -621,7 +619,12 @@ app.put('/api/admin/settings/:key', requireAdmin, async (req, res) => {
 
 app.use((req, res) => res.status(404).json({ status: 'error', message: 'Halaman tidak ditemukan' }));
 app.use((err, req, res, next) => {
-  console.error('Server error:', err.stack);
+  console.error('[ERROR]', new Date().toISOString());
+  console.error('URL:', req.method, req.originalUrl);
+  console.error('Message:', err.message);
+  console.error('Stack:', err.stack);
+  if (err.code) console.error('Code:', err.code);
+  if (err.status) console.error('Status:', err.status);
   res.status(500).json({ status: 'error', message: process.env.NODE_ENV === 'production' ? 'Terjadi kesalahan pada server' : err.message });
 });
 
