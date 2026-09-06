@@ -34,43 +34,9 @@ if (document.querySelector('#city-select')) {
 }
 
 // ---- DONASI PAGE ----
+// Form handler ada di inline script donasi.html
 if (document.getElementById('donation-form')) {
-  document.getElementById('donation-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const form = this;
-    const data = Form.serialize(form);
-
-    // Save to DB via API
-    const payload = {
-      donor_name: data['donor-name'],
-      donor_email: data['donor-email'],
-      amount: Number(data['donation-amount']),
-      program: data['donation-program'],
-      method: data['donation-method'],
-      note: data['donation-note'] || ''
-    };
-
-    fetch('/api/donations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(res => res.json()).then(result => {
-      if (result.status === 'success') {
-        Form.clear(form);
-        Notification.success('Terima kasih! Pesan Anda akan dikirim via WhatsApp.');
-        // Open WhatsApp
-        const message = `Halo, saya ingin mengirim pesan melalui website:\nNama: ${data.name}\nEmail: ${data.email}\nNo. WhatsApp: ${data.phone}\nSubjek: ${data.subject}\nPesan: ${data.message}`;
-        setTimeout(() => {
-          window.open(`https://wa.me/6285724419648?text=${encodeURIComponent(message)}`, '_blank');
-        }, 1000);
-      } else {
-        Notification.error(result.message || 'Gagal mengirim pesan');
-      }
-    }).catch(err => {
-      console.error('Contact error:', err);
-      Notification.error('Terjadi kesalahan. Silakan coba lagi.');
-    });
-  });
+  /* delegated to inline script in donasi.html */
 }
 
 // ---- KEGIATAN PAGE ----

@@ -71,7 +71,7 @@
                         </div>
                         <p style="margin: var(--spacing-2) 0 0 0; color: var(--primary-dark); font-weight: var(--font-bold);">Rp 65.000.000 / Rp 100.000.000</p>
                     </div>
-                    <a href="/donasi/operasional" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
+                    <a href="#qris-section" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
                 </div>
                 
                 <div class="card">
@@ -85,7 +85,7 @@
                         </div>
                         <p style="margin: var(--spacing-2) 0 0 0; color: var(--secondary); font-weight: var(--font-bold);">Rp 45.000.000 / Rp 100.000.000</p>
                     </div>
-                    <a href="/donasi/santunan" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
+                    <a href="#qris-section" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
                 </div>
                 
                 <div class="card">
@@ -99,7 +99,7 @@
                         </div>
                         <p style="margin: var(--spacing-2) 0 0 0; color: #3b82f6; font-weight: var(--font-bold);">Rp 30.000.000 / Rp 100.000.000</p>
                     </div>
-                    <a href="/donasi/renovasi" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
+                    <a href="#qris-section" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
                 </div>
                 
                 <div class="card">
@@ -113,7 +113,7 @@
                         </div>
                         <p style="margin: var(--spacing-2) 0 0 0; color: #ec4899; font-weight: var(--font-bold);">Rp 55.000.000 / Rp 100.000.000</p>
                     </div>
-                    <a href="/donasi/pendidikan" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
+                    <a href="#qris-section" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-6);">Donasi Sekarang</a>
                 </div>
             </div>
         </div>
@@ -152,11 +152,11 @@
                         <h4>💳 Rekening Bank</h4>
                         <div style="background: var(--light); padding: var(--spacing-6); border-radius: var(--radius-lg); margin-top: var(--spacing-4);">
                         <p style="margin: 0; color: var(--gray); font-size: var(--text-sm);">Bank BRI a.n. Masjid Al Karomah</p>
-                        <p style="margin: var(--spacing-2) 0 0 0; font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-dark); font-family: monospace;">1234-56-78901234-5</p>
+                        <p id="rekening-number" style="margin: var(--spacing-2) 0 0 0; font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--primary-dark); font-family: monospace;">1234-56-78901234-5</p>
                         <p style="margin: var(--spacing-2) 0 0 0; color: var(--gray); font-size: var(--text-sm);">a.n. Masjid Al Karomah</p>
                         <p style="margin-top: var(--spacing-4); color: var(--gray); font-size: var(--text-xs);">Hubungi kami via WhatsApp untuk info rekening lain.</p>
                         </div>
-                        <button class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-4);">Salin Nomor Rekening</button>
+                        <button id="copy-rekening" class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-4);">📋 Salin Nomor Rekening</button>
                     </div>
                     
                     <div style="text-align: center;">
@@ -292,16 +292,16 @@
             
             <div style="text-align: center;">
                 <p style="color: var(--gray); margin-bottom: var(--spacing-6);">Laporan donasi transparan disajikan setiap bulan sebagai bentuk akuntabilitas kepada para donatur.</p>
-                <a href="/donasi/laporan-lengkap" class="btn btn-primary">Lihat Laporan Lengkap</a>
+                <a href="https://wa.me/6285724419648?text=Assalamu'alaikum,%20saya%20ingin%20meminta%20laporan%20lengkap%20donasi%20Masjid%20Al%20Karomah" class="btn btn-primary" target="_blank">📊 Minta Laporan via WhatsApp</a>
             </div>
         </div>
     </section>
 
     <!-- ============ QRIS DONATION ============ -->
-    <section class="section" style="background:var(--light);">
+    <section id="qris-section" class="section" style="background:linear-gradient(135deg,#0f766e,#10b981,#34d399);">
         <div class="container">
-            <h2 style="text-align:center;margin-bottom:var(--spacing-12);">📱 Donasi via QRIS</h2>
-            <div style="max-width:500px;margin:0 auto;background:white;padding:var(--spacing-8);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+            <h2 style="text-align:center;margin-bottom:var(--spacing-12);color:white;">📱 Donasi via QRIS</h2>
+            <div style="max-width:500px;margin:0 auto;background:white;padding:var(--spacing-8);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
                 <div id="qris-container" style="text-align:center;margin-bottom:var(--spacing-8);display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
                     <div id="qris-image" style="max-width:280px;width:100%;border:3px solid #e5e7eb;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0f172a,#1e293b);">
                         <img src="/images/qris-placeholder.svg" alt="QRIS Masjid Al Karomah" style="width:100%;height:auto;display:block;">
@@ -311,7 +311,7 @@
                 <form id="qris-form">
                     <div class="form-group">
                         <label class="form-label">Nama Donatur *</label>
-                        <input type="text" name="donor_name" class="form-control" required>
+                        <input type="text" name="donor_name" class="form-control" placeholder="Nama lengkap Anda" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">No. WhatsApp</label>
@@ -321,11 +321,13 @@
                         <label class="form-label">Program *</label>
                         <select name="program" class="form-control" required>
                             <option value="">-- Pilih Program --</option>
-                            <option value="Infaq Operasional Masjid">Infaq Operasional</option>
+                            <option value="Infaq Operasional Masjid">Infaq Operasional Masjid</option>
                             <option value="Zakat">Zakat</option>
                             <option value="Sedekah">Sedekah</option>
                             <option value="Pembangunan Masjid">Pembangunan Masjid</option>
                             <option value="Santunan Yatim">Santunan Yatim</option>
+                            <option value="Renovasi">Renovasi & Pemeliharaan</option>
+                            <option value="Pendidikan">Program Pendidikan</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -334,10 +336,10 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Catatan</label>
-                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="Masukkan doa atau harapan Anda..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;">
-                        💰 Buat Kode Pembayaran
+                    <button type="submit" class="btn btn-primary" style="width:100%;padding:0.75rem;background:#10b981;">
+                        💰 Bayar via QRIS
                     </button>
                 </form>
                 <div id="qris-result" style="margin-top:var(--spacing-4);display:none;"></div>
@@ -411,6 +413,29 @@
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
     <script>
+    // Copy rekening number
+    document.getElementById('copy-rekening')?.addEventListener('click', function() {
+      const text = document.getElementById('rekening-number')?.textContent || '1234-56-78901234-5';
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-rekening');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Tersalin!';
+        btn.style.background = '#10b981';
+        setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const btn = document.getElementById('copy-rekening');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Tersalin!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      });
+    });
+
     // QRIS Section - try to load from admin, fallback to placeholder
     (function loadQris() {
       const container = document.getElementById('qris-image');
@@ -430,7 +455,7 @@
         const data = Object.fromEntries(new FormData(qrisForm));
         const result = document.getElementById('qris-result');
         result.style.display = 'block';
-        result.innerHTML = '<p>Memproses...</p>';
+        result.innerHTML = '<p style="color:#6b7280;">Memproses...</p>';
         try {
           const res = await fetch('/api/donations/qris', {
             method: 'POST',
@@ -446,6 +471,49 @@
           }
         } catch (err) {
           result.innerHTML = '<p style="color:#ef4444;background:#fee2e2;padding:1rem;border-radius:8px;">❌ Gagal memproses</p>';
+        }
+      });
+    }
+
+    // Konfirmasi donasi form
+    const donationForm = document.getElementById('donation-form');
+    if (donationForm) {
+      donationForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = donationForm.querySelector('button[type=submit]');
+        const orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Mengirim...';
+        const formData = new FormData(donationForm);
+        const payload = {
+          donor_name: formData.get('donor-name'),
+          donor_email: formData.get('donor-email'),
+          donor_phone: formData.get('donor-email'),
+          amount: Number(formData.get('donation-amount')),
+          program: formData.get('donation-program'),
+          method: formData.get('donation-method'),
+          note: formData.get('donation-note') || ''
+        };
+        try {
+          const res = await fetch('/api/donations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const json = await res.json();
+          if (json.status === 'success') {
+            const waMsg = 'Assalamu\'alaikum, saya ingin konfirmasi donasi:\n\nNama: ' + payload.donor_name + '\nProgram: ' + payload.program + '\nJumlah: Rp ' + payload.amount.toLocaleString('id-ID') + '\nMetode: ' + payload.method + '\nCatatan: ' + payload.note;
+            const waUrl = 'https://wa.me/6285724419648?text=' + encodeURIComponent(waMsg);
+            donationForm.innerHTML = '<div style="text-align:center;padding:2rem;"><div style="font-size:4rem;margin-bottom:1rem;">✅</div><h3 style="color:#10b981;margin-bottom:1rem;">Terima Kasih!</h3><p>Donasi Anda telah tercatat. Silakan hubungi kami via WhatsApp untuk konfirmasi transfer.</p><a href="' + waUrl + '" class="btn btn-primary" style="margin-top:1.5rem;display:inline-flex;" target="_blank">💬 Hubungi via WhatsApp</a></div>';
+          } else {
+            btn.disabled = false;
+            btn.textContent = orig;
+            alert(json.message || 'Gagal mengirim');
+          }
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = orig;
+          alert('Terjadi kesalahan. Silakan coba lagi.');
         }
       });
     }
