@@ -19,8 +19,10 @@
         .filter-tab:hover { background:#e5e7eb; }
         .filter-tab.active { background:#10b981; color:white; }
     </style>
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
     <div class="scroll-progress"></div>
 
     <nav class="navbar">
@@ -42,7 +44,8 @@
         </div>
     </nav>
 
-    <section style="background:linear-gradient(rgba(15,23,42,0.7),rgba(15,23,42,0.7)),url('/images/Masjid.png') center/cover no-repeat;color:white;padding:calc(70px + 3rem) 1rem 3rem;">
+    
+    <main id="main-content"><section style="background:linear-gradient(rgba(15,23,42,0.7),rgba(15,23,42,0.7)),url('/images/Masjid.png') center/cover no-repeat;color:white;padding:calc(70px + 3rem) 1rem 3rem;">
         <div class="container">
             <h1>📚 Artikel Sunnah</h1>
             <p style="color:#e5e7eb;">Pelajaran islami berdasarkan Al-Quran &amp; Hadits Shahih — Manhaj Ahlussunnah waljama'ah</p>
@@ -70,6 +73,8 @@
             </div>
         </div>
     </section>
+    </main>
+
 
     <footer>
         <div class="footer-container">
@@ -227,6 +232,21 @@
       const filtered = allArticles.filter(a => a.title.toLowerCase().includes(term));
       renderArticles(filtered);
     });
+    </script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
     </script>
 </body>
 </html>

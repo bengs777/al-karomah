@@ -3,15 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Masjid Al Karomah - Pusat Ibadah, Dakwah, Pendidikan Islam, dan Pelayanan Umat di Desa Buntu, Majalengka">
+    <meta name="description" content="Masjid Al Karomah - Pusat Ibadah, Dakwah, Pendidikan Islam, dan Pelayanan Umat di Desa Buntu, Majalengka. Jadwal sholat, donasi, kajian, dan layanan umat.">
+    <meta name="keywords" content="masjid, al karomah, majalengka, jadwal sholat, donasi masjid, kajian, zakat, qurban, sunnah, desa buntu, lingung">
+    <meta name="author" content="Masjid Al Karomah">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#10b981">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Masjid Al Karomah - Pusat Ibadah & Pelayanan Umat">
+    <meta property="og:description" content="Pusat ibadah, dakwah, dan pelayanan umat di Desa Buntu, Majalengka. Jadwal sholat, donasi, kajian Islam, dan layanan umat.">
+    <meta property="og:url" content="/">
+    <meta property="og:site_name" content="Masjid Al Karomah">
+    <meta property="og:image" content="/images/Masjid.png">
+    <meta property="og:locale" content="id_ID">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Masjid Al Karomah">
+    <meta name="twitter:description" content="Pusat ibadah, dakwah, dan pelayanan umat di Majalengka">
+    <meta name="twitter:image" content="/images/Masjid.png">
+    
+    <link rel="canonical" href="/">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <title>Beranda - Masjid Al Karomah</title>
+    <link rel="apple-touch-icon" href="/images/Masjid.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <title>Masjid Al Karomah - Pusat Ibadah, Dakwah & Pelayanan Umat</title>
+    
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/components.css">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ReligiousOrganization",
+      "name": "Masjid Al Karomah",
+      "description": "Pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat",
+      "url": "/",
+      "logo": "/images/Masjid.png",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Desa Buntu",
+        "addressLocality": "Ligung",
+        "addressRegion": "Jawa Barat",
+        "postalCode": "45465",
+        "addressCountry": "ID"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "-6.7523",
+        "longitude": "108.3126"
+      },
+      "openingHoursSpecification": [{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "00:00",
+        "closes": "23:59"
+      }],
+      "sameAs": [
+        "https://www.facebook.com/masjidalakromah",
+        "https://www.instagram.com/masjidalakromah"
+      ]
+    }
+    </script>
+    
     <!-- Clerk Authentication -->
     <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
 </head>
 <body>
+    <!-- ============ SKIP TO CONTENT (A11y) ============ -->
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+
     <!-- ============ SCROLL PROGRESS ============ -->
     <div class="scroll-progress"></div>
 
@@ -23,7 +84,7 @@
                 <span>Al Karomah</span>
             </a>
             
-            <button class="navbar-toggle">☰</button>
+            <button class="navbar-toggle" aria-label="Toggle navigation menu">☰</button>
             
             <ul class="navbar-menu">
                 <li><a href="/">Beranda</a></li>
@@ -38,10 +99,18 @@
                 <li><a href="/media">Media</a></li>
                 <li><a href="/kontak">Kontak</a></li>
                 <li><a href="/saran">Saran</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                </li>
                 <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
             </ul>
         </div>
     </nav>
+
+    <main id="main-content">
 
     <!-- ============ HERO SECTION ============ -->
     <section class="hero">
@@ -362,6 +431,8 @@
         </div>
     </section>
 
+    </main>
+
     <!-- ============ FOOTER ============ -->
     <footer>
         <div class="footer-container">
@@ -426,5 +497,22 @@
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+      // Theme Toggle Logic
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
 </body>
 </html>

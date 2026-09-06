@@ -10,8 +10,10 @@
     <link rel="stylesheet" href="/css/components.css">
     <!-- Clerk Authentication -->
     <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
     <!-- ============ SCROLL PROGRESS ============ -->
     <div class="scroll-progress"></div>
 
@@ -42,7 +44,8 @@
         </div>
     </nav>
 
-    <!-- ============ PAGE TITLE ============ -->
+    
+    <main id="main-content"><!-- ============ PAGE TITLE ============ -->
     <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
         <div class="container">
             <h1>Layanan Masjid</h1>
@@ -259,6 +262,8 @@
     </section>
 
     <!-- ============ FOOTER ============ -->
+    </main>
+
     <footer>
         <div class="footer-container">
             <div class="footer-col">
@@ -310,5 +315,20 @@
     <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
 </body>
 </html>

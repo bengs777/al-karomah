@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Profil Masjid Al Karomah - Sejarah, Visi & Misi">
+    <meta name="description" content="Profil Masjid Al Karomah - Sejarah, Visi Misi, dan Struktur Organisasi Masjid Al Karomah di Desa Buntu, Majalengka">
+    <meta name="keywords" content="masjid al karomah, profil masjid, sejarah masjid, visi misi masjid, majalengka">
+    <meta name="theme-color" content="#10b981">
+    <meta property="og:title" content="Profil Masjid Al Karomah">
+    <meta property="og:description" content="Mengenal lebih dekat sejarah, visi misi, dan program Masjid Al Karomah">
+    <meta property="og:image" content="/images/Masjid.png">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="/profil">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <title>Profil - Masjid Al Karomah</title>
+    <link rel="manifest" href="/manifest.json">
+    <title>Profil Masjid Al Karomah - Sejarah & Visi Misi</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/components.css">
-    <!-- Clerk Authentication -->
     <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
 </head>
 <body>
-    <!-- ============ SCROLL PROGRESS ============ -->
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
     <div class="scroll-progress"></div>
 
-    <!-- ============ NAVBAR ============ -->
     <nav class="navbar">
         <div class="navbar-container">
             <a href="/" class="navbar-brand">
@@ -23,7 +29,7 @@
                 <span>Al Karomah</span>
             </a>
             
-            <button class="navbar-toggle">☰</button>
+            <button class="navbar-toggle" aria-label="Toggle navigation">☰</button>
             
             <ul class="navbar-menu">
                 <li><a href="/">Beranda</a></li>
@@ -38,11 +44,17 @@
                 <li><a href="/media">Media</a></li>
                 <li><a href="/kontak">Kontak</a></li>
                 <li><a href="/saran">Saran</a></li>
-                <li><a href="/admin" class="btn btn-primary btn-sm">Admin</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                </li>
             </ul>
         </div>
     </nav>
 
+    <main id="main-content">
     <!-- ============ PAGE TITLE ============ -->
     <section style="background: linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/Masjid.png') center/cover no-repeat; color: white; padding: calc(70px + var(--spacing-12)) var(--spacing-4) var(--spacing-12);">
         <div class="container">
@@ -318,11 +330,26 @@
         </div>
     </footer>
 
-    <!-- ============ FLOATING BUTTONS ============ -->
+    </main>
+
     <a href="https://wa.me/6285724419648" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
 
-    <!-- ============ SCRIPTS ============ -->
     <script src="/js/utils.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
 </body>
 </html>

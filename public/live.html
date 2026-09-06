@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Live Streaming Masjid Al Karomah - Saksikan kajian, ceramah, dan ibadah secara langsung dari Masjid Al Karomah Majalengka">
+    <meta name="theme-color" content="#10b981">
+    <meta property="og:type" content="video.other">
+    <meta property="og:title" content="Live Streaming - Masjid Al Karomah">
+    <meta property="og:description" content="Saksikan kajian dan ibadah secara langsung dari Masjid Al Karomah">
+    <meta property="og:image" content="/images/Masjid.png">
+    <link rel="canonical" href="/live">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <title>Live Streaming - Masjid Al Karomah</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Live Streaming Masjid Al Karomah",
+      "description": "Live streaming kajian dan ibadah dari Masjid Al Karomah",
+      "thumbnailUrl": "/images/Masjid.png",
+      "uploadDate": "2026-09-06T00:00:00+07:00",
+      "contentUrl": "/live"
+    }
+    </script>
+    <script src="https://cdn.clerk.dev/v1/clerk.js"></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    <div class="scroll-progress"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <span>🕌</span>
+                <span>Al Karomah</span>
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation menu">☰</button>
+            <ul class="navbar-menu">
+                <li><a href="/">Beranda</a></li>
+                <li><a href="/profil">Profil</a></li>
+                <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                <li><a href="/kegiatan">Kegiatan</a></li>
+                <li><a href="/layanan">Layanan</a></li>
+                <li><a href="/artikel">Artikel</a></li>
+                <li><a href="/artikel-sunnah">Artikel Sunnah</a></li>
+                <li><a href="/live" class="active">Live</a></li>
+                <li><a href="/zakat">Zakat</a></li>
+                <li><a href="/donasi">Donasi</a></li>
+                <li><a href="/media">Media</a></li>
+                <li><a href="/kontak">Kontak</a></li>
+                <li><a href="/saran">Saran</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <section class="section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>📡 Live Streaming Masjid</h2>
+                    <p>Saksikan kajian, ceramah, dan ibadah secara langsung</p>
+                </div>
+
+                <div class="live-container" style="max-width: 1000px; margin: 0 auto;">
+                    <div class="live-status" id="liveStatus" style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--bg-secondary); border-radius: var(--radius-lg); margin-bottom: var(--spacing-6);">
+                        <span class="live-dot" id="liveDot" style="width: 12px; height: 12px; border-radius: 50%; background: var(--gray); display: inline-block;"></span>
+                        <strong id="liveStatusText">Memuat status live...</strong>
+                        <span style="margin-left: auto; font-size: var(--text-sm); color: var(--text-muted);" id="viewerCount"></span>
+                    </div>
+
+                    <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; background: #000; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-2xl);">
+                        <div id="videoContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; flex-direction: column; gap: 16px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 4rem; margin-bottom: 16px;">🕌</div>
+                                <h3 style="color: white; margin-bottom: 8px;">Belum Ada Siaran</h3>
+                                <p style="color: #94a3b8;">Live streaming akan dimulai sesuai jadwal kegiatan</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); padding: var(--spacing-6); border-radius: var(--radius-xl); margin-top: var(--spacing-6);">
+                        <h3 style="margin-bottom: var(--spacing-4);">📅 Jadwal Live Streaming</h3>
+                        <ul class="schedule-list" style="list-style: none; padding: 0;">
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><strong>Subuh</strong></span>
+                                <span style="color: var(--text-muted);">04:30 WIB</span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><strong>Kajian Subuh (Sabtu)</strong></span>
+                                <span style="color: var(--text-muted);">05:30 WIB</span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><strong>Dzuhur & Kultum</strong></span>
+                                <span style="color: var(--text-muted);">12:00 WIB</span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><strong>Ashar</strong></span>
+                                <span style="color: var(--text-muted);">15:30 WIB</span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><strong>Maghrib & Kultum</strong></span>
+                                <span style="color: var(--text-muted);">18:00 WIB</span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                                <span><strong>Isya & Kajian Malam (Selasa & Jumat)</strong></span>
+                                <span style="color: var(--text-muted);">19:30 WIB</span>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                                <span><strong>Kajian Minggu (Ahad)</strong></span>
+                                <span style="color: var(--text-muted);">09:00 WIB</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); padding: var(--spacing-6); border-radius: var(--radius-xl); margin-top: var(--spacing-6); text-align: center;">
+                        <h3>📺 Tonton Juga di Platform Lain</h3>
+                        <div class="flex" style="justify-content: center; gap: 16px; margin-top: var(--spacing-4); flex-wrap: wrap;">
+                            <a href="https://youtube.com/@kabarbuntu?si=Lt9rbACCLZc5M2rJ" target="_blank" class="btn btn-primary">▶️ YouTube</a>
+                            <a href="https://www.facebook.com/groups/1131267470932783/" target="_blank" class="btn btn-primary">📘 Facebook</a>
+                            <a href="https://instagram.com/masjidalkaromah" target="_blank" class="btn btn-primary">📷 Instagram</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Tentang Masjid Al Karomah</h4>
+                <p>Masjid Al Karomah merupakan pusat ibadah, dakwah, pendidikan Islam, dan pelayanan umat di Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigasi Cepat</h4>
+                <ul>
+                    <li><a href="/">Beranda</a></li>
+                    <li><a href="/profil">Profil Masjid</a></li>
+                    <li><a href="/jadwal-sholat">Jadwal Sholat</a></li>
+                    <li><a href="/kegiatan">Kegiatan</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="/layanan">Layanan Masjid</a></li>
+                    <li><a href="/artikel">Artikel Islami</a></li>
+                    <li><a href="/donasi">Donasi</a></li>
+                    <li><a href="/live">Live Streaming</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontak Kami</h4>
+                <p>📍 Desa Buntu, Kecamatan Ligung, Kabupaten Majalengka</p>
+                <p>📞 <a href="https://wa.me/6285724419648">+62 857-2441-9648</a></p>
+                <p>✉️ <a href="mailto:masjidalkaromahdesabuntu@gmail.com">masjidalkaromahdesabuntu@gmail.com</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Masjid Al Karomah. Semua hak cipta terlindungi.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/6285724419648" class="floating-btn whatsapp-btn" title="Chat WhatsApp">💬</a>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+      
+      // Live status check
+      async function checkLiveStatus() {
+        try {
+          const res = await fetch('/api/live/status');
+          const data = await res.json();
+          const statusDot = document.getElementById('liveDot');
+          const statusText = document.getElementById('liveStatusText');
+          const videoContainer = document.getElementById('videoContainer');
+          
+          if (data.isLive && data.streamUrl) {
+            statusDot.style.background = '#ef4444';
+            statusDot.style.animation = 'pulse 1.5s infinite';
+            statusText.innerHTML = '🔴 LIVE - ' + (data.title || 'Siaran Langsung');
+            document.getElementById('viewerCount').textContent = (data.viewers || 0) + ' penonton';
+            videoContainer.innerHTML = '<iframe src="' + data.streamUrl + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe>';
+          } else {
+            statusDot.style.background = '#6b7280';
+            statusText.textContent = '⚫ Offline - Siaran akan dimulai sesuai jadwal';
+          }
+        } catch (err) {
+          document.getElementById('liveStatusText').textContent = '⚫ Offline';
+        }
+      }
+      
+      checkLiveStatus();
+      setInterval(checkLiveStatus, 60000);
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+</body>
+</html>

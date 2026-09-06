@@ -24,8 +24,10 @@
         .btn-primary:hover { background:#059f74; }
         .btn-primary:disabled { background:#9ca3af; cursor:not-allowed; }
     </style>
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
     <div class="scroll-progress"></div>
 
     <nav class="navbar">
@@ -47,7 +49,8 @@
         </div>
     </nav>
 
-    <section style="background:linear-gradient(rgba(15,23,42,0.7),rgba(15,23,42,0.7)),url('/images/Masjid.png') center/cover no-repeat;color:white;padding:calc(70px + 3rem) 1rem 3rem;">
+    
+    <main id="main-content"><section style="background:linear-gradient(rgba(15,23,42,0.7),rgba(15,23,42,0.7)),url('/images/Masjid.png') center/cover no-repeat;color:white;padding:calc(70px + 3rem) 1rem 3rem;">
         <div class="container">
             <h1>💰 Kalkulator Zakat</h1>
             <p style="color:#e5e7eb;">Hitung zakat Anda sesuai syariat Islam — Manhaj Salafush Shalih</p>
@@ -163,6 +166,8 @@
             </div>
         </div>
     </section>
+    </main>
+
 
     <footer>
         <div class="footer-container">
@@ -286,6 +291,21 @@
         resultDiv.innerHTML = '<p style="color:#ef4444;background:#fee2e2;padding:1rem;border-radius:8px;">❌ Gagal menghitung</p>';
       }
     });
+    </script>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
     </script>
 </body>
 </html>

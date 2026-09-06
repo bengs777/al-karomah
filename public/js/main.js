@@ -201,3 +201,46 @@ if (document.querySelectorAll('[data-filter]').length > 0 && document.querySelec
 if (typeof CONFIG !== 'undefined' && CONFIG.clerkPublishableKey) {
   // CONFIG.clerkPublishableKey is set by utils.js
 }
+
+// ---- DARK MODE TOGGLE ----
+(function() {
+  const themeToggle = document.getElementById('themeToggle');
+  if (!themeToggle) return;
+  
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch(e) {}
+  });
+})();
+
+// ---- LAZY LOAD IMAGES ----
+(function() {
+  if ('loading' in HTMLImageElement.prototype) {
+    document.querySelectorAll('img:not([loading])').forEach(img => {
+      img.loading = 'lazy';
+    });
+  }
+})();
+
+// ---- BACK TO TOP BUTTON ----
+(function() {
+  const btn = document.createElement('button');
+  btn.innerHTML = '↑';
+  btn.className = 'back-to-top';
+  btn.setAttribute('aria-label', 'Back to top');
+  document.body.appendChild(btn);
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+  
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();

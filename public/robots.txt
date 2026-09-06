@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /profil
+Allow: /jadwal-sholat
+Allow: /kegiatan
+Allow: /layanan
+Allow: /artikel
+Allow: /artikel-sunnah
+Allow: /zakat
+Allow: /donasi
+Allow: /media
+Allow: /kontak
+Allow: /saran
+Allow: /live
+Allow: /request/sertifikat-kurban
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /dashboard
+
+Sitemap: /sitemap.xml

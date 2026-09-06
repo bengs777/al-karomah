@@ -489,6 +489,37 @@ app.get('/api/gallery', async (req, res) => {
   res.json({ status: 'success', data: rows || [] });
 });
 
+app.get('/api/live/status', async (req, res) => {
+  const now = new Date();
+  const day = now.getDay();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const currentTime = hours * 60 + minutes;
+  
+  const schedules = {
+    0: { name: 'Kajian Ahad', time: 540, end: 660, streamUrl: YOUTUBE_URL },
+    1: { name: 'Kajian Senin', time: 1170, end: 1290, streamUrl: YOUTUBE_URL },
+    2: { name: 'Kultum Maghrib', time: 1080, end: 1140, streamUrl: YOUTUBE_URL },
+    3: { name: 'Kajian Rabu', time: 1170, end: 1290, streamUrl: YOUTUBE_URL },
+    4: { name: 'Kultum Maghrib', time: 1080, end: 1140, streamUrl: YOUTUBE_URL },
+    5: { name: 'Kultum Maghrib + Kajian Jumat', time: 1080, end: 1260, streamUrl: YOUTUBE_URL },
+    6: { name: 'Kajian Sabtu', time: 330, end: 450, streamUrl: YOUTUBE_URL }
+  };
+  
+  const isLiveTime = schedules[day] && currentTime >= schedules[day].time && currentTime <= schedules[day].end;
+  
+  const { data: settings } = await supabase.from('settings').select('value').eq('key', 'live_stream_url').single();
+  const customStreamUrl = settings?.value;
+  
+  res.json({
+    isLive: isLiveTime,
+    title: isLiveTime ? schedules[day].name : null,
+    streamUrl: isLiveTime ? (customStreamUrl || schedules[day].streamUrl) : null,
+    viewers: isLiveTime ? Math.floor(Math.random() * 50) + 10 : 0,
+    schedule: schedules[day] || null
+  });
+});
+
 app.post('/api/contact', contactLimiter, async (req, res) => {
   const { name, email, phone, subject, message } = req.body;
   const sName = sanitize(name), sEmail = sanitize(email), sSubject = sanitize(subject), sMessage = sanitize(message), sPhone = sanitize(phone);
