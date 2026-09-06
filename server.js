@@ -275,6 +275,18 @@ app.post('/api/admin/requests/:id/issue', requireAdmin, async (req, res) => {
   res.json({ message: 'Sertifikat berhasil diterbitkan', certificateNumber, downloadUrl: `/api/user/certificate/${req.params.id}/download` });
 });
 
+app.get('/artikel-sunnah/:slug', (req, res) => {
+  const slug = req.params.slug;
+  if (slug && slug.length > 0) {
+    const filePath = path.join(__dirname, 'public/artikel-sunnah.html');
+    res.sendFile(filePath, (err) => {
+      if (err) res.status(404).send(`<h1>Halaman tidak ditemukan</h1>`);
+    });
+  } else {
+    res.redirect('/artikel-sunnah');
+  }
+});
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
 const pages = ['jadwal-sholat', 'profil', 'kegiatan', 'layanan', 'donasi', 'artikel', 'artikel-sunnah', 'zakat', 'media', 'kontak', 'saran'];
 pages.forEach(page => {

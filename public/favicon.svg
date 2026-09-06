@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fef3c7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" rx="8" fill="url(#bgGrad)"/>
+
+  <!-- Crescent Moon -->
+  <path d="M20 6 C16 6 13 9 13 13 C13 17 16 20 20 20 C17 20 14 17 14 13 C14 9 17 6 20 6 Z"
+        fill="url(#moonGrad)" opacity="0.95"/>
+  <path d="M19 7 C16 7 14 10 14 13 C14 16 16 19 19 19 C16 19 13 16 13 13 C13 10 16 7 19 7 Z"
+        fill="url(#bgGrad)"/>
+
+  <!-- Star -->
+  <path d="M26 10 L27 8 L29 8 L27.5 6.5 L28 4.5 L26 5.5 L24 4.5 L24.5 6.5 L23 8 L25 8 L26 10 Z"
+        fill="#fef3c7"/>
+
+  <!-- Minaret -->
+  <rect x="10" y="18" width="2" height="10" fill="#1f2937"/>
+  <rect x="9" y="17" width="4" height="2" fill="#1f2937"/>
+  <path d="M10 17 L12 14 L14 17 Z" fill="#1f2937"/>
+  <circle cx="12" cy="13" r="1.5" fill="#1f2937"/>
+
+  <!-- Dome -->
+  <path d="M12 24 Q16 20 20 24" stroke="#1f2937" stroke-width="2" fill="none"/>
+  <circle cx="16" cy="22" r="1" fill="#1f2937"/>
+
+  <!-- Base -->
+  <rect x="8" y="26" width="16" height="3" fill="#1f2937" opacity="0.8"/>
+</svg>
