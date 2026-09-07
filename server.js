@@ -69,8 +69,6 @@ app.use(session({
   cookie: { secure: process.env.NODE_ENV === 'production', httpOnly: true, sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-try { app.use(clerkMiddleware()); } catch (e) { console.log('Clerk middleware not loaded'); }
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin/assets', express.static(path.join(__dirname, 'admin/assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
@@ -154,27 +152,27 @@ app.get('/signout', (req, res) => {
   res.redirect(`https://${clerkDomain}/signout?redirect_url=${encodeURIComponent(req.protocol + '://' + req.get('host') + '/')}`);
 });
 
-app.get('/api/user/me', requireAuth(), (req, res) => {
+app.get('/api/user/me', clerkMiddleware(), requireAuth(), (req, res) => {
   const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
   res.json({ userId: req.auth.userId, email: req.auth.email, firstName: req.auth.firstName, lastName: req.auth.lastName, isAdmin: adminEmails.includes(req.auth.email?.toLowerCase() || '') });
 });
 
-app.get('/dashboard', requireAuth(), (req, res) => res.sendFile(path.join(__dirname, 'public/dashboard.html')));
-app.get('/request/sertifikat-kurban', requireAuth(), (req, res) => res.sendFile(path.join(__dirname, 'public/request/sertifikat-kurban.html')));
+app.get('/dashboard', clerkMiddleware(), requireAuth(), (req, res) => res.sendFile(path.join(__dirname, 'public/dashboard.html')));
+app.get('/request/sertifikat-kurban', clerkMiddleware(), requireAuth(), (req, res) => res.sendFile(path.join(__dirname, 'public/request/sertifikat-kurban.html')));
 
-app.get('/api/user/requests/:id', requireAuth(), async (req, res) => {
+app.get('/api/user/requests/:id', clerkMiddleware(), requireAuth(), async (req, res) => {
   const { data: row, error } = await supabase.from('service_requests').select('*').eq('id', req.params.id).eq('clerk_user_id', req.auth.userId).single();
   if (error || !row) return res.status(404).json({ error: 'Request not found' });
   res.json({ data: row });
 });
 
-app.get('/api/user/requests', requireAuth(), async (req, res) => {
+app.get('/api/user/requests', clerkMiddleware(), requireAuth(), async (req, res) => {
   const { data: rows, error } = await supabase.from('service_requests').select('*').eq('clerk_user_id', req.auth.userId).order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data: rows || [] });
 });
 
-app.post('/api/user/request-sertifikat', requireAuth(), upload.single('payment_proof'), async (req, res) => {
+app.post('/api/user/request-sertifikat', clerkMiddleware(), requireAuth(), upload.single('payment_proof'), async (req, res) => {
   const { name, whatsapp, address, qurban_name, animal_type, portion_count, qurban_year, behalf_of, notes } = req.body;
   if (!name || !qurban_name || !animal_type || !portion_count || !qurban_year) return res.status(400).json({ error: 'Data tidak lengkap' });
 
@@ -208,7 +206,7 @@ app.post('/api/user/request-sertifikat', requireAuth(), upload.single('payment_p
   res.json({ message: 'Permintaan sertifikat berhasil dikirim', requestId: data.id });
 });
 
-app.get('/api/user/certificate/:id/download', requireAuth(), async (req, res) => {
+app.get('/api/user/certificate/:id/download', clerkMiddleware(), requireAuth(), async (req, res) => {
   const { data: cert, error } = await supabase.from('qurban_certificates').select('*, service_requests(status)').eq('id', req.params.id).eq('clerk_user_id', req.auth.userId).single();
   if (error || !cert) return res.status(404).json({ error: 'Sertifikat tidak ditemukan' });
   if (cert.service_requests?.status !== 'issued') return res.status(400).json({ error: 'Sertifikat belum diterbitkan' });
