@@ -56,7 +56,8 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
+app.use(cors({ origin: allowedOrigins.length > 0 ? allowedOrigins : 'https://yourdomain.com' }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100, message: { status: 'error', message: 'Terlalu banyak permintaan' } }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -78,8 +79,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 function requireAdmin(req, res, next) {
-  if (req.session && req.session.adminId) return next();
-  if (req.auth && req.auth.userId) {
+  if (req.session?.adminId) return next();
+  if (req.auth?.userId) {
     const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
     if (adminEmails.includes(req.auth.email?.toLowerCase() || '')) return next();
   }
@@ -90,6 +91,7 @@ function requireAdmin(req, res, next) {
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, message: { status: 'error', message: 'Terlalu banyak percobaan login' } });
 const contactLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 5, message: { status: 'error', message: 'Terlalu banyak pesan' } });
 const donationLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 3, message: { status: 'error', message: 'Terlalu banyak donasi' } });
+const adminLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { status: 'error', message: 'Terlalu banyak permintaan API' } });
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[\d\s\-\+\(\)]{8,20}$/;
@@ -216,31 +218,33 @@ app.get('/api/user/certificate/:id/download', requireAuth(), async (req, res) =>
   res.redirect(publicUrlData.publicUrl);
 });
 
-app.get('/api/admin/requests', requireAdmin, async (req, res) => {
+app.get('/api/admin/requests', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('service_requests').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
   res.json({ data: rows || [] });
 });
 
-app.get('/api/admin/requests/:id', requireAdmin, async (req, res) => {
+app.get('/api/admin/requests/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { data: row, error } = await supabase.from('service_requests').select('*').eq('id', req.params.id).single();
   if (error || !row) return res.status(404).json({ error: 'Request not found' });
   res.json({ data: row });
 });
 
-app.post('/api/admin/requests/:id/approve', requireAdmin, async (req, res) => {
-  const { error } = await supabase.from('service_requests').update({ status: 'verified', admin_note: req.body.admin_note, updated_at: new Date().toISOString() }).eq('id', req.params.id);
+app.post('/api/admin/requests/:id/approve', requireAdmin, adminLimiter, async (req, res) => {
+  const adminNote = req.body.admin_note?.substring(0, 500).replace(/[<>]/g, '') || null;
+  const { error } = await supabase.from('service_requests').update({ status: 'verified', admin_note: adminNote, updated_at: new Date().toISOString() }).eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ message: 'Permintaan diverifikasi' });
 });
 
-app.post('/api/admin/requests/:id/reject', requireAdmin, async (req, res) => {
-  const { error } = await supabase.from('service_requests').update({ status: 'rejected', admin_note: req.body.admin_note, updated_at: new Date().toISOString() }).eq('id', req.params.id);
+app.post('/api/admin/requests/:id/reject', requireAdmin, adminLimiter, async (req, res) => {
+  const adminNote = req.body.admin_note?.substring(0, 500).replace(/[<>]/g, '') || null;
+  const { error } = await supabase.from('service_requests').update({ status: 'rejected', admin_note: adminNote, updated_at: new Date().toISOString() }).eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ message: 'Permintaan ditolak' });
 });
 
-app.post('/api/admin/requests/:id/issue', requireAdmin, async (req, res) => {
+app.post('/api/admin/requests/:id/issue', requireAdmin, adminLimiter, async (req, res) => {
   const { data: row, error } = await supabase.from('service_requests').select('*').eq('id', req.params.id).eq('status', 'verified').single();
   if (error || !row) return res.status(400).json({ error: 'Request not found or not verified' });
 
@@ -275,16 +279,24 @@ app.post('/api/admin/requests/:id/issue', requireAdmin, async (req, res) => {
   res.json({ message: 'Sertifikat berhasil diterbitkan', certificateNumber, downloadUrl: `/api/user/certificate/${req.params.id}/download` });
 });
 
+/**
+ * Validate slug format - only allows alphanumeric characters, hyphens, and underscores
+ * Prevents path traversal attacks in the /artikel-sunnah/:slug endpoint
+ * @param {string} slug - The slug to validate
+ * @returns {boolean} - True if slug is valid, false otherwise
+ */
+function validateSlug(slug) {
+  if (!slug || typeof slug !== 'string') return false;
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 app.get('/artikel-sunnah/:slug', (req, res) => {
   const slug = req.params.slug;
-  if (slug && slug.length > 0) {
-    const filePath = path.join(__dirname, 'public/artikel-sunnah.html');
-    res.sendFile(filePath, (err) => {
-      if (err) res.status(404).send(`<h1>Halaman tidak ditemukan</h1>`);
-    });
-  } else {
-    res.redirect('/artikel-sunnah');
-  }
+  if (!validateSlug(slug)) return res.status(400).json({ error: 'Invalid slug format' });
+  const filePath = path.join(__dirname, 'public/artikel-sunnah.html');
+  res.sendFile(filePath, (err) => {
+    if (err) res.status(404).send(`<h1>Halaman tidak ditemukan</h1>`);
+  });
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
@@ -351,7 +363,7 @@ app.post('/api/suggestions', contactLimiter, async (req, res) => {
       `Nama: ${sName || 'Anonim'}\n` +
       `Email: ${sEmail || '-'}\n\n` +
       `Pesan:\n${cleanSuggestion}`
-    );
+    ).replace(/%5Cn/g, '%0A');
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${waText}`;
     res.json({
       status: 'success',
@@ -365,20 +377,20 @@ app.post('/api/suggestions', contactLimiter, async (req, res) => {
   }
 });
 
-app.get('/api/admin/suggestions', requireAdmin, async (req, res) => {
+app.get('/api/admin/suggestions', requireAdmin, adminLimiter, async (req, res) => {
   const { data, error } = await supabase.from('suggestions').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: data || [] });
 });
 
-app.put('/api/admin/suggestions/:id', requireAdmin, async (req, res) => {
+app.put('/api/admin/suggestions/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { status } = req.body;
   const { error } = await supabase.from('suggestions').update({ status: status || 'read' }).eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Status saran diperbarui' });
 });
 
-app.delete('/api/admin/suggestions/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/suggestions/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('suggestions').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Saran dihapus' });
@@ -392,12 +404,15 @@ app.get('/api/activities/monthly/:month', async (req, res) => {
   if (!/^\d{4}-\d{2}$/.test(month)) {
     return res.status(400).json({ status: 'error', message: 'Format bulan tidak valid (YYYY-MM)' });
   }
+  const year = parseInt(month.substring(0, 4));
+  const monthNum = parseInt(month.substring(5));
+  const daysInMonth = new Date(year, monthNum, 0).getDate();
   const { data, error } = await supabase
     .from('activities')
     .select('*')
     .eq('status', 'active')
     .gte('date', `${month}-01`)
-    .lte('date', `${month}-31`)
+    .lte('date', `${month}-${daysInMonth}`)
     .order('date', { ascending: true });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: data || [] });
@@ -524,13 +539,13 @@ app.get('/api/live/status', async (req, res) => {
   });
 });
 
-const quranCache = { surahs: null, surah: {}, tafsir: {}, timestamp: 0 };
+const quranCache = { surahs: { data: null, timestamp: 0 }, surah: { 1: { data: null, timestamp: 0 } }, tafsir: { 1: { data: null, timestamp: 0 } }, timestamp: 0 };
 const QURAN_CACHE_TTL = 60 * 60 * 1000;
 
 app.get('/api/quran/surahs', async (req, res) => {
   try {
-    if (quranCache.surahs && Date.now() - quranCache.timestamp < QURAN_CACHE_TTL) {
-      return res.json({ status: 'success', data: quranCache.surahs, cached: true });
+    if (quranCache.surahs.data && Date.now() - quranCache.surahs.timestamp < QURAN_CACHE_TTL) {
+      return res.json({ status: 'success', data: quranCache.surahs.data, cached: true });
     }
     
     const response = await fetch('https://api.alquran.cloud/v1/surah');
@@ -546,8 +561,7 @@ app.get('/api/quran/surahs', async (req, res) => {
         numberOfAyahs: s.numberOfAyahs,
         revelationType: s.revelationType
       }));
-      quranCache.surahs = surahs;
-      quranCache.timestamp = Date.now();
+      quranCache.surahs = { data: surahs, timestamp: Date.now() };
       return res.json({ status: 'success', data: surahs });
     }
     res.status(500).json({ status: 'error', message: 'Failed to load surahs' });
@@ -563,9 +577,10 @@ app.get('/api/quran/surah/:number', async (req, res) => {
       return res.status(400).json({ status: 'error', message: 'Invalid surah number' });
     }
     
-    const cacheKey = num;
-    if (quranCache.surah[cacheKey] && Date.now() - quranCache.timestamp < QURAN_CACHE_TTL) {
-      return res.json({ status: 'success', data: quranCache.surah[cacheKey], cached: true });
+    const cacheKey = num.toString();
+    const entry = quranCache.surah[cacheKey];
+    if (entry && entry.timestamp && Date.now() - entry.timestamp < QURAN_CACHE_TTL) {
+      return res.json({ status: 'success', data: entry.data, cached: true });
     }
     
     const [arabicRes, indoRes, metaRes] = await Promise.all([
@@ -594,7 +609,7 @@ app.get('/api/quran/surah/:number', async (req, res) => {
       }))
     };
     
-    quranCache.surah[cacheKey] = surahData;
+    quranCache.surah[cacheKey] = { data: surahData, timestamp: Date.now() };
     return res.json({ status: 'success', data: surahData });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
@@ -608,8 +623,10 @@ app.get('/api/quran/tafsir/:number', async (req, res) => {
       return res.status(400).json({ status: 'error', message: 'Invalid surah number' });
     }
     
-    if (quranCache.tafsir[num]) {
-      return res.json({ status: 'success', data: quranCache.tafsir[num], cached: true });
+    const cacheKey = num.toString();
+    const entry = quranCache.tafsir[cacheKey];
+    if (entry && entry.timestamp && Date.now() - entry.timestamp < QURAN_CACHE_TTL) {
+      return res.json({ status: 'success', data: entry.data, cached: true });
     }
     
     const response = await fetch(`https://api.alquran.cloud/v1/surah/${num}/en.maududi`);
@@ -620,7 +637,7 @@ app.get('/api/quran/tafsir/:number', async (req, res) => {
       data.data.ayahs.forEach(a => {
         tafsirMap[a.numberInSurah] = a.text;
       });
-      quranCache.tafsir[num] = tafsirMap;
+      quranCache.tafsir[cacheKey] = { data: tafsirMap, timestamp: Date.now() };
       return res.json({ status: 'success', data: tafsirMap });
     }
     
@@ -724,19 +741,19 @@ app.post('/api/donations', donationLimiter, async (req, res) => {
   res.json({ status: 'success', message: 'Terima kasih atas donasi Anda.' });
 });
 
-app.get('/api/admin/contacts', requireAdmin, async (req, res) => {
+app.get('/api/admin/contacts', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('contacts').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
 });
 
-app.get('/api/admin/donations', requireAdmin, async (req, res) => {
+app.get('/api/admin/donations', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('donations').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
 });
 
-app.get('/api/admin/articles', requireAdmin, async (req, res) => {
+app.get('/api/admin/articles', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
@@ -750,26 +767,26 @@ app.post('/api/admin/articles', requireAdmin, async (req, res) => {
   res.json({ status: 'success', message: 'Artikel disimpan', id: data.id });
 });
 
-app.put('/api/admin/articles/:id', requireAdmin, async (req, res) => {
+app.put('/api/admin/articles/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { title, slug, content, category, author, featured_image, status } = req.body;
   const { error } = await supabase.from('articles').update({ title, slug, content, category: category || null, author: author || null, featured_image: featured_image || null, status: status || 'draft', updated_at: new Date().toISOString() }).eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Artikel diperbarui' });
 });
 
-app.delete('/api/admin/articles/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/articles/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('articles').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Artikel dihapus' });
 });
 
-app.get('/api/admin/activities', requireAdmin, async (req, res) => {
+app.get('/api/admin/activities', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('activities').select('*').order('date', { ascending: true });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
 });
 
-app.post('/api/admin/activities', requireAdmin, async (req, res) => {
+app.post('/api/admin/activities', requireAdmin, adminLimiter, async (req, res) => {
   const { title, description, category, date, time, location, speaker, image, status } = req.body;
   if (!title || !date || !time) return res.status(400).json({ status: 'error', message: 'Data kegiatan tidak lengkap' });
   const { data, error } = await supabase.from('activities').insert([{ title, description: description || null, category: category || null, date, time, location: location || null, speaker: speaker || null, image: image || null, status: status || 'active' }]).select().single();
@@ -777,20 +794,20 @@ app.post('/api/admin/activities', requireAdmin, async (req, res) => {
   res.json({ status: 'success', message: 'Kegiatan disimpan', id: data.id });
 });
 
-app.put('/api/admin/activities/:id', requireAdmin, async (req, res) => {
+app.put('/api/admin/activities/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { title, description, category, date, time, location, speaker, image, status } = req.body;
   const { error } = await supabase.from('activities').update({ title, description: description || null, category: category || null, date, time, location: location || null, speaker: speaker || null, image: image || null, status: status || 'active', updated_at: new Date().toISOString() }).eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Kegiatan diperbarui' });
 });
 
-app.delete('/api/admin/activities/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/activities/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('activities').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Kegiatan dihapus' });
 });
 
-app.get('/api/admin/services', requireAdmin, async (req, res) => {
+app.get('/api/admin/services', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('services').select('*').order('id', { ascending: true });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
@@ -804,26 +821,26 @@ app.post('/api/admin/services', requireAdmin, async (req, res) => {
   res.json({ status: 'success', message: 'Layanan disimpan', id: data.id });
 });
 
-app.put('/api/admin/services/:id', requireAdmin, async (req, res) => {
+app.put('/api/admin/services/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { name, description, icon, status } = req.body;
   const { error } = await supabase.from('services').update({ name, description: description || null, icon: icon || null, status: status || 'active' }).eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Layanan diperbarui' });
 });
 
-app.delete('/api/admin/services/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/services/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('services').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Layanan dihapus' });
 });
 
-app.get('/api/admin/gallery', requireAdmin, async (req, res) => {
+app.get('/api/admin/gallery', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
 });
 
-app.post('/api/admin/gallery', requireAdmin, async (req, res) => {
+app.post('/api/admin/gallery', requireAdmin, adminLimiter, async (req, res) => {
   const { title, description, image_path, category, type } = req.body;
   if (!title || !image_path) return res.status(400).json({ status: 'error', message: 'Data galeri tidak lengkap' });
   const { data, error } = await supabase.from('gallery').insert([{ title, description: description || null, image_path, category: category || null, type: type || 'photo' }]).select().single();
@@ -831,50 +848,52 @@ app.post('/api/admin/gallery', requireAdmin, async (req, res) => {
   res.json({ status: 'success', message: 'Galeri disimpan', id: data.id });
 });
 
-app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/gallery/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('gallery').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Galeri dihapus' });
 });
 
-app.put('/api/admin/contacts/:id', requireAdmin, async (req, res) => {
+app.put('/api/admin/contacts/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('contacts').update({ status: req.body.status || 'read' }).eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Kontak diperbarui' });
 });
 
-app.delete('/api/admin/contacts/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/contacts/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('contacts').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Kontak dihapus' });
 });
 
-app.put('/api/admin/donations/:id', requireAdmin, async (req, res) => {
+app.put('/api/admin/donations/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { status, note } = req.body;
   const { error } = await supabase.from('donations').update({ status: status || 'pending', note: note || null }).eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Donasi diperbarui' });
 });
 
-app.delete('/api/admin/donations/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/donations/:id', requireAdmin, adminLimiter, async (req, res) => {
   const { error } = await supabase.from('donations').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', message: 'Donasi dihapus' });
 });
 
-app.get('/api/admin/users', requireAdmin, async (req, res) => {
+app.get('/api/admin/users', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
 });
 
-app.get('/api/admin/settings', requireAdmin, async (req, res) => {
+app.get('/api/admin/settings', requireAdmin, adminLimiter, async (req, res) => {
   const { data: rows, error } = await supabase.from('settings').select('*');
   if (error) return res.status(500).json({ status: 'error', message: error.message });
   res.json({ status: 'success', data: rows || [] });
 });
 
-app.put('/api/admin/settings/:key', requireAdmin, async (req, res) => {
+app.put('/api/admin/settings/:key', requireAdmin, adminLimiter, async (req, res) => {
+  const allowedKeys = ['masjid_name', 'masjid_address', 'masjid_phone', 'masjid_whatsapp', 'masjid_email', 'donation_account'];
+  if (!allowedKeys.includes(req.params.key)) return res.status(400).json({ status: 'error', message: 'Invalid settings key' });
   const { value } = req.body;
   const { error } = await supabase.from('settings').update({ value, updated_at: new Date().toISOString() }).eq('key', req.params.key);
   if (error) return res.status(500).json({ status: 'error', message: error.message });
@@ -913,7 +932,7 @@ app.get('/api/articles/sunnah/:slug', async (req, res) => {
     return res.status(404).json({ status: 'error', message: 'Artikel tidak ditemukan' });
   }
 
-  await supabase.from('sunnah_articles').update({ views: (data.views || 0) + 1 }).eq('id', data.id);
+  await supabase.from('sunnah_articles').inc({ views: 1 }).eq('id', data.id);
 
   res.json({ status: 'success', data });
 });
@@ -965,9 +984,14 @@ app.get('/api/qris/info', async (req, res) => {
 
 app.post('/api/qris/update', requireAdmin, async (req, res) => {
   const { merchant_name, qris_static_url, is_active } = req.body;
+  // Validate qris_static_url is a valid path or URL
+  let validatedUrl = qris_static_url || null;
+  if (qris_static_url && !/^\/|^https?:\/\//.test(qris_static_url)) {
+    return res.status(400).json({ status: 'error', message: 'Invalid qris_static_url format' });
+  }
   const payload = {
     merchant_name: merchant_name || 'Masjid Al Karomah',
-    qris_static_url: qris_static_url || null,
+    qris_static_url: validatedUrl,
     is_active: is_active !== false,
     updated_at: new Date().toISOString()
   };
@@ -994,7 +1018,7 @@ app.post('/api/donations/qris', donationLimiter, async (req, res) => {
     return res.status(400).json({ status: 'error', message: 'Nominal minimal Rp 10.000' });
   }
 
-  const transactionId = `TRX-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const transactionId = `TRX-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 
   const { data, error } = await supabase.from('donation_history').insert([{
     transaction_id: transactionId,
@@ -1057,6 +1081,7 @@ app.post('/api/zakat/calculate', async (req, res) => {
 
   if (zakat_type === 'fitrah') {
     const { jumlah_jiwa } = payload || {};
+    if (jumlah_jiwa === undefined) return res.status(400).json({ status: 'error', message: 'jumlah_jiwa wajib diisi untuk zakat fitrah' });
     const jiwa = parseInt(jumlah_jiwa) || 0;
     const harga_beras_per_kg = 15000;
     const kg_per_jiwa = 2.5;
@@ -1065,6 +1090,9 @@ app.post('/api/zakat/calculate', async (req, res) => {
     notes = `Zakat fitrah untuk ${jiwa} jiwa (2.5 kg/jiwa × Rp ${harga_beras_per_kg.toLocaleString('id-ID')}/kg)`;
   } else if (zakat_type === 'mal') {
     const { saldo_tabungan, emas_perak, properti, hutang, harga_emas_per_gram } = payload || {};
+    if (saldo_tabungan === undefined || emas_perak === undefined || properti === undefined || hutang === undefined || harga_emas_per_gram === undefined) {
+      return res.status(400).json({ status: 'error', message: 'Field wajib tidak lengkap untuk zakat mal' });
+    }
     const totalHarta = (parseInt(saldo_tabungan) || 0) +
                        (parseInt(emas_perak) || 0) +
                        (parseInt(properti) || 0);
@@ -1086,6 +1114,9 @@ app.post('/api/zakat/calculate', async (req, res) => {
       : `Harta bersih belum mencapai nisab (${NISAB_EMAS_GRAM} gram emas)`;
   } else if (zakat_type === 'penghasilan') {
     const { gaji_bulanan, penghasilan_lain, kebutuhan_pokok, harga_emas_per_gram } = payload || {};
+    if (gaji_bulanan === undefined || penghasilan_lain === undefined || kebutuhan_pokok === undefined || harga_emas_per_gram === undefined) {
+      return res.status(400).json({ status: 'error', message: 'Field wajib tidak lengkap untuk zakat penghasilan' });
+    }
     const totalGaji = (parseInt(gaji_bulanan) || 0) + (parseInt(penghasilan_lain) || 0);
     const kebutuhan = parseInt(kebutuhan_pokok) || 0;
     const sisa = totalGaji - kebutuhan;
@@ -1124,21 +1155,39 @@ app.post('/api/zakat/calculate', async (req, res) => {
   });
 });
 
-app.use((req, res) => res.status(404).json({ status: 'error', message: 'Halaman tidak ditemukan' }));
+app.use((req, res) => {
+  res.status(404).json({ status: 'error', message: 'Endpoint tidak ditemukan' });
+});
 app.use((err, req, res, next) => {
+  const statusCode = err.status || 500;
+  const message = process.env.NODE_ENV === 'production' ? 'Terjadi kesalahan pada server' : err.message || 'Terjadi kesalahan tidak dikenal';
   console.error('[ERROR]', new Date().toISOString());
   console.error('URL:', req.method, req.originalUrl);
   console.error('Message:', err.message);
   console.error('Stack:', err.stack);
-  if (err.code) console.error('Code:', err.code);
-  if (err.status) console.error('Status:', err.status);
-  res.status(500).json({ status: 'error', message: process.env.NODE_ENV === 'production' ? 'Terjadi kesalahan pada server' : err.message });
+  res.status(statusCode).json({ status: 'error', message });
 });
 
 module.exports = app;
 
 if (require.main === module && process.env.VERCEL !== '1') {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`\n╔════════════════════════════════════════╗\n║  Website Masjid Al Karomah             ║\n║  Server berjalan di port: ${PORT}     ║\n║  Database: Supabase                    ║\n╚════════════════════════════════════════╝\n`);
   });
+
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('\nSIGTERM/SIGINT received. Shutting down gracefully...');
+    server.close(() => {
+      console.log('Server closed');
+      process.exit(0);
+    });
+    setTimeout(() => {
+      console.error('Force shutdown after timeout');
+      process.exit(1);
+    }, 5000);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
