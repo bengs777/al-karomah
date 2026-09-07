@@ -692,10 +692,12 @@ app.get('/api/quran/search', async (req, res) => {
 
 app.post('/api/quran/bookmark', async (req, res) => {
   try {
-    const { surah, ayat, userId } = req.body;
-    if (!surah || !ayat || !userId) {
+    const { surah, ayat } = req.body;
+    if (!surah || !ayat) {
       return res.status(400).json({ status: 'error', message: 'Data tidak lengkap' });
     }
+    
+    const userId = req.auth?.userId || 'guest';
     
     const { error } = await supabase.from('quran_bookmarks').insert([{
       user_id: userId,
